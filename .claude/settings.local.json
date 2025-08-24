@@ -8,9 +8,19 @@
       "Bash(make test:*)",
       "Bash(\"D:\\Dev\\Go\\bin\\go.exe\" build ./cmd/elvish)",
       "Bash(\"D:\\Dev\\Go\\bin\\go.exe\" build ./cmd/elvmdfmt)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(./elvish.exe -c 'use str; str:to-upper \"\"h\"\"')",
+      "mcp__Ast-Grep__find_code",
+      "Bash(rg:*)",
+      "Bash(./elvish.exe -c 'put $nil | to-string')",
+      "Bash(./elvish.exe -c 'echo $nil')",
+      "Bash(git push:*)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "additionalDirectories": [
+      "D:\\d\\Code\\MyProject\\Go"
+    ]
   }
 }

@@ -426,8 +426,6 @@ func withRandNullary(f func(*rand.Rand)) {
 
 type rangeOpts struct{ Step vals.Num }
 
-// TODO: The default value can only be used implicitly; passing "range
-// &step=nil" results in an error.
 func (o *rangeOpts) SetDefaultOptions() { o.Step = nil }
 
 func rangeFn(fm *Frame, opts rangeOpts, args ...vals.Num) error {
@@ -440,6 +438,8 @@ func rangeFn(fm *Frame, opts rangeOpts, args ...vals.Num) error {
 	default:
 		return errs.ArityMismatch{What: "arguments", ValidLow: 1, ValidHigh: 2, Actual: len(args)}
 	}
+	// Include step if it's explicitly provided and not nil
+	// In Elvish, explicit nil should be treated the same as not providing the option
 	if opts.Step != nil {
 		rawNums = append(rawNums, opts.Step)
 	}

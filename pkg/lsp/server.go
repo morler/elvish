@@ -12,6 +12,7 @@ import (
 	"src.elv.sh/pkg/eval"
 	"src.elv.sh/pkg/mods/doc"
 	"src.elv.sh/pkg/parse"
+	"src.elv.sh/pkg/parse/cmpd"
 	"src.elv.sh/pkg/parse/np"
 )
 
@@ -31,6 +32,84 @@ type document struct {
 	code      string
 	parseTree parse.Tree
 	parseErr  error
+}
+
+// isVariableShadowed checks if a variable is locally defined (shadowing global/builtin)
+func isVariableShadowed(parseTree parse.Tree, pos int, varName string) bool {
+	// Find the path to the current position
+	path := np.Find(parseTree.Root, pos)
+	if len(path) == 0 {
+		return false
+	}
+	
+	// Check if this variable is defined locally
+	found := false
+	eachDefinedVariableAtPos(path[len(path)-1], path[0].Range().From, func(name string) {
+		if name == varName {
+			found = true
+		}
+	})
+	return found
+}
+
+// eachDefinedVariableAtPos calls f for each variable defined and visible at pos
+// This is adapted from pkg/edit/complete/ns_helper.go:eachDefinedVariable
+func eachDefinedVariableAtPos(n parse.Node, pos int, f func(string)) {
+	if fn, ok := n.(*parse.Form); ok {
+		eachDefinedVariableInForm(fn, f)
+	}
+	if pn, ok := n.(*parse.Primary); ok && pn.Type == parse.Lambda {
+		for _, param := range pn.Elements {
+			if varRef, ok := cmpd.StringLiteral(param); ok {
+				_, name := eval.SplitSigil(varRef)
+				f(name)
+			}
+		}
+	}
+	for _, ch := range parse.Children(n) {
+		if ch.Range().From > pos {
+			break
+		}
+		if pn, ok := ch.(*parse.Primary); ok && pn.Type == parse.Lambda {
+			if pos >= pn.Range().To {
+				continue
+			}
+		}
+		eachDefinedVariableAtPos(ch, pos, f)
+	}
+}
+
+// eachDefinedVariableInForm calls f for each variable defined in fn
+// This is adapted from pkg/edit/complete/ns_helper.go:eachDefinedVariableInForm
+func eachDefinedVariableInForm(fn *parse.Form, f func(string)) {
+	if fn.Head == nil {
+		return
+	}
+	switch head, _ := cmpd.StringLiteral(fn.Head); head {
+	case "var":
+		for _, arg := range fn.Args {
+			if parse.SourceText(arg) == "=" {
+				break
+			}
+			if varRef, ok := cmpd.StringLiteral(arg); ok {
+				_, name := eval.SplitSigil(varRef)
+				f(name)
+			}
+		}
+	case "fn":
+		if len(fn.Args) >= 1 {
+			if name, ok := cmpd.StringLiteral(fn.Args[0]); ok {
+				f(name + eval.FnSuffix)
+			}
+		}
+	}
+}
+
+// getLocalVariableInfo returns information about a local variable if it exists
+func getLocalVariableInfo(varName string) (string, error) {
+	// For locally defined variables, we provide basic information
+	// since they don't have full documentation like builtins
+	return fmt.Sprintf("**%s** (local variable)\n\nLocally defined variable in current scope.", varName), nil
 }
 
 func newServer() *server {
@@ -124,20 +203,38 @@ func (s *server) hover(_ context.Context, params lsp.TextDocumentPositionParams)
 	// Try variable doc
 	var primary *parse.Primary
 	if p.Match(np.Store(&primary)) && primary.Type == parse.Variable {
-		// TODO: Take shadowing into consideration.
-		markdown, err := doc.Source("$" + primary.Value)
-		if err == nil {
-			return lsp.Hover{Contents: lsp.MarkupContent{Kind: lsp.MKMarkdown, Value: markdown}}, nil
+		// Check if variable is locally defined (shadowing consideration)
+		if isVariableShadowed(document.parseTree, pos, primary.Value) {
+			// Variable is locally defined, provide local variable information
+			markdown, err := getLocalVariableInfo(primary.Value)
+			if err == nil {
+				return lsp.Hover{Contents: lsp.MarkupContent{Kind: lsp.MKMarkdown, Value: markdown}}, nil
+			}
+		} else {
+			// Variable is not locally defined, try global/builtin documentation
+			markdown, err := doc.Source("$" + primary.Value)
+			if err == nil {
+				return lsp.Hover{Contents: lsp.MarkupContent{Kind: lsp.MKMarkdown, Value: markdown}}, nil
+			}
 		}
 	}
 	// Try command doc
 	var expr np.SimpleExprData
 	var form *parse.Form
 	if p.Match(np.SimpleExpr(&expr, nil), np.Store(&form)) && form.Head == expr.Compound {
-		// TODO: Take shadowing into consideration.
-		markdown, err := doc.Source(expr.Value)
-		if err == nil {
-			return lsp.Hover{Contents: lsp.MarkupContent{Kind: lsp.MKMarkdown, Value: markdown}}, nil
+		// Check if command is locally defined (shadowing consideration)  
+		if isVariableShadowed(document.parseTree, pos, expr.Value) {
+			// Command is locally defined, provide local function information
+			markdown, err := getLocalVariableInfo(expr.Value)
+			if err == nil {
+				return lsp.Hover{Contents: lsp.MarkupContent{Kind: lsp.MKMarkdown, Value: markdown}}, nil
+			}
+		} else {
+			// Command is not locally defined, try global/builtin documentation
+			markdown, err := doc.Source(expr.Value)
+			if err == nil {
+				return lsp.Hover{Contents: lsp.MarkupContent{Kind: lsp.MKMarkdown, Value: markdown}}, nil
+			}
 		}
 	}
 	return nil, nil
@@ -149,10 +246,11 @@ func (s *server) completion(_ context.Context, params lsp.CompletionParams) (any
 		return nil, unknownDocument(params.TextDocument.URI)
 	}
 	code := document.code
+	pos := lspPositionToIdx(code, params.Position)
 	result, err := complete.Complete(
 		complete.CodeBuffer{
 			Content: code,
-			Dot:     lspPositionToIdx(code, params.Position)},
+			Dot:     pos},
 		s.evaler,
 		complete.Config{},
 	)
@@ -163,17 +261,35 @@ func (s *server) completion(_ context.Context, params lsp.CompletionParams) (any
 
 	lspItems := make([]lsp.CompletionItem, len(result.Items))
 	lspRange := lspRangeFromRange(code, result.Replace)
-	var kind lsp.CompletionItemKind
-	switch result.Name {
-	case "command":
-		kind = lsp.CIKFunction
-	case "variable":
-		kind = lsp.CIKVariable
-	default:
-		// TODO: Support more values of kind
+	
+	// Enhanced completion item kind determination with shadowing consideration
+	var getCompletionKind = func(name, contextName string) lsp.CompletionItemKind {
+		switch contextName {
+		case "command":
+			// Check if command is locally defined
+			if isVariableShadowed(document.parseTree, pos, name) {
+				return lsp.CIKFunction // Local function
+			}
+			return lsp.CIKFunction // Global/builtin function
+		case "variable":
+			// Always return CIKVariable for compatibility, but use details to distinguish
+			return lsp.CIKVariable
+		case "argument":
+			return lsp.CIKValue // Command arguments
+		case "index":
+			return lsp.CIKProperty // Array/map indices
+		case "redir":
+			return lsp.CIKFile // File paths for redirections
+		default:
+			return lsp.CIKText // Fallback for unknown types
+		}
 	}
+	
 	for i, item := range result.Items {
-		lspItems[i] = lsp.CompletionItem{
+		kind := getCompletionKind(item.ToInsert, result.Name)
+		
+		// Enhanced completion item with additional information
+		completionItem := lsp.CompletionItem{
 			Label: item.ToInsert,
 			Kind:  kind,
 			TextEdit: &lsp.TextEdit{
@@ -181,6 +297,30 @@ func (s *server) completion(_ context.Context, params lsp.CompletionParams) (any
 				NewText: item.ToInsert,
 			},
 		}
+		
+		// Add detail information for better UX
+		switch result.Name {
+		case "variable":
+			if isVariableShadowed(document.parseTree, pos, item.ToInsert) {
+				completionItem.Detail = "local variable"
+			} else {
+				completionItem.Detail = "global/builtin variable"
+			}
+		case "command":
+			if isVariableShadowed(document.parseTree, pos, item.ToInsert) {
+				completionItem.Detail = "local function"
+			} else {
+				completionItem.Detail = "global/builtin command"
+			}
+		case "argument":
+			completionItem.Detail = "command argument"
+		case "index":
+			completionItem.Detail = "index key"
+		case "redir":
+			completionItem.Detail = "file path"
+		}
+		
+		lspItems[i] = completionItem
 	}
 	return lspItems, nil
 }
