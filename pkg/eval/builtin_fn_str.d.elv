@@ -40,6 +40,33 @@ fn '>=s' {|@string| }
 # ```
 fn wcswidth {|string| }
 
+# Override the column width of a Unicode rune to a specific non-negative value.
+# If `$width` is negative, removes the override for that rune.
+#
+# This function is useful for handling terminal compatibility issues with certain
+# Unicode characters that may not display with their expected width on specific
+# terminals or environments.
+#
+# ```elvish-transcript
+# ~> # First, see the normal width of an emoji
+# ~> wcswidth 🌟
+# ▶ (num 2)
+# ~> # Override the width to be 1 column instead of 2
+# ~> -override-wcwidth 🌟 1
+# ~> wcswidth 🌟
+# ▶ (num 1)
+# ~> # Remove the override (use negative width)
+# ~> -override-wcwidth 🌟 -1
+# ~> wcswidth 🌟
+# ▶ (num 2)
+# ```
+#
+# **Note**: This function takes a single Unicode rune, not a multi-rune string.
+# Use `(all)` to apply overrides to multiple characters.
+#
+# See also [`wcswidth`](#wcswidth).
+fn '-override-wcwidth' {|rune width| }
+
 # Convert arguments to string values.
 #
 # ```elvish-transcript

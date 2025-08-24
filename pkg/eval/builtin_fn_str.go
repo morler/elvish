@@ -13,8 +13,6 @@ import (
 
 // String operations.
 
-// TODO(xiaq): Document -override-wcswidth.
-
 func init() {
 	addBuiltinFns(map[string]any{
 		"<s":  chainStringComparer(func(a, b string) bool { return a < b }),

@@ -414,6 +414,50 @@ fg 12346       # Bring entire group to foreground
 
 **Result**: The `fg` command now has complete, professional documentation explaining job control functionality, process group requirements, and platform-specific behavior, making it accessible to users and improving overall Elvish documentation completeness.
 
+### Function Documentation Enhancement - override-wcwidth Option  
+**Status**: ✅ COMPLETED (2025-08-24)  
+**Location**: `pkg/eval/builtin_fn_str.go`, `pkg/eval/builtin_fn_str.d.elv`  
+**Description**: Documented the `-override-wcwidth` option for Unicode character width customization
+
+**Tasks Completed**:
+- ✅ **Function Analysis**: Analyzed `-override-wcwidth` implementation using `wcwidth.Override` function
+  - Understood function signature: `Override(rune, int)` for setting character display width
+  - Identified negative width behavior for removing overrides
+  - Analyzed relationship to terminal compatibility and Unicode display width issues
+  
+- ✅ **Comprehensive Documentation**: Added complete function documentation to `builtin_fn_str.d.elv`
+  - Added detailed description explaining function purpose for terminal compatibility
+  - Added practical examples showing emoji width override scenarios
+  - Added cross-references to related `wcswidth` function  
+  - Documented negative width parameter behavior for removing overrides
+  - Added note about single rune limitation and multi-character handling
+  
+- ✅ **Code Cleanup**: Removed TODO comment from source code
+  - Removed `// TODO(xiaq): Document -override-wcswidth.` from `builtin_fn_str.go`
+  - Maintained code cleanliness and completeness
+
+**Technical Implementation**:
+- **Documentation Style**: Followed existing Elvish documentation patterns and formatting
+- **Example Quality**: Provided realistic examples showing Unicode character width handling scenarios
+- **Cross-References**: Added appropriate see-also reference to `wcswidth` function
+- **Usage Context**: Explained relationship to terminal compatibility and Unicode display issues
+
+**Usage Examples**:
+```elvish
+# Basic width override  
+-override-wcwidth 🌟 1    # Set emoji width to 1 column instead of 2
+
+# Remove override
+-override-wcwidth 🌟 -1   # Remove override, restore default width
+
+# Terminal compatibility scenario
+-override-wcwidth ≈ 1     # Fix terminal display issues with specific Unicode characters
+```
+
+**Validation**: All existing transcript tests pass (line 112-114 in `builtin_fn_str_test.elvts` contain working test cases), ensuring no functional regressions.
+
+**Result**: The `-override-wcwidth` function now has complete, professional documentation explaining Unicode character width customization, terminal compatibility use cases, and proper usage patterns, making it accessible to users dealing with terminal display issues.
+
 ## Current Active TODO Items
 
 ### High Priority (Core Functionality Impact)
@@ -425,7 +469,8 @@ fg 12346       # Bring entire group to foreground
 
 ### Medium Priority (User Experience)
 - ✅ **Command Completion** (`pkg/edit/complete_getopt.go`): Make Config field configurable - COMPLETED (2025-08-24)
-- **Function Documentation** (Various `builtin_fn_*.go` files): Improve function documentation
+- ✅ **Function Documentation** (`pkg/eval/builtin_fn_str.go`): Document -override-wcswidth option - COMPLETED (2025-08-24)
+- **Function Documentation** (Various `builtin_fn_*.go` files): Improve remaining function documentation
 - **Test Infrastructure** (`pkg/cli/term/read_rune_test.go`): Remove Unix dependency
 - **Error Messages** (Various locations): Improve error message informativeness
 
@@ -617,6 +662,7 @@ The current bbolt-based storage daemon might be replaced with a custom database 
 - ✅ **LSP Enhancement**: Variable shadowing support for completions and definitions
 - ✅ **Performance Optimization**: Compilation phase benchmarking infrastructure established
 - ✅ **Command Completion**: Configurable getopt.Config field for flexible option parsing
+- ✅ **Function Documentation**: Enhanced builtin_fn_str.go with -override-wcwidth documentation
 
 **Active Development Areas** (143 TODO comments remaining in codebase):
 - TUI/CLI improvements (33 items across pkg/edit and pkg/cli)
@@ -636,10 +682,10 @@ The current bbolt-based storage daemon might be replaced with a custom database 
 ## Project Status Overview
 
 ### Completion Statistics
-- **Major Features Completed**: 9 (Go upgrade, Windows compatibility, Module system, String module, Error handling, Test coverage, LSP enhancement, Performance optimization, Command completion)
-- **Active TODO Comments**: 142 items across 98 source files (1 TODO resolved in complete_getopt.go)
+- **Major Features Completed**: 10 (Go upgrade, Windows compatibility, Module system, String module, Error handling, Test coverage, LSP enhancement, Performance optimization, Command completion, Function documentation)
+- **Active TODO Comments**: 141 items across 97 source files (2 TODOs resolved: complete_getopt.go, builtin_fn_str.go)
 - **High Priority Items**: 4 core functionality improvements (all completed)
-- **Medium Priority Items**: 4 user experience enhancements (1 completed) 
+- **Medium Priority Items**: 4 user experience enhancements (2 completed) 
 - **Low Priority Items**: 3 code quality improvements
 
 ### Development Focus Areas
