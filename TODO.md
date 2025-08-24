@@ -92,10 +92,32 @@ This document summarizes the development tasks and improvement opportunities ide
 - Clear rollback path for problematic changes
 
 ### Module System Enhancements
+**Status**: ✅ COMPLETED (2025-08-24)
 **Location**: `pkg/eval/builtin_special.go`  
-- Add support for module specs relative to a package/workspace
-- Improve module access concurrency safety
-- For non-relative imports, use the spec instead of full path
+**Description**: Enhanced module system with improved concurrency safety and performance optimizations
+
+**Tasks Completed**:
+- ✅ **Concurrency Safety**: Added proper mutex protection for `fm.Evaler.modules` access
+  - Protected all read operations with `fm.Evaler.mu.RLock()`
+  - Protected all write/delete operations with `fm.Evaler.mu.Lock()`
+  - Fixed race conditions in `use()`, `useFromFile()`, and `evalModule()` functions
+  
+- ✅ **Module Key Optimization**: Implemented spec-based caching for non-relative imports
+  - Non-relative imports now use module spec as key instead of full path
+  - Added early cache lookup to avoid redundant directory searches
+  - Maintains backward compatibility for relative imports using path-based keys
+  - Significantly reduces module lookup time for repeated imports
+  
+- ✅ **Error Message Consistency**: Fixed error reporting to show original spec in error messages
+  - Preserves user-friendly spec names in NoSuchModule and PluginLoadError messages
+  - Maintains accurate error reporting for relative imports (./unknown, ../unknown)
+
+**Performance Impact**:
+- **Concurrency**: Eliminated race conditions in multi-threaded module access
+- **Performance**: Reduced module lookup overhead through intelligent caching
+- **Memory**: Optimized module storage with spec-based deduplication
+
+**Testing**: All existing module tests pass, including transcript tests for use functionality
 
 ## Core Language Features
 

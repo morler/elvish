@@ -428,20 +428,30 @@ func use(fm *Frame, spec string, r diag.Ranger) (*Ns, error) {
 	}
 
 	// Handle imports of pre-defined modules like `builtin` and `str`.
+	fm.Evaler.mu.RLock()
 	if ns, ok := fm.Evaler.modules[spec]; ok {
+		fm.Evaler.mu.RUnlock()
 		return ns, nil
 	}
+	fm.Evaler.mu.RUnlock()
 	if code, ok := fm.Evaler.BundledModules[spec]; ok {
 		return evalModule(fm, spec,
 			parse.Source{Name: "[bundled " + spec + "]", Code: code}, r)
 	}
 
 	// Handle imports relative to the Elvish module search directories.
-	//
-	// TODO: For non-relative imports, use the spec (instead of the full path)
-	// as the module key instead to avoid searching every time.
+	// Check if the module is already loaded using spec as key.
+	fm.Evaler.mu.RLock()
+	if ns, ok := fm.Evaler.modules[spec]; ok {
+		fm.Evaler.mu.RUnlock()
+		return ns, nil
+	}
+	fm.Evaler.mu.RUnlock()
+
+	// Search for the module in library directories.
 	for _, dir := range fm.Evaler.LibDirs {
-		ns, err := useFromFile(fm, spec, filepath.Join(dir, spec), r)
+		fullPath := filepath.Join(dir, spec)
+		ns, err := useFromFileWithKeyAndSpec(fm, spec, fullPath, spec, r)
 		if _, isNoSuchModule := err.(NoSuchModule); isNoSuchModule {
 			continue
 		}
@@ -452,11 +462,18 @@ func use(fm *Frame, spec string, r diag.Ranger) (*Ns, error) {
 	return nil, NoSuchModule{spec}
 }
 
-// TODO: Make access to fm.Evaler.modules concurrency-safe.
 func useFromFile(fm *Frame, spec, path string, r diag.Ranger) (*Ns, error) {
-	if ns, ok := fm.Evaler.modules[path]; ok {
+	// For relative imports, use the path as key to maintain existing behavior
+	return useFromFileWithKeyAndSpec(fm, path, path, spec, r)
+}
+
+func useFromFileWithKeyAndSpec(fm *Frame, key, path, spec string, r diag.Ranger) (*Ns, error) {
+	fm.Evaler.mu.RLock()
+	if ns, ok := fm.Evaler.modules[key]; ok {
+		fm.Evaler.mu.RUnlock()
 		return ns, nil
 	}
+	fm.Evaler.mu.RUnlock()
 	_, err := os.Stat(path + ".so")
 	if err != nil {
 		code, err := readFileUTF8(path + ".elv")
@@ -467,7 +484,7 @@ func useFromFile(fm *Frame, spec, path string, r diag.Ranger) (*Ns, error) {
 			return nil, err
 		}
 		src := parse.Source{Name: path + ".elv", Code: code, IsFile: true}
-		return evalModule(fm, path, src, r)
+		return evalModule(fm, key, src, r)
 	}
 
 	plug, err := pluginOpen(path + ".so")
@@ -478,14 +495,16 @@ func useFromFile(fm *Frame, spec, path string, r diag.Ranger) (*Ns, error) {
 	if err != nil {
 		return nil, PluginLoadError{spec, err}
 	}
-	ns, ok := sym.(**Ns)
-	if !ok {
+	if nsPtr, ok := sym.(**Ns); ok {
+		fm.Evaler.mu.Lock()
+		fm.Evaler.modules[key] = *nsPtr
+		fm.Evaler.mu.Unlock()
+		return *nsPtr, nil
+	} else {
 		// plug.Lookup always returns a pointer
 		t := reflect.TypeOf(sym).Elem()
 		return nil, PluginLoadError{spec, fmt.Errorf("Ns symbol has wrong type %s", t)}
 	}
-	fm.Evaler.modules[path] = *ns
-	return *ns, nil
 }
 
 func readFileUTF8(fname string) (string, error) {
@@ -499,7 +518,6 @@ func readFileUTF8(fname string) (string, error) {
 	return string(bytes), nil
 }
 
-// TODO: Make access to fm.Evaler.modules concurrency-safe.
 func evalModule(fm *Frame, key string, src parse.Source, r diag.Ranger) (*Ns, error) {
 	ns, exec, err := fm.PrepareEval(src, r, new(Ns))
 	if err != nil {
@@ -507,11 +525,16 @@ func evalModule(fm *Frame, key string, src parse.Source, r diag.Ranger) (*Ns, er
 	}
 	// Installs the namespace before executing. This prevent circular use'es
 	// from resulting in an infinite recursion.
+	fm.Evaler.mu.Lock()
 	fm.Evaler.modules[key] = ns
+	fm.Evaler.mu.Unlock()
+
 	err = exec()
 	if err != nil {
 		// Unload the namespace.
+		fm.Evaler.mu.Lock()
 		delete(fm.Evaler.modules, key)
+		fm.Evaler.mu.Unlock()
 		return nil, err
 	}
 	return ns, nil
