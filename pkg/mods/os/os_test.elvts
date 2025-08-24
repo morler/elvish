@@ -231,8 +231,8 @@ Exception: CreateFile non-existent: The system cannot find the file specified.
 ## sock on Windows ##
 //mksock-or-skip sock
 //only-on windows
-// Windows does support Unix sockets now, but Go has only started reporting them
-// as sockets since 1.23 (https://go.dev/doc/go1.23).
+// Windows does support Unix sockets now, but the socket file may not
+// be created as a proper Unix socket file in the filesystem.
 ~> has-value [socket irregular] (os:stat sock)[type]
 ▶ $true
 

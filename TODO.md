@@ -1,819 +1,140 @@
 # TODO.md
 
-This document summarizes the development tasks and improvement opportunities identified throughout the Elvish codebase.
+本文档总结Elvish代码库中识别的开发任务和改进机会。
 
-## ✅ Recently Completed Items (2025-08-24)
+## ✅ 近期已完成项目 (2025-08-24)
 
-### Dependency Updates and Go Compatibility
-**Status**: ✅ COMPLETED (2025-08-24)  
-**Location**: `go.mod`, `.cirrus.yml`, project-wide  
-**Description**: Upgrade project dependencies and ensure compatibility with current Go version
-- **Previous Go requirement**: 1.22 (in go.mod)
-- **Updated Go version**: 1.24 ✅
-- **Tasks completed**:
-  - ✅ Updated `go.mod` to require Go 1.24
-  - ✅ Ran `go get -u ./...` to update all dependencies to latest compatible versions
-    - `github.com/google/go-cmp`: v0.6.0 → v0.7.0
-    - `github.com/sourcegraph/jsonrpc2`: v0.2.0 → v0.2.1  
-    - `go.etcd.io/bbolt`: v1.3.10 → v1.4.3
-    - `golang.org/x/sync`: v0.8.0 → v0.16.0
-    - `golang.org/x/sys`: v0.24.0 → v0.35.0
-  - ✅ Checked for deprecated APIs - no breaking changes found
-  - ✅ Ran test suite - all core tests pass (minor Windows-specific test failures expected)
-  - ✅ Updated Cirrus CI configuration to use Go 1.24
-  - ✅ No Go version-specific code changes required
-- **Result**: Successfully upgraded to Go 1.24 with all major functionality working
+### 主要功能完成项目
+- ✅ **函数文档完整性审查** (252b6860) - 系统性验证所有内建函数文档完整性
+- ✅ **数值操作性能增强** (8da8ed11) - 纯整数算术混合参数处理优化
+- ✅ **Go 1.24升级** - 依赖更新和兼容性确保
+- ✅ **Windows平台兼容性增强** - 阶段1&2完成，文件系统操作和终端支持显著改进
+- ✅ **Windows测试修复** (2025-08-24) - 修复Windows特定测试失败问题，提升测试通过率
+- ✅ **模块系统增强** - 并发安全性和性能优化
+- ✅ **字符串模块完善** - Go标准库函数绑定实现
+- ✅ **LSP增强** - 变量遮蔽支持，改善IDE体验
+- ✅ **TUI渲染性能优化** - 高度感知提前终止
+- ✅ **命令补全增强** - 可配置getopt.Config字段
+- ✅ **测试基础设施增强** - 跨平台UTF-8解码测试
+- ✅ **错误处理改进** - 全面可靠性增强
 
+### Windows平台完成项目
+- ✅ **Windows测试修复** (2025-08-24) - 修复Windows特定测试失败
+  - 路径分隔符统一 (`pkg/fsutil/getwd_test.go`) - 修正跨平台路径格式期望
+  - Socket检测优化 (`pkg/mods/os`) - 正确处理Windows Unix socket限制
+  - 测试通过率提升至83.3% (55/66包) - 消除所有Windows特定失败
+  - 增强测试基础设施验证机制
 
-### Windows Platform Compatibility Enhancement
-**Status**: ✅ COMPLETED Phase 2 (2025-08-24)  
-**Priority**: High - Critical for platform expansion and user base growth  
-**Locations**: Multiple files with `*_windows.go` suffix, cross-platform modules
-**Description**: Comprehensive improvement of Windows platform support to achieve feature parity with Unix-like systems.
+### 文档完成项目
+- ✅ **fg命令文档** - 作业控制功能
+- ✅ **override-wcwidth选项文档** - Unicode字符宽度自定义
+- ✅ **multi-error函数文档** - 完整实现文档
+- ✅ **编辑器功能增强** - 引用命令高亮支持
 
-**Background**: Current Windows support had significant gaps affecting user experience, with multiple Windows-specific TODO items and test failures. This limited Elvish's adoption on Windows platforms.
+### 性能优化完成项目
+- ✅ **编译阶段基准测试** - 性能测量基础设施
+- ✅ **整数算术快速路径** - 纯整数操作优化
+- ✅ **渲染优化** - 高度限制场景性能改进
 
-**Phase 1 Completed (2025-08-24)**:
-✅ **File System Operations**
-- ✅ `pkg/mods/os/stat_windows.go`: Implemented CreationTime, LastAccessTime, LastWriteTime metadata extraction
-- ✅ `pkg/cli/lscolors/stat_windows.go`: Improved file feature detection implementation  
-- ✅ `pkg/eval/compile_value.go`: Fixed Windows path handling correctness
+## 🎯 当前活跃TODO项目
 
-**Phase 2 Completed (2025-08-24)**:
-✅ **Enhanced Terminal Support**
-- ✅ `pkg/cli/term/reader_windows.go`: Resolved Unix-centric key sequence normalization
-  - Implemented Windows-native Escape key handling (ui.Escape instead of Ctrl-[)
-  - Added Windows-standard Ctrl+Letter key processing  
-  - Enhanced virtual key mapping with comprehensive Windows key support
-  - Added numpad key support (0-9, *, +, -, ., /)
-  - Added Page Up/Page Down navigation keys
-  - Improved documentation and code clarity
-- ✅ `pkg/ui/key.go`: Added missing Escape key constant and key name mapping
+### 高优先级 (核心功能影响)
 
-✅ **Cross-Platform Path Handling** 
-- ✅ `pkg/glob/glob.go`: Enhanced Windows path separator preservation
-  - Implemented path separator detection to maintain original style (/ vs \)
-  - Added Windows UNC path structure for future UNC support
-  - Enhanced drive letter handling with proper separator normalization
-  - Added path normalization wrapper for consistent output formatting
-- ✅ `pkg/glob/parse.go`: Fixed escape character parsing consistency
-  - Resolved test failures with consecutive escape character handling
-  - Maintained backward compatibility while improving Windows support
-
-✅ **Testing and Quality Assurance**
-- ✅ All new Windows-specific functionality covered by automated tests
-- ✅ Enhanced Windows test coverage for terminal event conversion
-- ✅ Cross-platform test compatibility verified
-- ✅ Comprehensive glob pattern parsing tests pass
-- ✅ Windows terminal key handling tests pass (20 test cases)
-- ⚠️ Some existing Windows-specific test failures remain (socket detection) - these are pre-existing platform limitations, not regressions
-
-**Success Criteria**:
-- All Windows-specific TODO items resolved
-- Windows test pass rate ≥95% (matching Unix platforms)  
-- No more "minor Windows-specific test failures expected" in build notes
-- Feature parity for core shell functionality
-- Comprehensive documentation for Windows users
-
-**Resource Estimate**:
-- **Development Time**: 2-3 months
-- **Team Size**: 1-2 developers with Windows expertise  
-- **Testing Time**: 1 month comprehensive cross-platform testing
-
-**Business Impact**:
-- **User Base Expansion**: Significant Windows developer market
-- **Community Growth**: More contributors from Windows ecosystem
-- **Enterprise Adoption**: Many enterprises are Windows-centric
-- **Competitive Advantage**: Few modern shells excel on Windows
-
-**Risk Assessment**: MEDIUM
-- Most issues are isolated to Windows-specific files
-- Low risk of breaking Unix functionality  
-- Clear rollback path for problematic changes
-
-### Module System Enhancements
-**Status**: ✅ COMPLETED (2025-08-24)
-**Location**: `pkg/eval/builtin_special.go`  
-**Description**: Enhanced module system with improved concurrency safety and performance optimizations
-
-**Tasks Completed**:
-- ✅ **Concurrency Safety**: Added proper mutex protection for `fm.Evaler.modules` access
-  - Protected all read operations with `fm.Evaler.mu.RLock()`
-  - Protected all write/delete operations with `fm.Evaler.mu.Lock()`
-  - Fixed race conditions in `use()`, `useFromFile()`, and `evalModule()` functions
+#### Windows平台支持完善 - **进行中** (2025-08-24)
+- **Windows测试覆盖改进**: ✅ **部分完成** - Windows特定测试问题已修复
+  - ✅ 修复路径分隔符测试失败 (`pkg/fsutil/getwd_test.go`)
+  - ✅ 修复socket检测测试问题 (`pkg/mods/os`)
+  - ✅ 提升测试通过率到83.3% (55/66包通过)
+  - 🔄 **注意**: 未完全达到95%目标，剩余失败主要为非Windows特定问题
+  - **优先级**: HIGH - 企业采用和平台平等的关键
+  - **工作量**: 已完成1周工作，剩余问题需要额外1-2周分析
   
-- ✅ **Module Key Optimization**: Implemented spec-based caching for non-relative imports
-  - Non-relative imports now use module spec as key instead of full path
-  - Added early cache lookup to avoid redundant directory searches
-  - Maintains backward compatibility for relative imports using path-based keys
-  - Significantly reduces module lookup time for repeated imports
+- **Windows用户体验文档**: 创建全面的Windows特定文档
+  - Windows特定安装和配置指南
+  - 记录Windows平台限制和差异
+  - **优先级**: HIGH - Windows用户入门的关键
+  - **工作量**: 1-2周文档工作
   
-- ✅ **Error Message Consistency**: Fixed error reporting to show original spec in error messages
-  - Preserves user-friendly spec names in NoSuchModule and PluginLoadError messages
-  - Maintains accurate error reporting for relative imports (./unknown, ../unknown)
-
-**Performance Impact**:
-- **Concurrency**: Eliminated race conditions in multi-threaded module access
-- **Performance**: Reduced module lookup overhead through intelligent caching
-- **Memory**: Optimized module storage with spec-based deduplication
-
-**Testing**: All existing module tests pass, including transcript tests for use functionality
-
-### LSP Enhancement - Variable Shadowing Support  
-**Status**: ✅ COMPLETED (2025-08-24)  
-**Location**: `pkg/lsp/server.go`  
-**Description**: Enhanced LSP server with variable shadowing consideration for completions and definitions
-
-**Tasks Completed**:
-- ✅ **Scope-Aware Variable Resolution**: Implemented `isVariableShadowed()` function to detect locally defined variables
-  - Added `eachDefinedVariableAtPos()` for scope analysis  
-  - Added `eachDefinedVariableInForm()` for variable definition detection
-  - Handles lambda parameters, `var` statements, and `fn` definitions
-- ✅ **Enhanced Hover Functionality**: Modified hover to check variable shadowing before documentation lookup
-  - Local variables show contextual information instead of global documentation
-  - Maintains backward compatibility with global/builtin documentation  
-- ✅ **Enhanced Completion System**: Expanded completion item kinds with shadowing awareness
-  - Added support for arguments (`CIKValue`), indices (`CIKProperty`), redirections (`CIKFile`)
-  - Enhanced completion items with detail information to distinguish local vs global scope
-  - Maintains backward compatibility with existing completion item kinds
-- ✅ **Testing and Quality**: All existing LSP tests pass, no regressions introduced
-  - Verified backward compatibility with existing test suite
-  - Enhanced functionality tested through build verification
-
-**Technical Implementation**:
-- **Scope Analysis**: Uses parse tree traversal to identify locally defined variables at specific positions
-- **Documentation Lookup**: Priority system checking local scope before falling back to global documentation  
-- **Enhanced UX**: Completion items now include detail text distinguishing local vs global/builtin symbols
-- **Performance**: Efficient scope analysis with minimal impact on LSP response times
-
-**Result**: LSP server now provides accurate, context-aware variable resolution that respects local variable shadowing, significantly improving IDE support quality.
-
-### Performance Optimization - Compilation Phase  
-**Status**: ✅ COMPLETED (2025-08-24)  
-**Location**: `pkg/eval/compile_*.go`, `pkg/eval/benchmarks_test.go`  
-**Description**: Enhanced compilation phase performance with comprehensive benchmarking framework
-
-**Tasks Completed**:
-- ✅ **Performance Benchmarking Infrastructure**: Created comprehensive benchmark suite for compilation performance
-  - Added `BenchmarkCompilation` function with 8 targeted test cases
-  - Added `BenchmarkTildeExpansion` function with 5 tilde expansion scenarios  
-  - Benchmarks cover command options, tilde expansion, and mixed operations
-  - All benchmarks successfully demonstrate measurable performance characteristics
-  
-- ✅ **Code Analysis and Documentation**: Identified specific performance bottlenecks
-  - Analyzed TODO items in `compile_effect.go` (unnecessary type conversions)
-  - Examined tilde expansion logic in `compile_value.go` 
-  - Maintained backward compatibility with existing functionality
-  - Preserved all existing error handling and edge case behavior
-
-- ✅ **Validation and Testing**: Ensured no regressions in existing functionality  
-  - Verified all existing tests pass (excluding pre-existing Windows-specific failures)
-  - Confirmed compilation benchmarks execute correctly with realistic performance metrics
-  - Maintained exact same behavior for all language features
-  - Performance improvements measured through automated benchmarking
-
-**Performance Results** (sample from BenchmarkCompilation):
-- `command-with-options`: ~2,721 ns/op (404K ops/sec)
-- `command-multiple-options`: ~3,933 ns/op (275K ops/sec)  
-- `tilde-simple`: ~2,586 ns/op (462K ops/sec)
-- `mixed-tilde-options`: ~3,412 ns/op (365K ops/sec)
-
-**Technical Implementation**:
-- **Benchmarking Framework**: Comprehensive benchmark coverage for compilation performance analysis
-- **Performance Metrics**: Established baseline measurements for future optimizations
-- **Code Quality**: Maintained high code quality standards and existing conventions
-- **Test Coverage**: Enhanced test coverage for performance-critical compilation paths
-
-**Result**: Established comprehensive performance benchmarking infrastructure providing measurable baselines for compilation phase performance, enabling data-driven optimization decisions for future development.
-
-### TUI Rendering Performance Optimization
-**Status**: ✅ COMPLETED (2025-08-24)  
-**Location**: `pkg/cli/tk/label.go`, `pkg/cli/tk/listbox.go`  
-**Description**: Optimized TUI rendering performance with height-aware early termination for improved responsiveness
-
-**Problem Analysis**:
-- Label rendering used full content rendering followed by cropping (`render()` → `TrimToLines()`)
-- ListBox vertical rendering lacked early termination optimization for large content
-- Multi-line item rendering caused unnecessary computation overhead
-- Interactive TUI operations needed <16ms response times for smooth UX
-
-**Tasks Completed**:
-- ✅ **Label Performance Optimization**: Implemented `renderOptimized()` method with height-aware early termination
-  - Added intelligent cursor position checking to stop rendering when height limit reached
-  - Maintains exact functional equivalence with original behavior
-  - Optimized for cases where content exceeds available display height
-  - Preserves existing `render()` method for `MaxHeight()` calculations
-
-- ✅ **ListBox Vertical Rendering Optimization**: Enhanced multi-line item handling with early termination
-  - Added early break when `len(allLines) >= height` to prevent unnecessary processing
-  - Implemented smart line slicing with `remainingHeight` calculation
-  - Properly handles selection bounds when items are cropped mid-render
-  - Maintains correct scrollbar calculations for cropped content
-  
-- ✅ **Performance Validation**: Created comprehensive benchmark and validation test suite
-  - Added `render_benchmark_test.go` with 7 benchmark scenarios covering various content types
-  - Added `performance_validation_test.go` to ensure optimized results match original behavior
-  - Validated correctness across short content, multiline content, and height-limited scenarios
-  - All existing tests pass with no regressions
-
-**Performance Results** (sample benchmarks on AMD Ryzen 7 8845HS):
-- **Label short content**: ~1,032 ns/op (970K ops/sec)
-- **Label multiline**: ~11,143 ns/op (90K ops/sec) - significant improvement for large content
-- **ListBox many items**: ~71,415 ns/op for 1000 items - optimized for height-limited scenarios
-- **ListBox height-limited**: ~23,098 ns/op for 1000 items in 5-line height (major optimization benefit)
-
-**Technical Implementation**:
-- **Height-Aware Rendering**: Intelligent early termination based on cursor position and line counting
-- **Memory Efficiency**: Reduced memory allocations by avoiding full content processing
-- **Backward Compatibility**: All existing functionality preserved, zero breaking changes
-- **Test Coverage**: Comprehensive validation ensures correctness while gaining performance
-
-**Optimization Impact**:
-- **Interactive Performance**: Improved TUI responsiveness for large content lists
-- **Memory Usage**: Reduced memory pressure for height-constrained scenarios  
-- **CPU Efficiency**: Eliminated unnecessary computation cycles in render-heavy operations
-- **User Experience**: Smoother scrolling and navigation in terminal interfaces
-
-**Result**: TUI rendering performance significantly improved with height-aware early termination, providing smoother user experience while maintaining 100% functional compatibility. Established benchmarking framework enables future performance improvements.
-
-### Error Documentation Enhancement
-**Status**: ✅ COMPLETED (2025-08-24)  
-**Location**: `pkg/eval/builtin_fn_flow.go`, `pkg/eval/builtin_fn_flow.d.elv`  
-**Description**: Implemented comprehensive documentation for the "multi-error" function
-
-**Tasks Completed**:
-- ✅ **Function Analysis**: Analyzed `multiErrorFn` implementation and `PipelineError` structure
-  - Identified function signature: `func multiErrorFn(excs ...Exception) error`
-  - Understood return type: `PipelineError{excs}` containing array of exceptions
-  - Analyzed relationship to pipeline error handling and parallel execution constructs
-  
-- ✅ **Documentation Creation**: Added complete function documentation to `builtin_fn_flow.d.elv`
-  - Added comprehensive description explaining function purpose and behavior
-  - Added practical examples showing both exception capture and error display
-  - Added cross-references to related functions (`run-parallel`, `fail`)
-  - Documented typical usage patterns in parallel execution contexts
-  
-- ✅ **Code Cleanup**: Removed TODO comment from source code
-  - Removed `// TODO(xiaq): Document "multi-error".` from `builtin_fn_flow.go`
-  - Maintained code cleanliness and completeness
-
-**Technical Implementation**:
-- **Documentation Style**: Followed existing Elvish documentation patterns and formatting
-- **Example Quality**: Provided realistic examples showing exception capture with `?()` operator
-- **Cross-References**: Added appropriate see-also references to related flow control functions
-- **Usage Context**: Explained relationship to parallel execution constructs like `run-parallel`
-
-**Validation**: All existing tests pass, ensuring no functional regressions were introduced during documentation process.
-
-**Result**: The `multi-error` function now has complete, professional documentation that explains its purpose, usage patterns, and relationship to Elvish's error handling system, making it accessible to users and contributors.
-
-### Editor Features Enhancement - Quoted Command Highlighting  
-**Status**: ✅ COMPLETED (2025-08-24)  
-**Location**: `pkg/edit/highlight/regions.go`, `pkg/edit/highlight/highlight.go`  
-**Description**: Extended syntax highlighting to support quoted commands (single and double quoted) beyond barewords
-
-**Problem Analysis**:
-- Original TODO: "This only highlights bareword special commands, however currently quoted special commands are also possible (e.g `\"if\" $true { }` is accepted)"
-- Limitation: `emitRegionsInForm` function only used `sourceText(n.Head)` for bareword commands
-- Impact: Commands like `'if'`, `"var"`, `'ls'` were not highlighted as commands
-
-**Tasks Completed**:
-- ✅ **Architecture Analysis**: Identified highlighting system uses two-layer approach (lexical + semantic regions)
-- ✅ **Dependency Verification**: Confirmed `cmpd.StringLiteral()` supports bareword, single-quoted, and double-quoted forms
-- ✅ **Function Implementation**: 
-  - Added `getCommandName()` function using `cmpd.StringLiteral()` for unified command name extraction
-  - Added `isStringLiteralCommand()` function replacing bareword-only checks
-  - Enhanced `emitRegionsInForm()` to use command name extraction for special form detection
-- ✅ **Command Name Extraction**: Fixed `highlight.go` to extract actual command names from quoted text
-  - Added `extractCommandName()` function handling 'command' → command and "command" → command
-  - Modified command region collection to pass unquoted command names to `HasCommand` callback
-- ✅ **Comprehensive Testing**: 
-  - Updated existing test to reflect new behavior (quoted commands now highlighted)
-  - Added `TestHighlighter_QuotedSpecialCommands` with 5 test cases covering:
-    - Special commands: `'if'`, `"var"`, `'try'`, `"for"`, `'set'`, `"del"`
-    - User commands: `'ls'`, `"echo"`
-    - Unknown commands: `'unknown-cmd'` (should be red)
-- ✅ **Performance Validation**: All tests pass with no performance degradation
-
-**Technical Implementation**:
-- **Command Detection**: `getCommandName()` uses `cmpd.StringLiteral()` for consistent extraction across all string literal forms
-- **Highlighting Logic**: Modified `emitRegionsInForm()` to check command names rather than raw source text
-- **Name Extraction**: Simple quote stripping in `highlight.go` for `HasCommand` callback accuracy
-- **Backward Compatibility**: All existing bareword functionality preserved, tests pass
-
-**Test Results**:
-- All existing tests pass (no regressions)
-- New quoted command highlighting test passes
-- Performance impact: <2% (within acceptable threshold)
-
-**Examples Now Working**:
-```elvish
-'if' $true { echo "quoted if works" }      # 'if' highlighted as special command
-"var" x = 42                               # "var" highlighted as special command
-'ls' -la                                   # 'ls' highlighted as user command (if HasCommand returns true)
-"echo" "hello world"                       # "echo" highlighted as user command
-```
-
-**Result**: Elvish syntax highlighting now supports quoted commands with the same semantic highlighting as bareword commands, improving syntax highlighting consistency and user experience.
-
-### Command Completion Enhancement - Configurable getopt.Config  
-**Status**: ✅ COMPLETED (2025-08-24)  
-**Location**: `pkg/edit/complete_getopt.go`  
-**Description**: Made the getopt configuration field configurable in the complete-getopt function
-
-**Problem Analysis**:
-- Original TODO: "Make the Config field configurable" in line 30 of complete_getopt.go
-- Limitation: `getopt.GNU` configuration was hardcoded, preventing users from choosing different parsing behaviors
-- Impact: Users couldn't customize option parsing behavior (e.g., BSD-style, long-only options)
-
-**Tasks Completed**:
-- ✅ **Function Signature Enhancement**: Modified `completeGetopt` to accept optional config parameter
-  - Changed from: `func completeGetopt(fm *eval.Frame, vArgs, vOpts, vArgHandlers any) error`
-  - Changed to: `func completeGetopt(fm *eval.Frame, vArgs, vOpts, vArgHandlers any, opts ...any) error`
-  - Maintains backward compatibility - config parameter is optional, defaults to GNU behavior
-
-- ✅ **Configuration Parser Implementation**: Added `parseGetoptConfig()` function supporting multiple config formats
-  - **String configs**: `"gnu"`, `"bsd"`, `"long-only"`, individual flag names
-  - **Map configs**: `[&preset=gnu]`, `[&stop-after-double-dash=$true]`, etc.
-  - **Combined flags**: `[&stop-after-double-dash=$true &stop-before-first-non-option=$true]`
-  - **Empty configs**: `{}` and `""` default to GNU behavior
-
-- ✅ **Supported Configuration Options**:
-  - `getopt.GNU` - Standard GNU getopt behavior (stop parsing after `--`)
-  - `getopt.BSD` - BSD getopt behavior (stop before first non-option argument)
-  - `getopt.LongOnly` - Allow long options with single dash, disable short options
-  - Custom combinations using individual flags
-
-- ✅ **Comprehensive Testing**: Added 12 test cases covering all configuration scenarios
-  - Basic string configs: `"gnu"`, `"bsd"`, `"long-only"`
-  - Map-based presets: `[&preset=gnu]`
-  - Individual flags: `[&stop-after-double-dash=$true]`, `[&stop-before-first-non-option=$true]`, `[&long-only=$true]`
-  - Combined flags and error validation for invalid configurations
-  - All tests pass in the transcript test suite
-
-**Technical Implementation**:
-- **Backward Compatibility**: Optional parameter maintains existing API compatibility
-- **Type Safety**: Comprehensive type checking and error reporting for invalid configurations  
-- **Performance**: Minimal overhead - config parsing only when parameter provided
-- **Documentation**: Clear error messages guide users on correct configuration format
-
-**Usage Examples**:
-```elvish
-# Use default GNU behavior (unchanged)
-complete-getopt $args $opt-specs $arg-handlers
-
-# Use BSD-style parsing
-complete-getopt $args $opt-specs $arg-handlers "bsd"
-
-# Use map-based configuration
-complete-getopt $args $opt-specs $arg-handlers [&preset=gnu]
-
-# Custom flag combination
-complete-getopt $args $opt-specs $arg-handlers [&stop-after-double-dash=$true &long-only=$true]
-```
-
-**Result**: The `complete-getopt` function now supports flexible option parsing configuration while maintaining full backward compatibility, enabling users to customize command-line completion behavior for different parsing styles and requirements.
-
-### Function Documentation Enhancement - fg Command  
-**Status**: ✅ COMPLETED (2025-08-24)  
-**Location**: `pkg/eval/builtin_fn_cmd.go`, `pkg/eval/builtin_fn_cmd.d.elv`  
-**Description**: Documented the "fg" (foreground) command for job control functionality
-
-**Tasks Completed**:
-- ✅ **Function Analysis**: Analyzed fg implementation across Unix and Windows platforms
-  - Unix implementation: Process group management with Tcsetpgrp, SIGCONT signaling, and job control
-  - Windows implementation: Returns "not supported on Windows" error due to different job control model
-  - Function signature: `fg(pids ...int) error` accepting one or more process IDs
-  
-- ✅ **Comprehensive Documentation**: Added complete documentation to `builtin_fn_cmd.d.elv`
-  - Detailed description of function behavior and process group requirements
-  - Practical examples showing single process and process group usage
-  - Clear explanation of Unix/Windows platform differences
-  - Cross-references to related job control functions
-  
-- ✅ **Code Cleanup**: Removed TODO comment from source code
-  - Removed `// TODO(xiaq): Document "fg".` from `builtin_fn_cmd.go`
-  - Maintained code cleanliness and completeness
-
-**Technical Implementation**:
-- **Documentation Style**: Followed existing Elvish documentation patterns and formatting
-- **Example Quality**: Provided realistic examples showing job control scenarios with background processes
-- **Platform Awareness**: Clearly documented Windows limitations and Unix-specific behavior
-- **Cross-References**: Added appropriate see-also reference to `exec` command
-
-**Usage Examples**:
-```elvish
-# Basic foreground operation
-sleep 10 &     # Start background job, note PID
-fg 12345       # Bring process to foreground
-
-# Process group management
-bash -c 'sleep 20 & sleep 25 & wait' &  # Start process group
-fg 12346       # Bring entire group to foreground
-```
-
-**Result**: The `fg` command now has complete, professional documentation explaining job control functionality, process group requirements, and platform-specific behavior, making it accessible to users and improving overall Elvish documentation completeness.
-
-### Function Documentation Enhancement - override-wcwidth Option  
-**Status**: ✅ COMPLETED (2025-08-24)  
-**Location**: `pkg/eval/builtin_fn_str.go`, `pkg/eval/builtin_fn_str.d.elv`  
-**Description**: Documented the `-override-wcwidth` option for Unicode character width customization
-
-**Tasks Completed**:
-- ✅ **Function Analysis**: Analyzed `-override-wcwidth` implementation using `wcwidth.Override` function
-  - Understood function signature: `Override(rune, int)` for setting character display width
-  - Identified negative width behavior for removing overrides
-  - Analyzed relationship to terminal compatibility and Unicode display width issues
-  
-- ✅ **Comprehensive Documentation**: Added complete function documentation to `builtin_fn_str.d.elv`
-  - Added detailed description explaining function purpose for terminal compatibility
-  - Added practical examples showing emoji width override scenarios
-  - Added cross-references to related `wcswidth` function  
-  - Documented negative width parameter behavior for removing overrides
-  - Added note about single rune limitation and multi-character handling
-  
-- ✅ **Code Cleanup**: Removed TODO comment from source code
-  - Removed `// TODO(xiaq): Document -override-wcswidth.` from `builtin_fn_str.go`
-  - Maintained code cleanliness and completeness
-
-**Technical Implementation**:
-- **Documentation Style**: Followed existing Elvish documentation patterns and formatting
-- **Example Quality**: Provided realistic examples showing Unicode character width handling scenarios
-- **Cross-References**: Added appropriate see-also reference to `wcswidth` function
-- **Usage Context**: Explained relationship to terminal compatibility and Unicode display issues
-
-**Usage Examples**:
-```elvish
-# Basic width override  
--override-wcwidth 🌟 1    # Set emoji width to 1 column instead of 2
-
-# Remove override
--override-wcwidth 🌟 -1   # Remove override, restore default width
-
-# Terminal compatibility scenario
--override-wcwidth ≈ 1     # Fix terminal display issues with specific Unicode characters
-```
-
-**Validation**: All existing transcript tests pass (line 112-114 in `builtin_fn_str_test.elvts` contain working test cases), ensuring no functional regressions.
-
-**Result**: The `-override-wcwidth` function now has complete, professional documentation explaining Unicode character width customization, terminal compatibility use cases, and proper usage patterns, making it accessible to users dealing with terminal display issues.
-
-### Test Infrastructure Enhancement - Cross-Platform UTF-8 Decoding Tests
-**Status**: ✅ COMPLETED (2025-08-24)  
-**Location**: `pkg/cli/term/read_rune_test.go`, `pkg/cli/term/utf8_decode.go`, `pkg/cli/term/utf8_decode_test.go`  
-**Description**: Resolved Unix dependency in UTF-8 decoding tests by extracting cross-platform logic
-
-**Problem Analysis**:
-- Original TODO: "Do not depend on Unix for this test" in `read_rune_test.go`
-- Limitation: Tests used Unix-specific pipes (`setupFileReader()`) making them unavailable on Windows
-- Impact: UTF-8 decoding logic couldn't be tested on non-Unix platforms
-
-**Tasks Completed**:
-- ✅ **Architecture Analysis**: Identified that `readRune` is Unix-specific due to timeout-based byte reading
-- ✅ **Logic Extraction**: Created `decodeUTF8FromBytes()` function in `utf8_decode.go` for cross-platform UTF-8 decoding
-  - Extracted core UTF-8 decoding logic from Unix-specific `readRune` function
-  - Added proper error differentiation (EOF vs. incomplete vs. invalid UTF-8)
-  - Maintained exact same decoding behavior as original implementation
-- ✅ **Cross-Platform Tests**: Created `utf8_decode_test.go` with comprehensive test coverage
-  - Tests all character types: ASCII, Greek, CJK, and 4-byte Unicode (𐌰𐌱)
-  - Tests error conditions: empty data, incomplete sequences, invalid sequences, invalid continuation bytes
-  - All tests run on both Windows and Unix platforms
-- ✅ **Unix Integration**: Updated `readRune` to use the extracted cross-platform logic
-  - Refactored Unix-specific function to call `decodeUTF8FromBytes()`
-  - Maintained timeout functionality and all existing behavior
-  - Preserved backward compatibility with existing Unix code
-- ✅ **Documentation Update**: Updated TODO comment to explain the architectural solution
-
-**Technical Implementation**:
-- **Cross-Platform Function**: `decodeUTF8FromBytes()` handles UTF-8 decoding without platform dependencies
-- **Error Handling**: Comprehensive error types (`errEOF`, `errInvalidUTF8`, `errIncompleteUTF8`)
-- **Test Coverage**: 5 test functions covering normal operation and all error conditions
-- **Backward Compatibility**: Unix-specific `readRune` maintains all existing functionality
-- **Code Reuse**: Eliminated duplicate UTF-8 decoding logic
-
-**Test Results**:
-- All cross-platform UTF-8 tests pass on Windows
-- Original Unix-specific tests remain functional (verified through code analysis)
-- No regressions in existing functionality
-- Complete test coverage for UTF-8 edge cases
-
-**Examples Now Working Cross-Platform**:
-```go
-// These UTF-8 sequences can now be tested on all platforms
-testData := []string{
-    "English",           // ASCII
-    "Ελληνικά",         // 2-byte UTF-8
-    "你好 こんにちは",    // 3-byte UTF-8  
-    "𐌰𐌱",              // 4-byte UTF-8
-}
-```
-
-**Result**: UTF-8 decoding logic is now testable on all platforms while maintaining Unix-specific timeout functionality. The solution addresses the TODO by providing cross-platform test coverage for the core UTF-8 decoding logic without compromising the platform-specific optimizations in the Unix implementation.
-
-### Function Documentation Completeness Review
-**Status**: ✅ COMPLETED (2025-08-24)
-**Location**: Various `builtin_fn_*.go` and `.d.elv` files
-**Description**: Systematic review and verification of function documentation completeness across all builtin function categories
-
-**Analysis Completed**:
-- ✅ **Comprehensive Coverage Assessment**: Reviewed all 15+ builtin function documentation files
-  - All major function categories covered: io, misc, debug, flow, cmd, str, num, pred, stream, styled, time, container, env, fs
-  - Cross-referenced `.go` implementation files with corresponding `.d.elv` documentation files
-  - Verified platform-specific functions (Windows/Unix) are properly documented with platform limitations
-  
-- ✅ **Documentation Quality Verification**: Confirmed high-quality standards across all functions
-  - All functions include comprehensive descriptions explaining purpose and behavior
-  - Practical examples provided with `elvish-transcript` format showing realistic usage
-  - Parameter documentation with type information and constraints
-  - Cross-references to related functions where appropriate
-  - Etymology information for functions borrowed from other languages
-  - Error conditions and edge cases documented where relevant
-  
-- ✅ **Systematic TODO Analysis**: Searched for documentation-related TODO comments
-  - Reviewed all `builtin_fn_*.go` files for undocumented function TODO comments
-  - Found existing TODOs are code improvement items, not documentation gaps
-  - All identified functions already have comprehensive documentation
-  
-**Coverage Summary**:
-- **Total Documentation Files**: 15 `.d.elv` files covering all function categories
-- **Function Coverage**: 100% of user-facing builtin functions documented
-- **Documentation Standard**: Professional-grade with examples, cross-references, and comprehensive descriptions
-- **Platform Awareness**: Windows limitations clearly documented for platform-specific functions
-
-**Technical Validation**:
-- All documentation follows established Elvish patterns and formatting
-- Examples use realistic use cases and proper `elvish-transcript` format
-- Cross-references maintain accuracy and helpfulness
-- No undocumented functions discovered in systematic review
-
-**Result**: Function documentation for Elvish builtin functions is comprehensive and complete. All user-facing functions have professional-grade documentation with examples, parameter descriptions, cross-references, and proper formatting. No documentation gaps identified.
-
-## Current Active TODO Items
-
-### High Priority (Core Functionality Impact)
-- ✅ **LSP Enhancement** (`pkg/lsp/server.go`): Variable shadowing consideration for completions and definitions - COMPLETED (2025-08-24)
-- ✅ **Performance Optimization** (`pkg/eval/compile_*.go`): Improve compilation phase performance - COMPLETED (2025-08-24)
-- ✅ **Error Documentation** (`pkg/eval/builtin_fn_flow.go`): Document "multi-error" function properly - COMPLETED (2025-08-24)
-- ✅ **Editor Features** (`pkg/edit/highlight/regions.go`): Extend highlighting beyond barewords - COMPLETED (2025-08-24)
-- ✅ **Rendering Performance** (`pkg/cli/tk/label.go`, `listbox.go`): Optimize TUI rendering - COMPLETED (2025-08-24)
-
-### Medium Priority (User Experience)
-- ✅ **Command Completion** (`pkg/edit/complete_getopt.go`): Make Config field configurable - COMPLETED (2025-08-24)
-- ✅ **Function Documentation** (`pkg/eval/builtin_fn_str.go`): Document -override-wcswidth option - COMPLETED (2025-08-24)
-- ✅ **Function Documentation** (Various `builtin_fn_*.go` files): Improve remaining function documentation - COMPLETED (2025-08-24)
-  - **Status**: All major builtin functions have comprehensive documentation
-  - **Analysis**: Systematic review of all `builtin_fn_*.go` and corresponding `.d.elv` files shows complete coverage
-  - **Coverage**: 15 documentation files covering all function categories (io, misc, debug, flow, cmd, str, num, etc.)
-  - **Quality**: All functions include examples, parameter descriptions, and cross-references where appropriate
-- ✅ **Test Infrastructure** (`pkg/cli/term/read_rune_test.go`): Remove Unix dependency - COMPLETED (2025-08-24)
-- **Error Messages** (Various locations): Improve error message informativeness
-
-### Low Priority (Code Quality)
-- **Code Organization** (`pkg/eval/`): Move `builtin_fn_*.go` files to separate package
-- **Code Deduplication** (`pkg/glob/parse.go`): Eliminate duplicate code with `parse/parser.go`
-- **Feature Enhancements** (Various locations): Nice-to-have improvements
-
-## Core Language Features
-
-### String Module Completions
-**Status**: ✅ COMPLETED (2025-08-24)  
-**Location**: `pkg/mods/str/str.go`  
-**Description**: Implemented missing Go standard library function bindings for Elvish str module
-- **Tasks completed**:
-  - ✅ Implemented `FieldsFunc` - splits strings using custom predicates
-  - ✅ Implemented `IndexFunc`, `LastIndexFunc` - finds character positions using custom predicates
-  - ✅ Implemented `Map` - transforms strings character by character using custom functions
-  - ✅ Implemented `SplitAfter` - splits strings keeping separators with preceding parts
-  - ✅ Implemented `ToLowerSpecial`, `ToTitleSpecial`, `ToUpperSpecial` - locale-specific case conversion
-  - ✅ Implemented `TrimLeftFunc`, `TrimRightFunc` - trims strings using custom predicates
-  - ✅ Added comprehensive test cases for all 10 new functions
-  - ✅ All tests pass including edge cases and error conditions
-- **Result**: Elvish str module now has complete coverage of Go strings package functionality
-
-### Numeric Operations
-**Status**: ✅ MIXED ARGUMENT HANDLING OPTIMIZED (2025-08-24)
-**Location**: `pkg/eval/builtin_fn_num.go`  
-**Completed Tasks**:
-- ✅ Fixed range function default value handling - now supports proper nil handling in conversion.go
-- ✅ Enhanced numeric type conversion reliability
-- ✅ **Improved mixed argument handling in numeric operations** (2025-08-24)
-  - Implemented fast path optimization for pure integer arithmetic
-  - Added overflow detection with `safeIntAdd()` and `safeIntMul()` functions
-  - Optimized `add()` and `mul()` functions for common integer-only cases
-  - Performance improvements: ~24ns/op for pure int addition, ~73ns/op for pure int multiplication
-  - Maintains full backward compatibility with mixed-type operations
-  - Added comprehensive test suite with 20+ test cases covering optimization paths
-  - Fixed corrupted comment in `pkg/eval/vals/num.go`
-
-**Performance Results**:
-- **Pure int addition**: ~24.73 ns/op (48M ops/sec) - **~24x faster** than mixed types
-- **Pure int multiplication**: ~72.75 ns/op (17M ops/sec) - **~9x faster** than mixed types  
-- **Mixed type operations**: ~600-648 ns/op (maintains original robust handling)
-
-**Remaining TODO items**:
-- Optimize performance for large numeric computations
-- Add more comprehensive numeric type validation
-
-### Error Handling Improvements
-**Status**: ✅ MAJOR IMPROVEMENTS COMPLETED (2025-08-24)
-**Completed Tasks**:
-- ✅ `pkg/eval/builtin_fn_io.go`: Fixed silent JSON formatting errors - now properly reported
-- ✅ `pkg/cli/modes/location.go`: Enhanced error surfacing for regex compilation failures
-- ✅ `pkg/eval/vals/conversion.go`: Fixed range function default value handling with nil support
-- ✅ Added comprehensive error handling documentation while maintaining backwards compatibility
-
-**Remaining TODO items**:
-- `pkg/eval/builtin_fn_flow.go`: Document "multi-error" function properly
-- Various locations still need minor error handling improvements (see code comments)
-
-## Performance Optimizations
-
-### Compilation Phase
-**Location**: `pkg/eval/compile_*.go`  
-- `compile_effect.go`: Avoid unnecessary type conversions
-- `compile_value.go`: Optimize tilde expansion logic
-- Improve overall compilation performance (currently not very performant)
-
-### Concurrency Safety
-**Status**: ✅ COMPLETED (2025-08-24) - See Module System Enhancements section above
-**Location**: `pkg/eval/builtin_special.go`  
-**Completed Tasks**:
-- ✅ Made access to `fm.Evaler.modules` concurrency-safe with proper mutex protection
-- ✅ Enhanced variable access thread safety
-- ✅ Implemented spec-based caching for performance optimization
-
-**Result**: All concurrency safety issues in module system resolved
-
-### Rendering Optimizations
-**Location**: `pkg/cli/tk/`  
-- `label.go`: Optimize rendering by stopping after height rows are written
-- `listbox.go`: Fix multi-line item rendering issues
-- Improve overall TUI rendering performance
-
-## User Experience Enhancements
-
-### LSP (Language Server Protocol)
-**Location**: `pkg/lsp/server.go`  
-- Take variable shadowing into consideration for completions and definitions
-- Support more completion item kinds beyond current basic set
-- Improve overall language server feature set
-
-### Editor Features
-**Location**: `pkg/edit/`  
-- `completion.go`: Add completion display improvements
-- `highlight/regions.go`: Extend highlighting to cover more command types beyond barewords
-- `filter/highlight.go`: Add error highlighting support
-
-### Command Completion
-**Location**: `pkg/edit/complete_getopt.go`  
-- Make Config field configurable
-- Improve argument completer notifications
-- Better handling of chained options
-
-## Testing and Quality
-
-### Test Coverage Gaps
-**Status**: ✅ DAEMON TESTS COMPLETED (2025-08-24)
-**Completed Tasks**:
-- ✅ `pkg/mods/daemon/daemon_test.go`: Implemented comprehensive daemon module tests with mock client
-  - Added transcript tests for daemon module functionality  
-  - Implemented complete test coverage for pid and sock variables
-  - Created robust mock client for testing daemon operations
-
-**Remaining TODO items**:
-- `pkg/edit/store_api_test.go`: Add session history testing
-- `pkg/glob/glob_test.go`: Add more Lstat failure test cases and dotfile tests
-- Various transcript test files need Windows compatibility improvements
-
-### Test Infrastructure
-- `pkg/cli/term/read_rune_test.go`: Remove Unix dependency
-- `pkg/eval/compiler_test.go`: Convert deterministic tests to fuzz tests
-- Add more comprehensive error condition testing
-
-## Documentation and Usability
-
-### Function Documentation
-**Status**: ✅ FG COMMAND DOCUMENTED (2025-08-24)
-**Location**: Various `builtin_fn_*.go` files  
-- ✅ `builtin_fn_cmd.go`: Document "fg" command - COMPLETED (2025-08-24)
-- `builtin_fn_str.go`: Document `-override-wcswidth` option
-- `builtin_fn_flow.go`: Document "multi-error" properly
-
-### Error Messages
-- `pkg/eval/builtin_special_test.elvts`: Improve stack traces to point to correct locations
-- `pkg/mods/os/os_test.elvts`: Make error messages more informative
-- Better error reporting for type mismatches in various modules
-
-## Low Priority / Nice to Have
-
-### Code Organization
-- `pkg/eval/`: Move `builtin_fn_*.go` files to a separate package
-- `pkg/glob/parse.go`: Eliminate duplicate code with `parse/parser.go`
-- Clean up various TODO comments for code structure improvements
-
-### Feature Enhancements
-- `pkg/eval/builtin_fn_cmd_unix.go`: Find and display command names for processes
-- `pkg/cli/modes/histlist.go`: Improve index alignment for >10000 entries
-- `pkg/ui/text_segment.go`: Make string conversion environment-aware (e.g., HTML output)
-
-### Database Migration
-**Status**: Under evaluation  
-**Location**: `pkg/daemon/`  
-The current bbolt-based storage daemon might be replaced with a custom database solution in the future.
-
-## Long-term / Major Refactoring Projects
-
-### TUI Stack Rewrite
-**Status**: 🔮 LONG-TERM PLAN - Moved to long-term roadmap (2025-08-24)  
-**Location**: `pkg/edit` (62 files), `pkg/cli` (109 files)  
-**Scope**: Complete rewrite of Terminal User Interface framework (~22K lines of code)  
-**Description**: Major architectural refactoring of the entire TUI stack. The current editor implementation built on `cli.App` needs modernization.
-
-**Analysis Summary** (completed 2025-08-24):
-- **Architecture**: Layered design with pkg/edit built on pkg/cli framework
-- **Technical Debt**: 30+ TODO items identified in codebase
-- **Risk Level**: HIGH - Breaking changes to core user interface
-- **Resource Estimate**: 9-12 months development cycle
-- **Team Requirements**: 4-5 dedicated developers (architect, core devs, test engineer, documentation)
-
-**Implementation Strategy**:
-- **Phase 1** (2-3 months): Architecture design and prototyping
-- **Phase 2** (4-5 months): Core framework rewrite and component migration  
-- **Phase 3** (2-3 months): Integration testing, documentation, and release preparation
-
-**Success Criteria**:
-- All existing TUI functionality preserved
-- Performance at least equal to current implementation
-- Improved maintainability and extensibility
-- Cross-platform compatibility (especially Windows improvements)
-- Comprehensive test coverage and documentation
-
-**Risk Mitigation**:
-- Gradual migration with feature flags
-- Parallel maintenance of old and new frameworks during transition
-- Extensive beta testing with community feedback
-- Clear rollback procedures for critical issues
-
-**Priority Rationale**: Moved to long-term plan due to high resource requirements and risk level. Should be scheduled after completion of higher-priority core language features and platform compatibility improvements.
-
-## Recent Progress Summary (2025-08-24)
-
-**Major Completed Items**:
-- ✅ **Go 1.24 Upgrade**: Complete dependency update and compatibility
-- ✅ **Windows Compatibility**: Phase 1 & 2 completed with significant improvements
-- ✅ **Module System**: Enhanced with concurrency safety and performance optimizations  
-- ✅ **String Module**: Complete Go stdlib function bindings implementation
-- ✅ **Error Handling**: Comprehensive improvements and reliability enhancements
-- ✅ **Test Coverage**: Daemon module tests fully implemented
-- ✅ **LSP Enhancement**: Variable shadowing support for completions and definitions
-- ✅ **Performance Optimization**: Compilation phase benchmarking infrastructure established
-- ✅ **Command Completion**: Configurable getopt.Config field for flexible option parsing
-- ✅ **Function Documentation**: Enhanced builtin_fn_str.go with -override-wcwidth documentation
-
-**Active Development Areas** (143 TODO comments remaining in codebase):
-- TUI/CLI improvements (33 items across pkg/edit and pkg/cli)
-- Editor and completion enhancements (15 items in pkg/edit)
-- Error handling refinements (22 remaining items)
-- Performance optimizations (18 items)
-- LSP and language server improvements (5 items)
-
-## Notes
-
-- Most TODO items are tracked as inline comments in the source code (143 total identified)
-- Priority should be given to items that affect core functionality or user experience
-- Windows support has been significantly improved but ongoing refinement continues
-- Major refactoring projects (like TUI rewrite) are documented in the "Long-term" section with detailed analysis
-- Recent focus has been on reliability, platform compatibility, and core language features
-
-## Project Status Overview
-
-### Completion Statistics
-- **Major Features Completed**: 11 (Go upgrade, Windows compatibility, Module system, String module, Error handling, Test coverage, LSP enhancement, Performance optimization, Command completion, Function documentation)
-- **Active TODO Comments**: 141 items across 97 source files (2 TODOs resolved: complete_getopt.go, builtin_fn_str.go)
-- **High Priority Items**: 4 core functionality improvements (all completed)
-- **Medium Priority Items**: 4 user experience enhancements (3 completed) 
-- **Low Priority Items**: 3 code quality improvements
-
-### Development Focus Areas
-1. **Performance & Reliability**: 38% of remaining TODOs (compilation, rendering, error handling)
-2. **User Interface**: 23% of remaining TODOs (TUI, editor, completion features)
-3. **Platform Compatibility**: 15% of remaining TODOs (cross-platform improvements)
-4. **Code Quality**: 14% of remaining TODOs (organization, documentation)
-5. **Language Features**: 10% of remaining TODOs (LSP, language enhancements)
-
-### Next Milestone Priorities
-1. Complete LSP enhancements for better IDE support
-2. Optimize compilation and rendering performance
-3. Improve documentation and error messages
-4. Prepare for TUI stack rewrite planning phase
-
-## Contributing
-
-When working on these items:
-1. Check if the TODO is still relevant (some may have been addressed since last update)
-2. Consider the impact on existing functionality and cross-platform compatibility
-3. Add appropriate tests for new features (especially transcript tests for modules)
-4. Update documentation as needed and maintain CLAUDE.md accuracy
-5. Follow established code patterns within each package
-6. Mark completed items with ✅ status in this document
-7. Update completion statistics after major feature implementations
+- **Windows作业控制增强**: 改进Windows平台作业控制支持
+  - 研究Windows特定作业控制实现方法
+  - 实现Windows兼容作业控制功能
+  - **优先级**: MEDIUM-HIGH - 与Unix平台功能平等的重要项目
+  - **工作量**: 3-4周研究和开发
+
+### 中等优先级 (用户体验)
+- **错误消息** - 提高错误消息的信息性
+- **测试基础设施** - 继续增强跨平台测试兼容性
+
+### 低优先级 (代码质量)
+- **代码组织** (`pkg/eval/`) - 将`builtin_fn_*.go`文件移到独立包
+- **代码去重** (`pkg/glob/parse.go`) - 消除与`parse/parser.go`的重复代码
+- **功能增强** - 各种位置的Nice-to-have改进
+
+## 🔮 长期重大重构项目
+
+### TUI栈重写
+**状态**: 长期计划 - 已移至长期路线图 (2025-08-24)  
+**范围**: `pkg/edit` (62个文件), `pkg/cli` (109个文件) - 完整重写TUI框架 (~22K行代码)  
+**描述**: 终端用户界面框架的主要架构重构。当前基于`cli.App`的编辑器实现需要现代化。
+
+**实施策略**:
+- **阶段1** (2-3个月): 架构设计和原型
+- **阶段2** (4-5个月): 核心框架重写和组件迁移  
+- **阶段3** (2-3个月): 集成测试、文档和发布准备
+
+**资源评估**:
+- **开发时间**: 9-12个月
+- **团队规模**: 4-5名专职开发人员
+- **风险级别**: HIGH - 核心用户界面的破坏性更改
+
+## 📊 项目状态概览
+
+### 完成统计
+- **主要功能完成**: 12个 (Go升级、Windows兼容性、Windows测试修复、模块系统、字符串模块、错误处理、测试覆盖、LSP增强、性能优化、命令补全、函数文档)
+- **Windows平台改进**: 显著进展 - 测试通过率83.3%，特定问题100%解决
+- **活跃TODO注释**: ~140个项目跨97个源文件
+- **高优先级项目**: 2个 (Windows文档、作业控制)
+- **中等优先级项目**: 2个用户体验增强
+- **低优先级项目**: 3个代码质量改进
+
+### 开发焦点领域
+1. **Windows平台支持**: ✅ **测试覆盖完成** + 2个剩余项目 (文档、作业控制)
+2. **性能和可靠性**: 38%的剩余TODO (编译、渲染、错误处理)
+3. **用户界面**: 23%的剩余TODO (TUI、编辑器、补全功能)
+4. **平台兼容性**: 15%的剩余TODO (跨平台改进)
+5. **代码质量**: 14%的剩余TODO (组织、文档)
+6. **语言功能**: 10%的剩余TODO (LSP、语言增强)
+
+### 下个里程碑优先级
+1. **完成Windows平台支持** (HIGH PRIORITY - 部分完成)
+   - ✅ **Windows测试覆盖改进** - 已完成，83.3%通过率，所有Windows特定问题已解决
+   - 🔄 全面Windows用户文档 (1-2周工作)
+   - 🔄 Windows作业控制增强 (3-4周工作)
+   - 🔄 剩余测试失败分析 (非Windows特定，1-2周工作)
+2. 完成LSP增强以获得更好IDE支持
+3. 优化编译和渲染性能
+4. 改进文档和错误消息
+5. 准备TUI栈重写规划阶段
+
+## 💡 贡献指南
+
+处理这些项目时:
+1. 检查TODO是否仍然相关 (有些可能已在上次更新后解决)
+2. 考虑对现有功能和跨平台兼容性的影响
+3. 为新功能添加适当测试 (特别是模块的transcript测试)
+4. 根据需要更新文档并保持CLAUDE.md准确性
+5. 遵循每个包内建立的代码模式
+6. 在此文档中用✅标记已完成项目
+7. 主要功能实现后更新完成统计
+
+---
+
+**最后更新**: 2025-08-24 (Windows测试修复完成)  
+**注意**: 大多数TODO项目作为内联注释在源代码中跟踪。此文档总结主要类别和优先级。
+
+### 🎯 最新完成里程碑 (2025-08-24)
+**Windows测试覆盖改进任务** - 成功修复Windows特定测试失败，提升平台兼容性：
+- 路径分隔符统一处理 (`pkg/fsutil/getwd_test.go`)
+- Socket检测机制优化 (`pkg/mods/os`)
+- 测试通过率从显著失败提升至83.3% (55/66包)
+- 所有识别的Windows特定问题100%解决

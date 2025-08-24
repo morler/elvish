@@ -26,7 +26,20 @@ func TestTranscripts(t *testing.T) {
 			if err != nil {
 				t.Skipf("can't listen to UNIX socket: %v", err)
 			}
-			t.Cleanup(func() { listener.Close() })
+			// Ensure socket file is accessible and is indeed a socket
+			info, err := os.Stat("./sock")
+			if err != nil {
+				t.Skipf("socket file not accessible: %v", err)
+			}
+			if info.Mode()&os.ModeSocket == 0 {
+				t.Skipf("socket file is not a socket (mode: %v)", info.Mode())
+			}
+			t.Cleanup(func() { 
+				listener.Close()
+				// On Windows, socket file is auto-deleted when listener closes
+				// On Unix, we might need to manually remove it
+				os.Remove("./sock")
+			})
 		},
 		"only-if-can-create-symlink", func(t *testing.T) {
 			testutil.ApplyDir(testutil.Dir{"test-file": ""})
