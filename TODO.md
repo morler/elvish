@@ -316,6 +316,64 @@ This document summarizes the development tasks and improvement opportunities ide
 
 **Result**: Elvish syntax highlighting now supports quoted commands with the same semantic highlighting as bareword commands, improving syntax highlighting consistency and user experience.
 
+### Command Completion Enhancement - Configurable getopt.Config  
+**Status**: ✅ COMPLETED (2025-08-24)  
+**Location**: `pkg/edit/complete_getopt.go`  
+**Description**: Made the getopt configuration field configurable in the complete-getopt function
+
+**Problem Analysis**:
+- Original TODO: "Make the Config field configurable" in line 30 of complete_getopt.go
+- Limitation: `getopt.GNU` configuration was hardcoded, preventing users from choosing different parsing behaviors
+- Impact: Users couldn't customize option parsing behavior (e.g., BSD-style, long-only options)
+
+**Tasks Completed**:
+- ✅ **Function Signature Enhancement**: Modified `completeGetopt` to accept optional config parameter
+  - Changed from: `func completeGetopt(fm *eval.Frame, vArgs, vOpts, vArgHandlers any) error`
+  - Changed to: `func completeGetopt(fm *eval.Frame, vArgs, vOpts, vArgHandlers any, opts ...any) error`
+  - Maintains backward compatibility - config parameter is optional, defaults to GNU behavior
+
+- ✅ **Configuration Parser Implementation**: Added `parseGetoptConfig()` function supporting multiple config formats
+  - **String configs**: `"gnu"`, `"bsd"`, `"long-only"`, individual flag names
+  - **Map configs**: `[&preset=gnu]`, `[&stop-after-double-dash=$true]`, etc.
+  - **Combined flags**: `[&stop-after-double-dash=$true &stop-before-first-non-option=$true]`
+  - **Empty configs**: `{}` and `""` default to GNU behavior
+
+- ✅ **Supported Configuration Options**:
+  - `getopt.GNU` - Standard GNU getopt behavior (stop parsing after `--`)
+  - `getopt.BSD` - BSD getopt behavior (stop before first non-option argument)
+  - `getopt.LongOnly` - Allow long options with single dash, disable short options
+  - Custom combinations using individual flags
+
+- ✅ **Comprehensive Testing**: Added 12 test cases covering all configuration scenarios
+  - Basic string configs: `"gnu"`, `"bsd"`, `"long-only"`
+  - Map-based presets: `[&preset=gnu]`
+  - Individual flags: `[&stop-after-double-dash=$true]`, `[&stop-before-first-non-option=$true]`, `[&long-only=$true]`
+  - Combined flags and error validation for invalid configurations
+  - All tests pass in the transcript test suite
+
+**Technical Implementation**:
+- **Backward Compatibility**: Optional parameter maintains existing API compatibility
+- **Type Safety**: Comprehensive type checking and error reporting for invalid configurations  
+- **Performance**: Minimal overhead - config parsing only when parameter provided
+- **Documentation**: Clear error messages guide users on correct configuration format
+
+**Usage Examples**:
+```elvish
+# Use default GNU behavior (unchanged)
+complete-getopt $args $opt-specs $arg-handlers
+
+# Use BSD-style parsing
+complete-getopt $args $opt-specs $arg-handlers "bsd"
+
+# Use map-based configuration
+complete-getopt $args $opt-specs $arg-handlers [&preset=gnu]
+
+# Custom flag combination
+complete-getopt $args $opt-specs $arg-handlers [&stop-after-double-dash=$true &long-only=$true]
+```
+
+**Result**: The `complete-getopt` function now supports flexible option parsing configuration while maintaining full backward compatibility, enabling users to customize command-line completion behavior for different parsing styles and requirements.
+
 ## Current Active TODO Items
 
 ### High Priority (Core Functionality Impact)
@@ -326,7 +384,7 @@ This document summarizes the development tasks and improvement opportunities ide
 - ✅ **Rendering Performance** (`pkg/cli/tk/label.go`, `listbox.go`): Optimize TUI rendering - COMPLETED (2025-08-24)
 
 ### Medium Priority (User Experience)
-- **Command Completion** (`pkg/edit/complete_getopt.go`): Make Config field configurable
+- ✅ **Command Completion** (`pkg/edit/complete_getopt.go`): Make Config field configurable - COMPLETED (2025-08-24)
 - **Function Documentation** (Various `builtin_fn_*.go` files): Improve function documentation
 - **Test Infrastructure** (`pkg/cli/term/read_rune_test.go`): Remove Unix dependency
 - **Error Messages** (Various locations): Improve error message informativeness
@@ -517,6 +575,7 @@ The current bbolt-based storage daemon might be replaced with a custom database 
 - ✅ **Test Coverage**: Daemon module tests fully implemented
 - ✅ **LSP Enhancement**: Variable shadowing support for completions and definitions
 - ✅ **Performance Optimization**: Compilation phase benchmarking infrastructure established
+- ✅ **Command Completion**: Configurable getopt.Config field for flexible option parsing
 
 **Active Development Areas** (143 TODO comments remaining in codebase):
 - TUI/CLI improvements (33 items across pkg/edit and pkg/cli)
@@ -536,10 +595,10 @@ The current bbolt-based storage daemon might be replaced with a custom database 
 ## Project Status Overview
 
 ### Completion Statistics
-- **Major Features Completed**: 8 (Go upgrade, Windows compatibility, Module system, String module, Error handling, Test coverage, LSP enhancement, Performance optimization)
-- **Active TODO Comments**: 143 items across 98 source files  
-- **High Priority Items**: 4 core functionality improvements (2 completed)
-- **Medium Priority Items**: 4 user experience enhancements  
+- **Major Features Completed**: 9 (Go upgrade, Windows compatibility, Module system, String module, Error handling, Test coverage, LSP enhancement, Performance optimization, Command completion)
+- **Active TODO Comments**: 142 items across 98 source files (1 TODO resolved in complete_getopt.go)
+- **High Priority Items**: 4 core functionality improvements (all completed)
+- **Medium Priority Items**: 4 user experience enhancements (1 completed) 
 - **Low Priority Items**: 3 code quality improvements
 
 ### Development Focus Areas

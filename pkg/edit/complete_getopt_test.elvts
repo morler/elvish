@@ -132,3 +132,27 @@ Exception: string except for ... not allowed as argument handler, got foo
 ~> complete-getopt [] [] [[]]
 Exception: argument handler should be fn, got list
   [tty]:1:1-26: complete-getopt [] [] [[]]
+
+# configuration tests #
+
+~> complete-getopt [''] [[&short=a]] [{|_| put first1 first2 }] "gnu"
+▶ first1
+▶ first2
+~> complete-getopt [''] [[&short=a]] [{|_| put first1 first2 }] "bsd"
+▶ first1
+▶ first2
+~> complete-getopt [''] [[&short=a]] [{|_| put first1 first2 }] [&preset=gnu]
+▶ first1
+▶ first2
+~> complete-getopt [''] [[&short=a]] [{|_| put first1 first2 }] {}
+▶ first1
+▶ first2
+~> complete-getopt [] [] [] "invalid-config"
+Exception: unknown getopt config: invalid-config
+  [tty]:1:1-41: complete-getopt [] [] [] "invalid-config"
+~> complete-getopt [] [] [] [&preset="invalid"]  
+Exception: unknown preset: invalid
+  [tty]:1:1-46: complete-getopt [] [] [] [&preset="invalid"]  
+~> complete-getopt [] [] [] [&preset=[]]
+Exception: preset should be string, got list
+  [tty]:1:1-37: complete-getopt [] [] [] [&preset=[]]

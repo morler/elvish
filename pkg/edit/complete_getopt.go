@@ -13,12 +13,12 @@ import (
 	"src.elv.sh/pkg/ui"
 )
 
-func completeGetopt(fm *eval.Frame, vArgs, vOpts, vArgHandlers any) error {
+func completeGetopt(fm *eval.Frame, vArgs, vOpts, vArgHandlers any, opts ...any) error {
 	args, err := parseGetoptArgs(vArgs)
 	if err != nil {
 		return err
 	}
-	opts, err := parseGetoptOptSpecs(vOpts)
+	optSpecs, err := parseGetoptOptSpecs(vOpts)
 	if err != nil {
 		return err
 	}
@@ -27,14 +27,23 @@ func completeGetopt(fm *eval.Frame, vArgs, vOpts, vArgHandlers any) error {
 		return err
 	}
 
-	// TODO: Make the Config field configurable
-	_, parsedArgs, ctx := getopt.Complete(args, opts.opts, getopt.GNU)
+	// Parse optional config parameter
+	var config getopt.Config = getopt.GNU // default to GNU behavior
+	if len(opts) > 0 {
+		parsedConfig, err := parseGetoptConfig(opts[0])
+		if err != nil {
+			return err
+		}
+		config = parsedConfig
+	}
+
+	_, parsedArgs, ctx := getopt.Complete(args, optSpecs.opts, config)
 
 	out := fm.ValueOutput()
 	putShortOpt := func(opt *getopt.OptionSpec) error {
 		c := complexItem{Stem: "-" + string(opt.Short)}
-		if d, ok := opts.desc[opt]; ok {
-			if e, ok := opts.argDesc[opt]; ok {
+		if d, ok := optSpecs.desc[opt]; ok {
+			if e, ok := optSpecs.argDesc[opt]; ok {
 				c.Display = ui.T(c.Stem + " " + e + " (" + d + ")")
 			} else {
 				c.Display = ui.T(c.Stem + " (" + d + ")")
@@ -44,8 +53,8 @@ func completeGetopt(fm *eval.Frame, vArgs, vOpts, vArgHandlers any) error {
 	}
 	putLongOpt := func(opt *getopt.OptionSpec) error {
 		c := complexItem{Stem: "--" + opt.Long}
-		if d, ok := opts.desc[opt]; ok {
-			if e, ok := opts.argDesc[opt]; ok {
+		if d, ok := optSpecs.desc[opt]; ok {
+			if e, ok := optSpecs.argDesc[opt]; ok {
 				c.Display = ui.T(c.Stem + " " + e + " (" + d + ")")
 			} else {
 				c.Display = ui.T(c.Stem + " (" + d + ")")
@@ -71,7 +80,7 @@ func completeGetopt(fm *eval.Frame, vArgs, vOpts, vArgHandlers any) error {
 		}
 		// TODO(xiaq): Notify that there is no suitable argument completer.
 	case getopt.AnyOption:
-		for _, opt := range opts.opts {
+		for _, opt := range optSpecs.opts {
 			if opt.Short != 0 {
 				err := putShortOpt(opt)
 				if err != nil {
@@ -86,7 +95,7 @@ func completeGetopt(fm *eval.Frame, vArgs, vOpts, vArgHandlers any) error {
 			}
 		}
 	case getopt.LongOption:
-		for _, opt := range opts.opts {
+		for _, opt := range optSpecs.opts {
 			if opt.Long != "" && strings.HasPrefix(opt.Long, ctx.Text) {
 				err := putLongOpt(opt)
 				if err != nil {
@@ -95,7 +104,7 @@ func completeGetopt(fm *eval.Frame, vArgs, vOpts, vArgHandlers any) error {
 			}
 		}
 	case getopt.ChainShortOption:
-		for _, opt := range opts.opts {
+		for _, opt := range optSpecs.opts {
 			if opt.Short != 0 {
 				// TODO(xiaq): Loses chained options.
 				err := putShortOpt(opt)
@@ -105,12 +114,107 @@ func completeGetopt(fm *eval.Frame, vArgs, vOpts, vArgHandlers any) error {
 			}
 		}
 	case getopt.OptionArgument:
-		gen := opts.argGenerator[ctx.Option.Spec]
+		gen := optSpecs.argGenerator[ctx.Option.Spec]
 		if gen != nil {
 			return call(gen, ctx.Option.Argument)
 		}
 	}
 	return nil
+}
+
+func parseGetoptConfig(v any) (getopt.Config, error) {
+	switch config := v.(type) {
+	case string:
+		// Handle empty string case - return default GNU config
+		if config == "" {
+			return getopt.GNU, nil
+		}
+		switch config {
+		case "gnu":
+			return getopt.GNU, nil
+		case "bsd":
+			return getopt.BSD, nil
+		case "long-only":
+			return getopt.LongOnly, nil
+		case "stop-after-double-dash":
+			return getopt.StopAfterDoubleDash, nil
+		case "stop-before-first-non-option":
+			return getopt.StopBeforeFirstNonOption, nil
+		default:
+			return 0, fmt.Errorf("unknown getopt config: %s", config)
+		}
+	case vals.Map:
+		var result getopt.Config
+		var hasConfig bool
+		
+		// Handle empty map case - return default GNU config
+		if config.Len() == 0 {
+			return getopt.GNU, nil
+		}
+		
+		// Check for predefined configurations
+		if preset, ok := config.Index("preset"); ok {
+			if presetStr, ok := preset.(string); ok {
+				switch presetStr {
+				case "gnu":
+					result = getopt.GNU
+					hasConfig = true
+				case "bsd":
+					result = getopt.BSD
+					hasConfig = true
+				case "long-only":
+					result = getopt.LongOnly
+					hasConfig = true
+				default:
+					return 0, fmt.Errorf("unknown preset: %s", presetStr)
+				}
+			} else {
+				return 0, fmt.Errorf("preset should be string, got %s", vals.Kind(preset))
+			}
+		}
+		
+		// Check for individual flags
+		if flag, ok := config.Index("stop-after-double-dash"); ok {
+			if flagBool, ok := flag.(bool); ok {
+				if flagBool {
+					result |= getopt.StopAfterDoubleDash
+				}
+				hasConfig = true
+			} else {
+				return 0, fmt.Errorf("stop-after-double-dash should be bool, got %s", vals.Kind(flag))
+			}
+		}
+		
+		if flag, ok := config.Index("stop-before-first-non-option"); ok {
+			if flagBool, ok := flag.(bool); ok {
+				if flagBool {
+					result |= getopt.StopBeforeFirstNonOption
+				}
+				hasConfig = true
+			} else {
+				return 0, fmt.Errorf("stop-before-first-non-option should be bool, got %s", vals.Kind(flag))
+			}
+		}
+		
+		if flag, ok := config.Index("long-only"); ok {
+			if flagBool, ok := flag.(bool); ok {
+				if flagBool {
+					result |= getopt.LongOnly
+				}
+				hasConfig = true
+			} else {
+				return 0, fmt.Errorf("long-only should be bool, got %s", vals.Kind(flag))
+			}
+		}
+		
+		if !hasConfig {
+			return getopt.GNU, nil // default if empty map
+		}
+		return result, nil
+		
+	default:
+		return 0, fmt.Errorf("config should be string or map, got %s", vals.Kind(v))
+	}
 }
 
 // TODO(xiaq): Simplify most of the parsing below with reflection.
