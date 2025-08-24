@@ -197,7 +197,12 @@ func (w *listBox) renderVertical(width, height int) *term.Buffer {
 	hasCropped := firstCrop > 0
 
 	var i, selectFrom, selectTo int
-	for i = first; i < n && len(allLines) < height; i++ {
+	for i = first; i < n; i++ {
+		// Early termination if we've filled the available height
+		if len(allLines) >= height {
+			break
+		}
+		
 		item := items.Show(i)
 		lines := item.SplitByRune('\n')
 		if i == first {
@@ -209,9 +214,18 @@ func (w *listBox) renderVertical(width, height int) *term.Buffer {
 		// TODO: Optionally, add underlines to the last line as a visual
 		// separator between adjacent entries.
 
-		if len(allLines)+len(lines) > height {
-			lines = lines[:len(allLines)+len(lines)-height]
+		// Optimized height check: only add lines that fit
+		remainingHeight := height - len(allLines)
+		if len(lines) > remainingHeight {
+			lines = lines[:remainingHeight]
 			hasCropped = true
+			// Update selection bounds if this was the selected item
+			if i == selected {
+				selectTo = len(allLines) + len(lines)
+			}
+			allLines = append(allLines, lines...)
+			i++ // Include this item in the count for scrollbar calculation
+			break
 		}
 		allLines = append(allLines, lines...)
 	}
