@@ -28,3 +28,6 @@ cover
 /_*
 /elvish
 /branding/*.png
+
+# Claude Code configuration
+.claude/

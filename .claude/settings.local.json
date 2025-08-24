@@ -15,12 +15,15 @@
       "Bash(rg:*)",
       "Bash(./elvish.exe -c 'put $nil | to-string')",
       "Bash(./elvish.exe -c 'echo $nil')",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Read(/C:\\Users\\Administrator\\.claude/**)",
+      "Read(/C:\\Users\\Administrator\\.claude/**)",
+      "Bash(ast-grep:*)",
+      "Bash(\"D:\\Dev\\Go\\bin\\go.exe\" build ./pkg/eval)",
+      "Bash(\"D:\\Dev\\Go\\bin\\go.exe\" test ./pkg/eval -v)"
     ],
     "deny": [],
     "ask": [],
-    "additionalDirectories": [
-      "D:\\d\\Code\\MyProject\\Go"
-    ]
+    "additionalDirectories": []
   }
 }
