@@ -10,7 +10,7 @@ Elvish is a modern shell implemented in Go, featuring both an interactive REPL a
 
 ### Building
 ```bash
-# Build the main elvish binary
+# Build the main elvish binary (recommended)
 make get
 # Or manually:
 go install ./cmd/elvish
@@ -18,9 +18,12 @@ go install ./cmd/elvish
 # Build specific variants
 go install ./cmd/withpprof/elvish    # With profiling support
 go install ./cmd/nodaemon/elvish     # Without daemon functionality
+go install ./cmd/elvmdfmt             # Markdown formatter utility
 
 # Build from upstream (if not working from source tree)
 go install src.elv.sh/cmd/elvish@latest
+
+# Note: Requires Go 1.24+ (current project uses Go 1.24)
 ```
 
 ### Testing
@@ -126,47 +129,67 @@ Language semantics are primarily implemented in:
 - Use last component of package path when referencing symbols (e.g., `eval.Evaler`)
 
 ### Build Features
-- CGO disabled by default for compatibility (prebuilt binaries)
-- Plugin support requires CGO and is available on limited platforms
+- **Go Version**: Requires Go 1.24+ (project upgraded from earlier versions)
+- **CGO**: Disabled by default for compatibility (prebuilt binaries)
+- **Plugin Support**: Requires CGO and is available on limited platforms
+- **Cross-Platform**: Enhanced Windows compatibility with recent improvements
+- **Dependencies**: Updated to latest versions including golang.org/x/sys v0.35.0
 - Use `CGO_ENABLED=1` to force CGO when building with plugin support
 
 ## Development Status & TODO Items
 
 ### Current Development Status
-- Latest commit: 2025-02-28 (pkg/mods/epm: Add sourcehut to default domain list)
+- Latest commit: a97ca688 (feat: Comprehensive error handling improvements and reliability enhancements)
+- Recent major improvements:
+  - Complete str module with missing Go stdlib function bindings (cd6cb020)
+  - Enhanced module system with concurrency safety and performance optimizations (df9b230c)
+  - Windows Platform Compatibility Enhancement - Phase 2 (8a486328)
+  - Go version upgraded to 1.24+ with dependency updates (4e0542d6)
 - Active development with regular updates and bug fixes
 - Comprehensive TODO tracking via inline code comments
 
 ### Known Development Tasks
 See [TODO.md](./TODO.md) for a comprehensive list of planned improvements, including:
 
+**Recently Completed**:
+- ✅ String module completions - missing Go stdlib function bindings now implemented
+- ✅ Comprehensive error handling improvements and reliability enhancements
+- ✅ Windows Platform Compatibility Enhancement (Phase 1 & 2)
+- ✅ Module system enhanced with concurrency safety and performance optimizations
+
 **High Priority**:
 - TUI stack rewrite (pkg/edit, pkg/cli) - major architectural change planned
-- Module system enhancements for better package/workspace support
-- Platform compatibility improvements, especially Windows support
+- Further platform compatibility improvements
+- Performance optimization in numeric operations
 
 **Core Features**:
-- String module completions (missing Go stdlib bindings)
-- Numeric operations improvements
-- Enhanced error handling throughout codebase
+- Advanced numeric operations and mathematical functions
+- Enhanced testing infrastructure improvements
+- Language server protocol enhancements
 
 **Performance**:
 - Compilation phase optimizations
-- Concurrency safety improvements
 - Rendering performance enhancements
+- Memory management improvements
 
 ### Common Development Areas
 When contributing, focus on:
-- Windows compatibility (many `*_windows.go` files need work)
-- Test coverage improvements (especially transcript tests)
-- Error message quality and debugging support
-- Performance optimizations in core evaluation loop
+- **Windows compatibility**: Significant improvements made, but ongoing work needed
+- **Test coverage**: Improvements especially in transcript tests and E2E testing
+- **Error handling**: Recently enhanced but continue improving error message quality
+- **Performance**: Core evaluation loop optimizations and numerical operations
+- **Module system**: Building on recent concurrency safety improvements
+- **String operations**: Leverage newly completed Go stdlib function bindings
 
 ## Important Notes
 
-- Project is pre-1.0, expect breaking changes
-- Race detector support varies by platform - see `tools/run-race.elv` for supported combinations
-- Daemon process is launched on-demand for interactive shells and terminates with the last shell
-- Storage backend uses bbolt for persistence (may change in future)
-- Time-sensitive tests can be scaled with `ELVISH_TEST_TIME_SCALE` environment variable
-- TODO items are tracked as inline comments throughout the codebase rather than centralized tracking
+- **Version Status**: Project is pre-1.0, expect breaking changes
+- **Go Requirements**: Now requires Go 1.24+ (upgraded from earlier versions)
+- **Race Detection**: Support varies by platform - see `tools/run-race.elv` for supported combinations
+- **Platform Support**: Enhanced Windows compatibility in recent releases
+- **Daemon Process**: Launched on-demand for interactive shells, terminates with last shell
+- **Storage Backend**: Uses bbolt v1.4.3 for persistence (may change in future)
+- **Testing**: Time-sensitive tests can be scaled with `ELVISH_TEST_TIME_SCALE` environment variable
+- **TODO Tracking**: Items tracked as inline comments throughout codebase rather than centralized
+- **Error Handling**: Recently improved with comprehensive reliability enhancements
+- **String Operations**: Now includes complete Go stdlib function bindings
