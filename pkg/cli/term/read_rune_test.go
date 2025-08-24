@@ -4,7 +4,8 @@ package term
 
 import "testing"
 
-// TODO(xiaq): Do not depend on Unix for this test.
+// These tests are Unix-specific because readRune is Unix-specific.
+// The UTF-8 decoding logic is now tested cross-platform in utf8_decode_test.go.
 
 var contents = []string{
 	"English",
