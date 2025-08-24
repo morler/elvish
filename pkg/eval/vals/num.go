@@ -90,8 +90,6 @@ func UnifyNums(nums []Num, typ NumType) NumSlice {
 	}
 	switch typ {
 	case Int:
-		// PromoteToBigInt converts an int or *big.Int, a *big.I or *big.Ratnt. It
-		// paniRat if n is any other type.
 		unified := make([]int, len(nums))
 		for i, num := range nums {
 			unified[i] = num.(int)

@@ -15,6 +15,44 @@ import (
 
 // Numerical operations.
 
+// Helper functions for overflow detection in optimized integer arithmetic
+
+const (
+	maxIntBits = ^uint(0) >> 1  // Bits for max int
+	maxInt     = int(maxIntBits)
+	minInt     = -maxInt - 1
+	intMaxDiv2 = maxInt / 2     // approximately maxInt/2
+	intMinDiv2 = minInt / 2     // approximately minInt/2
+)
+
+// safeIntAdd checks if adding two integers would overflow
+func safeIntAdd(a, b int) (int, bool) {
+	if (b > 0 && a > intMaxDiv2) || (b < 0 && a < intMinDiv2) {
+		return 0, false // would overflow
+	}
+	result := a + b
+	// Double-check for overflow
+	if (b > 0 && result < a) || (b < 0 && result > a) {
+		return 0, false
+	}
+	return result, true
+}
+
+// safeIntMul checks if multiplying two integers would overflow  
+func safeIntMul(a, b int) (int, bool) {
+	if a == 0 || b == 0 {
+		return 0, true
+	}
+	if a > intMaxDiv2 || a < intMinDiv2 || b > intMaxDiv2 || b < intMinDiv2 {
+		return 0, false // likely overflow
+	}
+	result := a * b
+	if result/a != b {
+		return 0, false // overflow occurred
+	}
+	return result, true
+}
+
 func init() {
 	addBuiltinFns(map[string]any{
 		// Constructor
@@ -151,6 +189,30 @@ func unifyNums2And[T any](a, b vals.Num,
 }
 
 func add(rawNums ...vals.Num) vals.Num {
+	if len(rawNums) == 0 {
+		return 0
+	}
+	
+	// Optimize for the common case of pure int arithmetic
+	allInts := true
+	intSum := 0
+	for _, num := range rawNums {
+		if i, ok := num.(int); ok {
+			if newSum, ok := safeIntAdd(intSum, i); ok {
+				intSum = newSum
+			} else {
+				allInts = false
+				break
+			}
+		} else {
+			allInts = false
+			break
+		}
+	}
+	if allInts {
+		return intSum
+	}
+	
 	nums := vals.UnifyNums(rawNums, vals.BigInt)
 	switch nums := nums.(type) {
 	case []*big.Int:
@@ -220,6 +282,10 @@ func sub(rawNums ...vals.Num) (vals.Num, error) {
 }
 
 func mul(rawNums ...vals.Num) vals.Num {
+	if len(rawNums) == 0 {
+		return 1
+	}
+	
 	hasExact0 := false
 	hasInf := false
 	for _, num := range rawNums {
@@ -233,6 +299,26 @@ func mul(rawNums ...vals.Num) vals.Num {
 	}
 	if hasExact0 && !hasInf {
 		return 0
+	}
+
+	// Optimize for the common case of pure int arithmetic
+	allInts := true
+	intProduct := 1
+	for _, num := range rawNums {
+		if i, ok := num.(int); ok {
+			if newProduct, ok := safeIntMul(intProduct, i); ok {
+				intProduct = newProduct
+			} else {
+				allInts = false
+				break
+			}
+		} else {
+			allInts = false
+			break
+		}
+	}
+	if allInts {
+		return intProduct
 	}
 
 	nums := vals.UnifyNums(rawNums, vals.BigInt)

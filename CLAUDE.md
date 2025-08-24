@@ -139,16 +139,18 @@ Language semantics are primarily implemented in:
 ## Development Status & TODO Items
 
 ### Current Development Status
-- Latest commit: 656f7fea (feat: Performance optimization - Compilation phase benchmarking infrastructure)
+- Latest commit: 3dfeca37 (feat: Test Infrastructure Enhancement - Cross-Platform UTF-8 Decoding Tests)
 - Recent major improvements:
-  - Performance optimization with compilation phase benchmarking infrastructure (656f7fea)
-  - LSP Enhancement with variable shadowing support for completions and definitions (0bf3d9b7)
-  - Project documentation updates with recent progress and current status (bbbfe951)
-  - Comprehensive error handling improvements and reliability enhancements (a97ca688)
-  - Complete str module with missing Go stdlib function bindings (cd6cb020)
-  - Enhanced module system with concurrency safety and performance optimizations (df9b230c)
-  - Windows Platform Compatibility Enhancement - Phase 2 (8a486328)
-  - Go version upgraded to 1.24+ with dependency updates (4e0542d6)
+  - Test Infrastructure Enhancement with cross-platform UTF-8 decoding tests (3dfeca37)
+  - Function Documentation Enhancement with -override-wcwidth option documentation (12bd8dde)
+  - Document fg command for job control functionality (0e0a0235)
+  - Command Completion Enhancement with configurable getopt.Config field (edb5cbe6)
+  - TUI Rendering Performance Optimization with height-aware early termination (b33c2d92)
+  - Performance optimization with compilation phase benchmarking infrastructure
+  - LSP Enhancement with variable shadowing support for completions and definitions
+  - Comprehensive error handling improvements and reliability enhancements
+  - Complete str module with missing Go stdlib function bindings
+  - Enhanced module system with concurrency safety and performance optimizations
 - Active development with regular updates and bug fixes
 - Comprehensive TODO tracking via inline code comments
 
@@ -156,13 +158,15 @@ Language semantics are primarily implemented in:
 See [TODO.md](./TODO.md) for a comprehensive list of planned improvements, including:
 
 **Recently Completed**:
+- ✅ Test Infrastructure Enhancement with cross-platform UTF-8 decoding tests
+- ✅ Function Documentation Enhancement with -override-wcwidth option documentation
+- ✅ Document fg command for job control functionality
+- ✅ Command Completion Enhancement with configurable getopt.Config field
+- ✅ TUI Rendering Performance Optimization with height-aware early termination
 - ✅ Performance optimization with compilation phase benchmarking infrastructure 
 - ✅ LSP Enhancement with variable shadowing support for completions and definitions
-- ✅ Comprehensive project documentation updates with progress tracking
 - ✅ String module completions - missing Go stdlib function bindings now implemented
 - ✅ Comprehensive error handling improvements and reliability enhancements
-- ✅ Windows Platform Compatibility Enhancement (Phase 1 & 2)
-- ✅ Module system enhanced with concurrency safety and performance optimizations
 
 **High Priority**:
 - TUI stack rewrite (pkg/edit, pkg/cli) - major architectural change planned
@@ -183,14 +187,15 @@ See [TODO.md](./TODO.md) for a comprehensive list of planned improvements, inclu
 
 ### Common Development Areas
 When contributing, focus on:
-- **Performance optimization**: Leverage new benchmarking infrastructure for systematic improvements
+- **Test infrastructure**: Building on cross-platform UTF-8 decoding improvements and comprehensive test coverage
+- **Documentation**: Continuing function documentation enhancements and command documentation
+- **TUI performance**: Leveraging height-aware early termination optimizations for further rendering improvements
+- **Command completion**: Expanding on configurable getopt.Config field improvements
+- **Performance optimization**: Leverage benchmarking infrastructure for systematic improvements
 - **LSP development**: Expand on variable shadowing support with additional language server features
-- **Windows compatibility**: Significant improvements made, but ongoing work needed
-- **Test coverage**: Improvements especially in transcript tests and E2E testing
-- **Error handling**: Recently enhanced but continue improving error message quality
-- **Performance**: Core evaluation loop optimizations and numerical operations
+- **Core evaluation**: Optimizations in numeric operations and evaluation loop performance
 - **Module system**: Building on recent concurrency safety improvements
-- **String operations**: Leverage newly completed Go stdlib function bindings
+- **Error handling**: Continue improving error message quality and reliability
 
 ## Important Notes
 
