@@ -368,3 +368,129 @@ Exception: arity mismatch: arguments must be 1 value, but is 2 values
 ~> str:trim-suffix "¡¡¡Hello, Elven!!!"
 Exception: arity mismatch: arguments must be 2 values, but is 1 value
   [tty]:1:1-39: str:trim-suffix "¡¡¡Hello, Elven!!!"
+
+////////////////////
+# str:fields-func #
+////////////////////
+
+~> use str
+~> str:fields-func {|c| eq $c ","} "a,b,c"
+▶ a
+▶ b
+▶ c
+~> str:fields-func {|c| eq $c " "} "hello world test"
+▶ hello
+▶ world
+▶ test
+~> str:fields-func {|c| eq $c ","} ",,a,,"
+▶ a
+~> str:fields-func {|c| eq $c ","} ""
+
+////////////////////
+# str:index-func #
+////////////////////
+
+~> str:index-func {|c| eq $c "e"} "hello"
+▶ (num 1)
+~> str:index-func {|c| eq $c "x"} "hello"
+▶ (num -1)
+~> str:index-func {|c| > (compare $c "m") 0} "hello"
+▶ (num 4)
+
+////////////////////////
+# str:last-index-func #
+////////////////////////
+
+~> str:last-index-func {|c| eq $c "l"} "hello"
+▶ (num 3)
+~> str:last-index-func {|c| eq $c "x"} "hello"
+▶ (num -1)
+~> str:last-index-func {|c| > (compare $c "d") 0} "hello"
+▶ (num 4)
+
+////////////
+# str:map #
+////////////
+
+~> str:map {|c| str:to-upper $c} "hello"
+▶ HELLO
+~> str:map {|c| if (eq $c "l") { put "L" } else { put $c }} "hello"
+▶ heLLo
+~> str:map {|c| if (eq $c "l") { put "" } else { put $c }} "hello"
+▶ heo
+~> str:map {|c| printf "%c" (+ 1 (str:to-codepoints $c | take 1))} "abc"
+▶ bcd
+
+//////////////////
+# str:split-after #
+//////////////////
+
+~> str:split-after "," "a,b,c"
+▶ 'a,'
+▶ 'b,'
+▶ c
+~> str:split-after "," "a,b,c," 
+▶ 'a,'
+▶ 'b,'
+▶ 'c,'
+~> str:split-after &max=2 "," "a,b,c"
+▶ 'a,'
+▶ 'b,c'
+
+////////////////////////
+# str:to-lower-special #
+////////////////////////
+
+~> str:to-lower-special "turkish" "İSTANBUL"
+▶ istanbul
+~> str:to-lower-special "tr" "İSTANBUL"
+▶ istanbul
+~> str:to-lower-special "azeri" "İSTANBUL"
+▶ istanbul
+~> str:to-lower-special "invalid" "test"
+Exception: bad value: casing must be turkish, tr, azeri, or az, but is invalid
+  [tty]:1:1-37: str:to-lower-special "invalid" "test"
+
+////////////////////////
+# str:to-title-special #
+////////////////////////
+
+~> str:to-title-special "turkish" "istanbul"
+▶ İSTANBUL
+~> str:to-title-special "tr" "istanbul"
+▶ İSTANBUL
+~> str:to-title-special "azeri" "istanbul"
+▶ İSTANBUL
+
+////////////////////////
+# str:to-upper-special #
+////////////////////////
+
+~> str:to-upper-special "turkish" "istanbul"
+▶ İSTANBUL
+~> str:to-upper-special "tr" "istanbul"
+▶ İSTANBUL
+~> str:to-upper-special "azeri" "istanbul"
+▶ İSTANBUL
+
+//////////////////////
+# str:trim-left-func #
+//////////////////////
+
+~> str:trim-left-func {|c| eq $c " "} "   hello   "
+▶ 'hello   '
+~> str:trim-left-func {|c| or (eq $c " ") (eq $c "\t")} "\t  hello\t  "
+▶ "hello\t  "
+~> str:trim-left-func {|c| < (compare $c "d") 0} "abcdefg"
+▶ defg
+
+///////////////////////
+# str:trim-right-func #
+///////////////////////
+
+~> str:trim-right-func {|c| eq $c " "} "   hello   "
+▶ '   hello'
+~> str:trim-right-func {|c| or (eq $c " ") (eq $c "\t")} "\t  hello\t  "
+▶ "\t  hello"
+~> str:trim-right-func {|c| > (compare $c "d") 0} "abcdefg"
+▶ abcd

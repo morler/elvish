@@ -122,14 +122,19 @@ This document summarizes the development tasks and improvement opportunities ide
 ## Core Language Features
 
 ### String Module Completions
+**Status**: ✅ COMPLETED (2025-08-24)  
 **Location**: `pkg/mods/str/str.go`  
-Missing Go standard library function bindings:
-- `FieldsFunc`
-- `IndexFunc`, `LastIndexFunc`
-- `Map`
-- `SplitAfter`
-- `ToLowerSpecial`, `ToTitleSpecial`, `ToUpperSpecial`
-- `TrimLeft`, `TrimRight`, `TrimLeftFunc`, `TrimRightFunc`
+**Description**: Implemented missing Go standard library function bindings for Elvish str module
+- **Tasks completed**:
+  - ✅ Implemented `FieldsFunc` - splits strings using custom predicates
+  - ✅ Implemented `IndexFunc`, `LastIndexFunc` - finds character positions using custom predicates
+  - ✅ Implemented `Map` - transforms strings character by character using custom functions
+  - ✅ Implemented `SplitAfter` - splits strings keeping separators with preceding parts
+  - ✅ Implemented `ToLowerSpecial`, `ToTitleSpecial`, `ToUpperSpecial` - locale-specific case conversion
+  - ✅ Implemented `TrimLeftFunc`, `TrimRightFunc` - trims strings using custom predicates
+  - ✅ Added comprehensive test cases for all 10 new functions
+  - ✅ All tests pass including edge cases and error conditions
+- **Result**: Elvish str module now has complete coverage of Go strings package functionality
 
 ### Numeric Operations
 **Location**: `pkg/eval/builtin_fn_num.go`  
