@@ -225,3 +225,32 @@ fn continue { }
 #   [tty]:1:1-17: defer { put foo }
 # ```
 fn defer {|fn| }
+
+# Creates a pipeline error containing multiple exceptions.
+#
+# This function is primarily used for composing multiple exceptions into a
+# single pipeline error, similar to how pipelines collect errors from multiple
+# commands. It takes any number of exception arguments and combines them into
+# a `PipelineError`.
+#
+# The resulting pipeline error behaves like other Elvish exceptions but
+# contains information about all the individual exceptions that occurred.
+#
+# Examples:
+#
+# ```elvish-transcript
+# ~> var exc1 = ?(fail "first error")
+# ~> var exc2 = ?(fail "second error")  
+# ~> put ?(multi-error $exc1 $exc2)
+# ▶ [^exception &reason=[^pipeline-error &errors=[[^exception &reason=[^fail-error &content='first error' &type=fail] &stack-trace=<...>] [^exception &reason=[^fail-error &content='second error' &type=fail] &stack-trace=<...>]]] &stack-trace=<...>]
+# ~> multi-error $exc1 $exc2
+# Exception: (first error | second error)
+#   [tty]:1:1-25: multi-error $exc1 $exc2
+# ```
+#
+# This function is typically used internally by Elvish's parallel execution
+# constructs like `run-parallel` to collect and report multiple errors that
+# occurred during parallel execution.
+#
+# See also [`run-parallel`]() and [`fail`]().
+fn multi-error {|@exc| }

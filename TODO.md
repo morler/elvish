@@ -186,12 +186,43 @@ This document summarizes the development tasks and improvement opportunities ide
 
 **Result**: Established comprehensive performance benchmarking infrastructure providing measurable baselines for compilation phase performance, enabling data-driven optimization decisions for future development.
 
+### Error Documentation Enhancement
+**Status**: ✅ COMPLETED (2025-08-24)  
+**Location**: `pkg/eval/builtin_fn_flow.go`, `pkg/eval/builtin_fn_flow.d.elv`  
+**Description**: Implemented comprehensive documentation for the "multi-error" function
+
+**Tasks Completed**:
+- ✅ **Function Analysis**: Analyzed `multiErrorFn` implementation and `PipelineError` structure
+  - Identified function signature: `func multiErrorFn(excs ...Exception) error`
+  - Understood return type: `PipelineError{excs}` containing array of exceptions
+  - Analyzed relationship to pipeline error handling and parallel execution constructs
+  
+- ✅ **Documentation Creation**: Added complete function documentation to `builtin_fn_flow.d.elv`
+  - Added comprehensive description explaining function purpose and behavior
+  - Added practical examples showing both exception capture and error display
+  - Added cross-references to related functions (`run-parallel`, `fail`)
+  - Documented typical usage patterns in parallel execution contexts
+  
+- ✅ **Code Cleanup**: Removed TODO comment from source code
+  - Removed `// TODO(xiaq): Document "multi-error".` from `builtin_fn_flow.go`
+  - Maintained code cleanliness and completeness
+
+**Technical Implementation**:
+- **Documentation Style**: Followed existing Elvish documentation patterns and formatting
+- **Example Quality**: Provided realistic examples showing exception capture with `?()` operator
+- **Cross-References**: Added appropriate see-also references to related flow control functions
+- **Usage Context**: Explained relationship to parallel execution constructs like `run-parallel`
+
+**Validation**: All existing tests pass, ensuring no functional regressions were introduced during documentation process.
+
+**Result**: The `multi-error` function now has complete, professional documentation that explains its purpose, usage patterns, and relationship to Elvish's error handling system, making it accessible to users and contributors.
+
 ## Current Active TODO Items
 
 ### High Priority (Core Functionality Impact)
 - ✅ **LSP Enhancement** (`pkg/lsp/server.go`): Variable shadowing consideration for completions and definitions - COMPLETED (2025-08-24)
 - ✅ **Performance Optimization** (`pkg/eval/compile_*.go`): Improve compilation phase performance - COMPLETED (2025-08-24)
-- **Error Documentation** (`pkg/eval/builtin_fn_flow.go`): Document "multi-error" function properly
+- ✅ **Error Documentation** (`pkg/eval/builtin_fn_flow.go`): Document "multi-error" function properly - COMPLETED (2025-08-24)
 - **Editor Features** (`pkg/edit/highlight/regions.go`): Extend highlighting beyond barewords
 - **Rendering Performance** (`pkg/cli/tk/label.go`, `listbox.go`): Optimize TUI rendering
 

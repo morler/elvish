@@ -20,7 +20,8 @@
       "Read(/C:\\Users\\Administrator\\.claude/**)",
       "Bash(ast-grep:*)",
       "Bash(\"D:\\Dev\\Go\\bin\\go.exe\" build ./pkg/eval)",
-      "Bash(\"D:\\Dev\\Go\\bin\\go.exe\" test ./pkg/eval -v)"
+      "Bash(\"D:\\Dev\\Go\\bin\\go.exe\" test ./pkg/eval -v)",
+      "Bash(echo $PWD)"
     ],
     "deny": [],
     "ask": [],

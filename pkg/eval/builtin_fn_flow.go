@@ -16,8 +16,6 @@ import (
 
 // Flow control.
 
-// TODO(xiaq): Document "multi-error".
-
 func init() {
 	addBuiltinFns(map[string]any{
 		"run-parallel": runParallel,
