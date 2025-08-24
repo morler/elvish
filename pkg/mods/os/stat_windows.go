@@ -2,6 +2,7 @@ package os
 
 import (
 	"syscall"
+	"time"
 
 	"src.elv.sh/pkg/eval/vals"
 )
@@ -39,6 +40,23 @@ var fileAttributeNames = [...]struct {
 	{0x400000, "recall-on-data-access"},
 }
 
+// filetimeToTime converts a Windows FILETIME to a Go time.Time.
+// FILETIME represents the number of 100-nanosecond intervals since January 1, 1601 UTC.
+func filetimeToTime(ft syscall.Filetime) time.Time {
+	// Windows epoch starts at January 1, 1601 UTC
+	// Unix epoch starts at January 1, 1970 UTC
+	// The difference is 116444736000000000 * 100ns = 11644473600 seconds
+	const windowsEpochDiff = 116444736000000000
+	
+	// Combine low and high parts into a single int64
+	nsec := int64(ft.HighDateTime)<<32 + int64(ft.LowDateTime)
+	
+	// Convert to Unix epoch (nanoseconds since January 1, 1970 UTC)
+	nsec = (nsec - windowsEpochDiff) * 100
+	
+	return time.Unix(0, nsec).UTC()
+}
+
 func statSysMap(sys any) vals.Map {
 	attrData := sys.(*syscall.Win32FileAttributeData)
 	// TODO: Make this a set when Elvish has a set type.
@@ -50,6 +68,8 @@ func statSysMap(sys any) vals.Map {
 	}
 	return vals.MakeMap(
 		"file-attributes", fileAttributes,
-		// TODO: CreationTime, LastAccessTime, LastWriteTime
+		"creation-time", filetimeToTime(attrData.CreationTime),
+		"last-access-time", filetimeToTime(attrData.LastAccessTime),
+		"last-write-time", filetimeToTime(attrData.LastWriteTime),
 	)
 }

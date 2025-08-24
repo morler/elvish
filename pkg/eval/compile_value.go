@@ -3,6 +3,7 @@ package eval
 import (
 	"errors"
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	"src.elv.sh/pkg/diag"
@@ -148,8 +149,8 @@ func doTilde(v any) (any, error) {
 	switch v := v.(type) {
 	case string:
 		s := v
-		// TODO: Make this correct on Windows.
-		i := strings.Index(s, "/")
+		// Handle both Unix (/) and Windows (\) path separators
+		i := strings.IndexAny(s, "/\\")
 		var uname, rest string
 		if i == -1 {
 			uname = s
@@ -161,7 +162,13 @@ func doTilde(v any) (any, error) {
 		if err != nil {
 			return nil, err
 		}
-		return dir + rest, nil
+		// Use filepath.Join to handle path separators correctly on all platforms
+		if rest == "" {
+			return dir, nil
+		}
+		// Remove leading separator from rest since filepath.Join will add it
+		rest = strings.TrimLeft(rest, "/\\")
+		return filepath.Join(dir, rest), nil
 	case globPattern:
 		if len(v.Segments) == 0 {
 			return nil, ErrBadglobPattern

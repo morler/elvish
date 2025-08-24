@@ -24,10 +24,69 @@ This document summarizes the development tasks and improvement opportunities ide
   - ✅ No Go version-specific code changes required
 - **Result**: Successfully upgraded to Go 1.24 with all major functionality working
 
-### TUI Stack Rewrite
-**Status**: Planned major refactoring  
-**Location**: `pkg/edit`, `pkg/cli`  
-**Description**: The entire TUI (Terminal User Interface) stack is due for a rewrite. The current editor implementation built on `cli.App` needs modernization.
+
+### Windows Platform Compatibility Enhancement
+**Status**: 🔄 IN PROGRESS - Phase 1 Completed (2025-08-24)  
+**Priority**: High - Critical for platform expansion and user base growth  
+**Locations**: Multiple files with `*_windows.go` suffix, cross-platform modules
+**Description**: Comprehensive improvement of Windows platform support to achieve feature parity with Unix-like systems.
+
+**Background**: Current Windows support has significant gaps affecting user experience, with multiple Windows-specific TODO items and test failures. This limits Elvish's adoption on Windows platforms and affects the note in go.mod upgrade that mentions "minor Windows-specific test failures expected".
+
+**Phase 1 Completed (2025-08-24)**:
+✅ **File System Operations**
+- ✅ `pkg/mods/os/stat_windows.go`: Implemented CreationTime, LastAccessTime, LastWriteTime metadata extraction
+  - Added `filetimeToTime()` function to convert Windows FILETIME to Go time.Time
+  - Updated `statSysMap()` to include all three Windows-specific timestamps
+  - Proper Windows epoch conversion (1601 → 1970 UTC adjustment)
+- ✅ `pkg/cli/lscolors/stat_windows.go`: Improved file feature detection implementation
+  - Documented performance considerations for hard link detection
+  - Provided clear implementation path for future enhancement
+  - Maintained compatibility with existing Unix behavior
+- ✅ `pkg/eval/compile_value.go`: Fixed Windows path handling correctness
+  - Added support for both `/` and `\` path separators in tilde expansion
+  - Implemented proper cross-platform path joining using `filepath.Join`
+  - Removed hardcoded Unix-only path separator assumptions
+
+**Remaining Implementation Tasks**:
+
+#### Terminal Support  
+- `pkg/cli/term/reader_windows.go`: Improve key sequence normalization for Windows console (currently Unix-centric)
+- Windows TTY improvements and better console integration
+
+#### Cross-Platform Path Handling
+- `pkg/glob/glob.go`: Preserve original path separator (/ vs \) on Windows
+- Handle Windows UNC paths properly in glob patterns  
+- Improve glob pattern matching on Windows
+
+#### Testing and Quality Assurance
+- Fix Windows-specific test failures mentioned in dependency upgrade
+- Add comprehensive Windows test coverage for all affected modules
+- Ensure cross-platform test compatibility
+- `pkg/cli/term/read_rune_test.go`: Remove Unix dependencies from tests
+
+**Success Criteria**:
+- All Windows-specific TODO items resolved
+- Windows test pass rate ≥95% (matching Unix platforms)  
+- No more "minor Windows-specific test failures expected" in build notes
+- Feature parity for core shell functionality
+- Comprehensive documentation for Windows users
+
+**Resource Estimate**:
+- **Development Time**: 2-3 months
+- **Team Size**: 1-2 developers with Windows expertise  
+- **Testing Time**: 1 month comprehensive cross-platform testing
+
+**Business Impact**:
+- **User Base Expansion**: Significant Windows developer market
+- **Community Growth**: More contributors from Windows ecosystem
+- **Enterprise Adoption**: Many enterprises are Windows-centric
+- **Competitive Advantage**: Few modern shells excel on Windows
+
+**Risk Assessment**: MEDIUM
+- Most issues are isolated to Windows-specific files
+- Low risk of breaking Unix functionality  
+- Clear rollback path for problematic changes
 
 ### Module System Enhancements
 **Location**: `pkg/eval/builtin_special.go`  
@@ -57,26 +116,6 @@ Multiple locations need better error handling:
 - `pkg/eval/builtin_fn_io.go`: Don't ignore JSON formatting errors
 - `pkg/eval/builtin_fn_flow.go`: Add proper multi-error documentation
 - `pkg/cli/modes/location.go`: Surface file system errors properly
-
-## Platform Compatibility
-
-### Windows Support
-**Priority**: Medium  
-**Locations**: Multiple files with `*_windows.go` suffix
-
-#### File System Operations
-- `pkg/mods/os/stat_windows.go`: Implement CreationTime, LastAccessTime, LastWriteTime
-- `pkg/cli/lscolors/stat_windows.go`: Implement file feature detection
-- `pkg/eval/compile_value.go`: Fix path handling correctness on Windows
-
-#### Terminal Support
-- `pkg/cli/term/reader_windows.go`: Improve key sequence normalization (currently Unix-centric)
-
-### Cross-Platform Path Handling
-**Location**: `pkg/glob/glob.go`  
-- Preserve original path separator (/ or \) on Windows
-- Handle Windows UNC paths properly
-- Improve glob pattern matching on Windows
 
 ## Performance Optimizations
 
@@ -160,12 +199,47 @@ Multiple locations need better error handling:
 **Location**: `pkg/daemon/`  
 The current bbolt-based storage daemon might be replaced with a custom database solution in the future.
 
+## Long-term / Major Refactoring Projects
+
+### TUI Stack Rewrite
+**Status**: 🔮 LONG-TERM PLAN - Moved to long-term roadmap (2025-08-24)  
+**Location**: `pkg/edit` (62 files), `pkg/cli` (109 files)  
+**Scope**: Complete rewrite of Terminal User Interface framework (~22K lines of code)  
+**Description**: Major architectural refactoring of the entire TUI stack. The current editor implementation built on `cli.App` needs modernization.
+
+**Analysis Summary** (completed 2025-08-24):
+- **Architecture**: Layered design with pkg/edit built on pkg/cli framework
+- **Technical Debt**: 30+ TODO items identified in codebase
+- **Risk Level**: HIGH - Breaking changes to core user interface
+- **Resource Estimate**: 9-12 months development cycle
+- **Team Requirements**: 4-5 dedicated developers (architect, core devs, test engineer, documentation)
+
+**Implementation Strategy**:
+- **Phase 1** (2-3 months): Architecture design and prototyping
+- **Phase 2** (4-5 months): Core framework rewrite and component migration  
+- **Phase 3** (2-3 months): Integration testing, documentation, and release preparation
+
+**Success Criteria**:
+- All existing TUI functionality preserved
+- Performance at least equal to current implementation
+- Improved maintainability and extensibility
+- Cross-platform compatibility (especially Windows improvements)
+- Comprehensive test coverage and documentation
+
+**Risk Mitigation**:
+- Gradual migration with feature flags
+- Parallel maintenance of old and new frameworks during transition
+- Extensive beta testing with community feedback
+- Clear rollback procedures for critical issues
+
+**Priority Rationale**: Moved to long-term plan due to high resource requirements and risk level. Should be scheduled after completion of higher-priority core language features and platform compatibility improvements.
+
 ## Notes
 
 - Most TODO items are tracked as inline comments in the source code
 - Priority should be given to items that affect core functionality or user experience
 - Windows support improvements would significantly expand platform compatibility
-- The TUI rewrite is likely the largest single undertaking on this list
+- Major refactoring projects (like TUI rewrite) are documented in the "Long-term" section with detailed analysis
 
 ## Contributing
 
