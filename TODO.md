@@ -374,6 +374,46 @@ complete-getopt $args $opt-specs $arg-handlers [&stop-after-double-dash=$true &l
 
 **Result**: The `complete-getopt` function now supports flexible option parsing configuration while maintaining full backward compatibility, enabling users to customize command-line completion behavior for different parsing styles and requirements.
 
+### Function Documentation Enhancement - fg Command  
+**Status**: ✅ COMPLETED (2025-08-24)  
+**Location**: `pkg/eval/builtin_fn_cmd.go`, `pkg/eval/builtin_fn_cmd.d.elv`  
+**Description**: Documented the "fg" (foreground) command for job control functionality
+
+**Tasks Completed**:
+- ✅ **Function Analysis**: Analyzed fg implementation across Unix and Windows platforms
+  - Unix implementation: Process group management with Tcsetpgrp, SIGCONT signaling, and job control
+  - Windows implementation: Returns "not supported on Windows" error due to different job control model
+  - Function signature: `fg(pids ...int) error` accepting one or more process IDs
+  
+- ✅ **Comprehensive Documentation**: Added complete documentation to `builtin_fn_cmd.d.elv`
+  - Detailed description of function behavior and process group requirements
+  - Practical examples showing single process and process group usage
+  - Clear explanation of Unix/Windows platform differences
+  - Cross-references to related job control functions
+  
+- ✅ **Code Cleanup**: Removed TODO comment from source code
+  - Removed `// TODO(xiaq): Document "fg".` from `builtin_fn_cmd.go`
+  - Maintained code cleanliness and completeness
+
+**Technical Implementation**:
+- **Documentation Style**: Followed existing Elvish documentation patterns and formatting
+- **Example Quality**: Provided realistic examples showing job control scenarios with background processes
+- **Platform Awareness**: Clearly documented Windows limitations and Unix-specific behavior
+- **Cross-References**: Added appropriate see-also reference to `exec` command
+
+**Usage Examples**:
+```elvish
+# Basic foreground operation
+sleep 10 &     # Start background job, note PID
+fg 12345       # Bring process to foreground
+
+# Process group management
+bash -c 'sleep 20 & sleep 25 & wait' &  # Start process group
+fg 12346       # Bring entire group to foreground
+```
+
+**Result**: The `fg` command now has complete, professional documentation explaining job control functionality, process group requirements, and platform-specific behavior, making it accessible to users and improving overall Elvish documentation completeness.
+
 ## Current Active TODO Items
 
 ### High Priority (Core Functionality Impact)
@@ -502,8 +542,9 @@ complete-getopt $args $opt-specs $arg-handlers [&stop-after-double-dash=$true &l
 ## Documentation and Usability
 
 ### Function Documentation
+**Status**: ✅ FG COMMAND DOCUMENTED (2025-08-24)
 **Location**: Various `builtin_fn_*.go` files  
-- `builtin_fn_cmd.go`: Document "fg" command
+- ✅ `builtin_fn_cmd.go`: Document "fg" command - COMPLETED (2025-08-24)
 - `builtin_fn_str.go`: Document `-override-wcswidth` option
 - `builtin_fn_flow.go`: Document "multi-error" properly
 

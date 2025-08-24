@@ -42,5 +42,37 @@ fn search-external {|command| }
 # supported on Windows".
 fn exec {|command? @args| }
 
+# Bring one or more background processes to the foreground by their process IDs.
+# All PIDs must belong to the same process group.
+#
+# This function performs the following operations:
+# - Verifies all processes are in the same process group
+# - Sets the process group as the foreground process group of the terminal
+# - Sends SIGCONT to resume the processes (in case they were stopped)
+# - Waits for each process to complete or be stopped
+#
+# Examples:
+#
+# ```elvish-transcript
+# ~> # Start a background job and note its PID
+# ~> sleep 10 &
+# ▶ 12345
+# ~> fg 12345  # Bring the sleep process to foreground
+# ```
+#
+# ```elvish-transcript
+# ~> # Multiple processes in the same group can be brought to foreground together
+# ~> bash -c 'sleep 20 & sleep 25 & wait' &
+# ▶ 12346
+# ~> fg 12346  # Brings the entire process group to foreground
+# ```
+#
+# **Note**: This command always raises an exception on Windows with the message
+# "not supported on Windows" as Windows doesn't have the same job control
+# concepts as Unix-like systems.
+#
+# See also [`exec`]().
+fn fg {|@pids| }
+
 # Exit the Elvish process with `$status` (defaulting to 0).
 fn exit {|status?| }

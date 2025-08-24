@@ -9,8 +9,6 @@ import (
 
 // Command and process control.
 
-// TODO(xiaq): Document "fg".
-
 func init() {
 	addBuiltinFns(map[string]any{
 		// Command resolution
