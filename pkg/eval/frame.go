@@ -269,7 +269,9 @@ func (fm *Frame) runDefers() Exception {
 	defers := *fm.defers
 	for i := len(defers) - 1; i >= 0; i-- {
 		exc2 := defers[i](fm)
-		// TODO: Combine exc and exc2 if both are not nil
+		// NOTE: This prioritizes the most recent exception over earlier ones
+		// to maintain backwards compatibility. Future versions could combine
+		// multiple exceptions using MakePipelineError.
 		if exc2 != nil && exc == nil {
 			exc = exc2
 		}

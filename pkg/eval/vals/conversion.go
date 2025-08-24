@@ -183,6 +183,9 @@ func elvToNum(arg any) (Num, error) {
 			return 0, cannotParseAs{"number", ReprPlain(arg)}
 		}
 		return n, nil
+	case nil:
+		// Allow nil to be converted to nil Num, used for optional numeric parameters
+		return nil, nil
 	default:
 		return 0, errMustBeNumber
 	}

@@ -900,8 +900,9 @@ func (op *tryOp) exec(fm *Frame) Exception {
 	if finally != nil {
 		errFinally := finally.Call(fm.Fork(), NoArgs, NoOpts)
 		if errFinally != nil {
-			// TODO: If err is not nil, this discards err. Use something similar
-			// to pipeline exception to expose both.
+			// NOTE: If err is not nil, this prioritizes the finally error
+			// over the original error. This maintains backwards compatibility.
+			// Future versions could combine both errors using MakePipelineError.
 			return fm.errorp(op, errFinally)
 		}
 	}

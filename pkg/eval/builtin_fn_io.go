@@ -452,8 +452,9 @@ func toLines(fm *Frame, inputs Inputs) error {
 		if errOut != nil {
 			return
 		}
-		// TODO: Don't ignore the error.
-		_, errOut = fmt.Fprintln(out, vals.ToString(v))
+		if _, err := fmt.Fprintln(out, vals.ToString(v)); err != nil {
+			errOut = err
+		}
 	})
 	return errOut
 }
@@ -469,7 +470,9 @@ func toTerminated(fm *Frame, terminator string, inputs Inputs) error {
 		if errOut != nil {
 			return
 		}
-		_, errOut = fmt.Fprint(out, vals.ToString(v), terminator)
+		if _, err := fmt.Fprint(out, vals.ToString(v), terminator); err != nil {
+			errOut = err
+		}
 	})
 	return errOut
 }

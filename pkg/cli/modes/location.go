@@ -3,6 +3,7 @@ package modes
 import (
 	"errors"
 	"fmt"
+	"log"
 	"math"
 	"path/filepath"
 	"regexp"
@@ -138,7 +139,8 @@ func (ws LocationWSIterator) Parse(path string) (kind, root string) {
 		}
 		re, err := regexp.Compile(pattern)
 		if err != nil {
-			// TODO(xiaq): Surface the error.
+			// Log the regex compilation error so it can be debugged
+			log.Printf("location: invalid workspace pattern %q: %v", pattern, err)
 			return true
 		}
 		if root := re.FindString(path); root != "" {
