@@ -37,17 +37,33 @@ rune:
 			}
 			p.backup()
 			add(Slash{})
+		case '\\':
+			fallthrough
 		default:
 			var literal bytes.Buffer
-		literal:
+			
+			// Handle the initial character
+			if r == '\\' {
+				// Process escaped character
+				r = p.next()
+				if r == eof {
+					literal.WriteRune('\\')
+				} else {
+					literal.WriteRune(r)
+				}
+				r = p.next()
+			}
+			
+			// Continue processing literal characters
 			for {
 				switch r {
 				case '?', '*', '/', eof:
-					break literal
+					goto endLiteral
 				case '\\':
+					// Backslash is always an escape character in literals
 					r = p.next()
 					if r == eof {
-						break literal
+						goto endLiteral
 					}
 					literal.WriteRune(r)
 				default:
@@ -55,6 +71,7 @@ rune:
 				}
 				r = p.next()
 			}
+		endLiteral:
 			p.backup()
 			add(Literal{literal.String()})
 		}
@@ -90,3 +107,4 @@ func (ps *parser) backup() {
 	_, s := utf8.DecodeLastRuneInString(ps.src[:ps.pos])
 	ps.pos -= s
 }
+

@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(go:*)",
+      "Bash(make test:*)",
+      "Bash(\"D:\\Dev\\Go\\bin\\go.exe\" build ./cmd/elvish)",
+      "Bash(\"D:\\Dev\\Go\\bin\\go.exe\" build ./cmd/elvmdfmt)",
+      "Bash(find:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

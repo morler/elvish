@@ -80,6 +80,7 @@ const (
 	Tab       = '\t'
 	Enter     = '\n'
 	Backspace = 0x7f
+	Escape    = '\x1b'
 )
 
 // keyNames maps runes, whether simple or function, to symbolic key names.
@@ -110,6 +111,7 @@ var keyNames = map[rune]string{
 	Tab:                "Tab",
 	Enter:              "Enter",
 	Backspace:          "Backspace",
+	Escape:             "Escape",
 }
 
 func (k Key) Kind() string {

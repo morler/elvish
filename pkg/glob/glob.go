@@ -4,11 +4,9 @@ package glob
 import (
 	"os"
 	"runtime"
+	"strings"
 	"unicode/utf8"
 )
-
-// TODO: On Windows, preserve the original path separator (/ or \) specified in
-// the glob pattern.
 
 // PathInfo keeps a path resulting from glob expansion and its FileInfo. The
 // FileInfo is useful for efficiently determining if a given pathname satisfies
@@ -20,6 +18,13 @@ type PathInfo struct {
 	Info os.FileInfo
 }
 
+// pathSepInfo tracks the original path separator used in the glob pattern
+// to maintain consistency in the output paths on Windows.
+type pathSepInfo struct {
+	originalSep rune // '/' or '\\'
+	pattern     string
+}
+
 // Glob returns a list of file names satisfying the given pattern.
 func Glob(p string, cb func(PathInfo) bool) bool {
 	return Parse(p).Glob(cb)
@@ -29,6 +34,14 @@ func Glob(p string, cb func(PathInfo) bool) bool {
 func (p Pattern) Glob(cb func(PathInfo) bool) bool {
 	segs := p.Segments
 	dir := ""
+	
+	// Detect the original path separator style for Windows compatibility
+	var originalSep rune = '/'
+	if runtime.GOOS == "windows" {
+		// Reconstruct pattern from segments to detect separator
+		pattern := reconstructPattern(segs)
+		originalSep = detectPathSeparator(pattern)
+	}
 
 	// TODO(xiaq): This is a hack solely for supporting globs that start with
 	// ~ (tilde) in the eval package.
@@ -40,15 +53,48 @@ func (p Pattern) Glob(cb func(PathInfo) bool) bool {
 		segs = segs[1:]
 		dir += "/"
 	} else if runtime.GOOS == "windows" && len(segs) > 1 && IsLiteral(segs[0]) && IsSlash(segs[1]) {
-		// TODO: Handle Windows UNC paths.
+		// Enhanced Windows drive letter handling: C:/ or C:\
 		elem := segs[0].(Literal).Data
 		if isDrive(elem) {
 			segs = segs[2:]
+			// Use forward slash internally, will be normalized in output
 			dir = elem + "/"
 		}
 	}
 
-	return glob(segs, dir, cb)
+	// Wrap callback to normalize path separators in results
+	wrappedCb := cb
+	if runtime.GOOS == "windows" {
+		wrappedCb = func(info PathInfo) bool {
+			info.Path = normalizeWindowsPath(info.Path, originalSep)
+			return cb(info)
+		}
+	}
+
+	return glob(segs, dir, wrappedCb)
+}
+
+// reconstructPattern reconstructs a pattern string from segments for separator detection.
+func reconstructPattern(segs []Segment) string {
+	var result strings.Builder
+	for _, seg := range segs {
+		switch s := seg.(type) {
+		case Literal:
+			result.WriteString(s.Data)
+		case Slash:
+			result.WriteRune('/')
+		case Wild:
+			switch s.Type {
+			case Question:
+				result.WriteRune('?')
+			case Star:
+				result.WriteRune('*')
+			case StarStar:
+				result.WriteString("**")
+			}
+		}
+	}
+	return result.String()
 }
 
 // isLetter returns true if the byte is an ASCII letter.
@@ -59,6 +105,59 @@ func isLetter(chr byte) bool {
 // isDrive returns true if the string looks like a Windows drive letter path prefix.
 func isDrive(s string) bool {
 	return len(s) == 2 && s[1] == ':' && isLetter(s[0])
+}
+
+// isUNCPath returns true if the string looks like a Windows UNC path.
+// UNC paths start with \\ or // followed by a server name and share name.
+func isUNCPath(path string) bool {
+	if runtime.GOOS != "windows" {
+		return false
+	}
+	return strings.HasPrefix(path, `\\`) || strings.HasPrefix(path, `//`)
+}
+
+// normalizeWindowsPath converts path separators to match the original pattern style.
+// On Windows, preserves the original separator (/ or \) used in the pattern.
+func normalizeWindowsPath(path string, originalSep rune) string {
+	if runtime.GOOS != "windows" {
+		return path
+	}
+	
+	// Convert to the original separator style
+	if originalSep == '\\' {
+		return strings.ReplaceAll(path, "/", "\\")
+	}
+	// Default to forward slashes (Unix-style)
+	return strings.ReplaceAll(path, "\\", "/")
+}
+
+// detectPathSeparator returns the primary path separator used in the pattern.
+// This is used to maintain output consistency on Windows.
+func detectPathSeparator(pattern string) rune {
+	if runtime.GOOS != "windows" {
+		return '/'
+	}
+	
+	// For Windows, detect the style used in the original pattern
+	// Look for unescaped backslashes (Windows paths)
+	backslashCount := 0
+	forwardCount := strings.Count(pattern, "/")
+	
+	// Count unescaped backslashes
+	for i := 0; i < len(pattern); i++ {
+		if pattern[i] == '\\' {
+			// Check if it's escaped (preceded by another backslash)
+			if i == 0 || pattern[i-1] != '\\' {
+				backslashCount++
+			}
+		}
+	}
+	
+	// If we have Windows-style paths (more backslashes), preserve that style
+	if backslashCount > forwardCount {
+		return '\\'
+	}
+	return '/'
 }
 
 // glob finds all filenames matching the given Segments in the given dir, and

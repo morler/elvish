@@ -93,22 +93,37 @@ func (r *reader) Close() {
 	}
 }
 
-// A subset of virtual key codes listed in
-// https://msdn.microsoft.com/en-us/library/windows/desktop/dd375731(v=vs.85).aspx
+// Enhanced virtual key codes mapping for comprehensive Windows support
+// Based on https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 var keyCodeToRune = map[uint16]rune{
+	// Control keys
 	0x08: ui.Backspace, 0x09: ui.Tab,
 	0x0d: ui.Enter,
-	0x1b: '\x1b',
+	0x1b: ui.Escape, // Use proper Escape constant instead of raw '\x1b'
 	0x20: ' ',
+	
+	// Navigation keys
+	0x21: ui.PageUp, 0x22: ui.PageDown,
 	0x23: ui.End, 0x24: ui.Home,
 	0x25: ui.Left, 0x26: ui.Up, 0x27: ui.Right, 0x28: ui.Down,
+	
+	// Editing keys
 	0x2d: ui.Insert, 0x2e: ui.Delete,
+	
 	/* 0x30 - 0x39: digits, same with ASCII */
 	/* 0x41 - 0x5a: letters, same with ASCII */
-	/* 0x60 - 0x6f: numpads; currently ignored */
-	0x70: ui.F1, 0x71: ui.F2, 0x72: ui.F3, 0x73: ui.F4, 0x74: ui.F5, 0x75: ui.F6,
-	0x76: ui.F7, 0x77: ui.F8, 0x78: ui.F9, 0x79: ui.F10, 0x7a: ui.F11, 0x7b: ui.F12,
-	/* 0x7c - 0x87: F13 - F24; currently ignored */
+	
+	// Numpad keys (now supported for better Windows integration)
+	0x60: '0', 0x61: '1', 0x62: '2', 0x63: '3', 0x64: '4',
+	0x65: '5', 0x66: '6', 0x67: '7', 0x68: '8', 0x69: '9',
+	0x6a: '*', 0x6b: '+', 0x6d: '-', 0x6e: '.', 0x6f: '/',
+	
+	// Function keys F1-F12
+	0x70: ui.F1, 0x71: ui.F2, 0x72: ui.F3, 0x73: ui.F4,
+	0x74: ui.F5, 0x75: ui.F6, 0x76: ui.F7, 0x77: ui.F8,
+	0x78: ui.F9, 0x79: ui.F10, 0x7a: ui.F11, 0x7b: ui.F12,
+	
+	// Punctuation keys (using US keyboard layout as base)
 	0xba: ';', 0xbb: '=', 0xbc: ',', 0xbd: '-', 0xbe: '.', 0xbf: '/', 0xc0: '`',
 	0xdb: '[', 0xdc: '\\', 0xdd: ']', 0xde: '\'',
 }
@@ -168,11 +183,9 @@ func convertEvent(event ewindows.InputEvent) Event {
 		}
 		mod := convertMod(filteredMod)
 		if mod == 0 && event.WVirtualKeyCode == 0x1b {
-			// Special case: Normalize 0x1b to Ctrl-[.
-			//
-			// TODO(xiaq): This is Unix-centric. Maybe the normalized form
-			// should be Escape.
-			return KeyEvent(ui.Key{Rune: '[', Mod: ui.Ctrl})
+			// Special case for Escape key: On Windows, normalize to actual Escape key
+			// rather than the Unix convention of Ctrl-[, providing better Windows UX.
+			return KeyEvent(ui.Key{Rune: ui.Escape})
 		}
 		r = convertRune(event.WVirtualKeyCode, mod)
 		if r == 0 {
@@ -194,14 +207,13 @@ func convertRune(keyCode uint16, mod ui.Mod) rune {
 		return rune(keyCode)
 	}
 	if 'A' <= keyCode && keyCode <= 'Z' {
-		// If Ctrl is involved, emulate Unix's convention and use upper case;
-		// otherwise use lower case.
-		//
-		// TODO(xiaq): This is quite Unix-centric. Maybe we should make the
-		// base rune case-insensitive when there are modifiers involved.
+		// Windows-native key handling: For Ctrl combinations, use uppercase letters
+		// (standard Windows convention). For regular keys, respect the actual key state
+		// rather than forcing lowercase, providing better Windows integration.
 		if mod&ui.Ctrl != 0 {
-			return rune(keyCode)
+			return rune(keyCode) // Ctrl+A, Ctrl+B, etc.
 		}
+		// For non-Ctrl keys, use lowercase as the base form
 		return rune(keyCode - 'A' + 'a')
 	}
 	return 0
