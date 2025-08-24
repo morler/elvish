@@ -4,6 +4,26 @@ This document summarizes the development tasks and improvement opportunities ide
 
 ## High Priority Items
 
+### Dependency Updates and Go Compatibility
+**Status**: ✅ COMPLETED (2025-08-24)  
+**Location**: `go.mod`, `.cirrus.yml`, project-wide  
+**Description**: Upgrade project dependencies and ensure compatibility with current Go version
+- **Previous Go requirement**: 1.22 (in go.mod)
+- **Updated Go version**: 1.24 ✅
+- **Tasks completed**:
+  - ✅ Updated `go.mod` to require Go 1.24
+  - ✅ Ran `go get -u ./...` to update all dependencies to latest compatible versions
+    - `github.com/google/go-cmp`: v0.6.0 → v0.7.0
+    - `github.com/sourcegraph/jsonrpc2`: v0.2.0 → v0.2.1  
+    - `go.etcd.io/bbolt`: v1.3.10 → v1.4.3
+    - `golang.org/x/sync`: v0.8.0 → v0.16.0
+    - `golang.org/x/sys`: v0.24.0 → v0.35.0
+  - ✅ Checked for deprecated APIs - no breaking changes found
+  - ✅ Ran test suite - all core tests pass (minor Windows-specific test failures expected)
+  - ✅ Updated Cirrus CI configuration to use Go 1.24
+  - ✅ No Go version-specific code changes required
+- **Result**: Successfully upgraded to Go 1.24 with all major functionality working
+
 ### TUI Stack Rewrite
 **Status**: Planned major refactoring  
 **Location**: `pkg/edit`, `pkg/cli`  

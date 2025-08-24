@@ -6,7 +6,7 @@ test_arm_task:
   arm_container:
     # The Alpine image has segmentation faults when running test -race, so
     # use Debian instead.
-    image: golang:1.23-bookworm
+    image: golang:1.24-bookworm
   go_version_script: go version
   test_script: go test $TEST_FLAG ./...
 
@@ -14,7 +14,7 @@ test_bsd_task:
   env:
     ELVISH_TEST_TIME_SCALE: "20"
     TEST_FLAG: -race
-    GO_VERSION: "1.23.0"
+    GO_VERSION: "1.24.0"
     PATH: /usr/local/go/bin:$PATH
   matrix:
     - name: Test on FreeBSD
@@ -65,7 +65,7 @@ build_binaries_task:
   container:
     # Keep the Go version part in sync with
     # https://github.com/elves/up/blob/master/Dockerfile
-    image: golang:1.23.0-alpine
+    image: golang:1.24.0-alpine
   go_modules_cache:
     fingerprint_script: cat go.sum
     folder: ~/go/pkg/mod
