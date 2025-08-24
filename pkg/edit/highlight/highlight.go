@@ -24,6 +24,23 @@ type cmdRegion struct {
 	cmd string
 }
 
+// extractCommandName extracts the actual command name from a region text,
+// handling bareword, single-quoted, and double-quoted forms.
+func extractCommandName(regionText string) string {
+	// Handle different quoting forms directly
+	switch {
+	case len(regionText) >= 2 && regionText[0] == '\'' && regionText[len(regionText)-1] == '\'':
+		// Single-quoted: 'command' -> command
+		return regionText[1 : len(regionText)-1]
+	case len(regionText) >= 2 && regionText[0] == '"' && regionText[len(regionText)-1] == '"':
+		// Double-quoted: "command" -> command (simplified - doesn't handle escapes)
+		return regionText[1 : len(regionText)-1]
+	default:
+		// Bareword or other forms: return as-is
+		return regionText
+	}
+}
+
 // Maximum wait time to block for late results. Can be changed for test cases.
 var maxBlockForLate = 10 * time.Millisecond
 
@@ -74,8 +91,9 @@ func highlight(code string, cfg Config, lateCb func(ui.Text)) (ui.Text, []ui.Tex
 		if r.Type == commandRegion {
 			if cfg.HasCommand != nil {
 				// Do not highlight now, but collect the index of the region and the
-				// segment.
-				cmdRegions = append(cmdRegions, cmdRegion{len(text), regionCode})
+				// segment. Extract the actual command name by parsing the region text.
+				cmdName := extractCommandName(regionCode)
+				cmdRegions = append(cmdRegions, cmdRegion{len(text), cmdName})
 			} else {
 				// Treat all commands as good commands.
 				styling = stylingForGoodCommand

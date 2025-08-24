@@ -109,24 +109,23 @@ func emitRegions(n parse.Node, f func(parse.Node, regionKind, string)) {
 }
 
 func emitRegionsInForm(n *parse.Form, f func(parse.Node, regionKind, string)) {
-	// Special forms.
-	// TODO: This only highlights bareword special commands, however currently
-	// quoted special commands are also possible (e.g `"if" $true { }` is
-	// accepted).
-	head := sourceText(n.Head)
-	switch head {
-	case "var", "set", "tmp":
-		emitRegionsInAssign(n, f)
-	case "del":
-		emitRegionsInDel(n, f)
-	case "if":
-		emitRegionsInIf(n, f)
-	case "for":
-		emitRegionsInFor(n, f)
-	case "try":
-		emitRegionsInTry(n, f)
+	// Special forms - now supports both bareword and quoted commands
+	if commandName, ok := getCommandName(n.Head); ok {
+		switch commandName {
+		case "var", "set", "tmp":
+			emitRegionsInAssign(n, f)
+		case "del":
+			emitRegionsInDel(n, f)
+		case "if":
+			emitRegionsInIf(n, f)
+		case "for":
+			emitRegionsInFor(n, f)
+		case "try":
+			emitRegionsInTry(n, f)
+		}
 	}
-	if isBarewordCompound(n.Head) {
+	// Highlight any string literal command (bareword, single-quoted, double-quoted)
+	if isStringLiteralCommand(n.Head) {
 		f(n.Head, semanticRegion, commandRegion)
 	}
 }
@@ -156,8 +155,22 @@ func emitVariableRegion(n *parse.Compound, f func(parse.Node, regionKind, string
 	}
 }
 
+// getCommandName extracts the command name from a compound node if it represents
+// a string literal (bareword, single-quoted, or double-quoted).
+func getCommandName(n *parse.Compound) (string, bool) {
+	return cmpd.StringLiteral(n)
+}
+
 func isBarewordCompound(n *parse.Compound) bool {
 	return len(n.Indexings) == 1 && len(n.Indexings[0].Indices) == 0 && n.Indexings[0].Head.Type == parse.Bareword
+}
+
+// isStringLiteralCommand checks if a compound represents a string literal command
+// (bareword, single-quoted, or double-quoted), replacing the older isBarewordCompound
+// for command highlighting purposes.
+func isStringLiteralCommand(n *parse.Compound) bool {
+	_, ok := getCommandName(n)
+	return ok
 }
 
 func emitRegionsInIf(n *parse.Form, f func(parse.Node, regionKind, string)) {

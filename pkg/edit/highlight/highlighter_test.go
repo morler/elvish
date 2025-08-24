@@ -49,8 +49,12 @@ func TestHighlighter_HighlightRegions(t *testing.T) {
 				"ls $x 'y'", styles,
 				"vv $$ '''"),
 			noTips),
-		// Non-bareword commands do not go through command highlighting.
-		Args("'ls'").Rets(ui.T("'ls'", ui.FgYellow)),
+		// Quoted commands now also go through command highlighting.
+		Args("'ls'").Rets(
+			ui.MarkLines(
+				"'ls'", styles,
+				"vvvv"),
+			noTips),
 		Args("a$x").Rets(
 			ui.MarkLines(
 				"a$x", styles,
@@ -58,6 +62,50 @@ func TestHighlighter_HighlightRegions(t *testing.T) {
 			noTips,
 		),
 	)
+}
+
+func TestHighlighter_QuotedSpecialCommands(t *testing.T) {
+	hl := NewHighlighter(Config{
+		HasCommand: func(name string) bool {
+			// Recognize special commands and test commands
+			switch name {
+			case "if", "var", "set", "tmp", "del", "for", "try", "ls", "echo", "fail":
+				return true
+			default:
+				return false
+			}
+		},
+	})
+
+	// Test that quoted commands are highlighted as green (good commands)
+	// We don't need to test exact formatting, just that the command is green
+	testCases := []struct {
+		code        string
+		expectGreen bool
+	}{
+		{"'if' $true { echo }", true}, // Quoted special command should be green
+		{"\"var\" x = 5", true},       // Quoted special command should be green
+		{"'ls'", true},                // Quoted user command should be green
+		{"\"echo\" hello", true},      // Quoted user command should be green
+		{"'unknown-cmd'", false},      // Unknown quoted command should be red
+	}
+
+	for _, tc := range testCases {
+		result, _ := hl.Get(tc.code)
+		resultStr := result.String()
+		hasGreen := strings.Contains(resultStr, "\x1b[32m") || strings.Contains(resultStr, "\x1b[;32m")
+		hasRed := strings.Contains(resultStr, "\x1b[31m") || strings.Contains(resultStr, "\x1b[;31m")
+
+		if tc.expectGreen {
+			if !hasGreen {
+				t.Errorf("Code %q: expected green command but got: %q", tc.code, resultStr)
+			}
+		} else {
+			if !hasRed {
+				t.Errorf("Code %q: expected red command but got: %q", tc.code, resultStr)
+			}
+		}
+	}
 }
 
 func TestHighlighter_ParseErrors(t *testing.T) {

@@ -21,7 +21,8 @@
       "Bash(ast-grep:*)",
       "Bash(\"D:\\Dev\\Go\\bin\\go.exe\" build ./pkg/eval)",
       "Bash(\"D:\\Dev\\Go\\bin\\go.exe\" test ./pkg/eval -v)",
-      "Bash(echo $PWD)"
+      "Bash(echo $PWD)",
+      "Bash(make fmt:*)"
     ],
     "deny": [],
     "ask": [],
