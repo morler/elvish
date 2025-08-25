@@ -3,6 +3,10 @@ package vars
 import (
 	"errors"
 	"os"
+	"runtime"
+	"strings"
+
+	"src.elv.sh/pkg/env"
 )
 
 var errEnvMustBeString = errors.New("environment variable can only be set string values")
@@ -20,7 +24,12 @@ func (ev envVariable) Set(val any) error {
 }
 
 func (ev envVariable) Get() any {
-	return os.Getenv(ev.name)
+	value := os.Getenv(ev.name)
+	// Normalize HOME environment variable on Windows for cross-platform consistency
+	if ev.name == env.HOME && runtime.GOOS == "windows" && value != "" {
+		return strings.ReplaceAll(value, "\\", "/")
+	}
+	return value
 }
 
 func (ev envVariable) Unset() error {

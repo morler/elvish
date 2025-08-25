@@ -22,7 +22,16 @@
       "Bash(\"D:\\Dev\\Go\\bin\\go.exe\" build ./pkg/eval)",
       "Bash(\"D:\\Dev\\Go\\bin\\go.exe\" test ./pkg/eval -v)",
       "Bash(echo $PWD)",
-      "Bash(make fmt:*)"
+      "Bash(make fmt:*)",
+      "Bash(elvish:*)",
+      "Bash(\"D:\\Dev\\Go\\bin\\go.exe\" test ./pkg/fsutil -v)",
+      "Bash(\"D:\\Dev\\Go\\bin\\go.exe\" test ./pkg/mods/os -v)",
+      "Bash(\"D:\\Dev\\Go\\bin\\go.exe\" run debug_socket.go)",
+      "Bash(\"D:\\Dev\\Go\\bin\\go.exe\" run persistent_socket.go)",
+      "Bash(\"D:\\Dev\\Go\\bin\\go.exe\" run test_transcript_socket.go)",
+      "Bash(\"D:\\Dev\\Go\\bin\\go.exe\" run test_socket_lifecycle.go)",
+      "Bash(\"D:\\Dev\\Go\\bin\\go.exe\" test ./pkg/mods/os -v -run \"TestTranscripts.*sock_on_Windows\")",
+      "mcp__MCP_Cache__get_cache_stats"
     ],
     "deny": [],
     "ask": [],

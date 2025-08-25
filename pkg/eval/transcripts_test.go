@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"runtime"
 	"strconv"
 	"strings"
 	"testing"
@@ -153,6 +154,10 @@ func TestTranscripts(t *testing.T) {
 		},
 		"mock-one-other-home", func(t *testing.T, ev *eval.Evaler) {
 			otherHome := testutil.TempDir(t)
+			// Normalize path separators for cross-platform consistency in tests
+			if runtime.GOOS == "windows" {
+				otherHome = strings.ReplaceAll(otherHome, "\\", "/")
+			}
 			ev.ExtendGlobal(eval.BuildNs().AddVar("other-home", vars.NewReadOnly(otherHome)))
 			testutil.Set(t, eval.GetHome, func(name string) (string, error) {
 				switch name {

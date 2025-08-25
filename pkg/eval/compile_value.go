@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"src.elv.sh/pkg/diag"
@@ -165,11 +166,21 @@ func doTilde(v any) (any, error) {
 		}
 		// Use filepath.Join to handle path separators correctly on all platforms
 		if rest == "" {
+			// Normalize path separators for consistency on Windows
+			if runtime.GOOS == "windows" {
+				dir = strings.ReplaceAll(dir, "\\", "/")
+			}
 			return dir, nil
 		}
 		// Remove leading separator from rest since filepath.Join will add it
 		rest = strings.TrimLeft(rest, "/\\")
-		return filepath.Join(dir, rest), nil
+		result := filepath.Join(dir, rest)
+		// For consistency in tests and cross-platform behavior, normalize path separators
+		// to forward slashes when the original path used forward slashes
+		if strings.Contains(s, "/") && !strings.Contains(s, "\\") {
+			result = strings.ReplaceAll(result, "\\", "/")
+		}
+		return result, nil
 	case globPattern:
 		if len(v.Segments) == 0 {
 			return nil, ErrBadglobPattern
@@ -187,6 +198,10 @@ func doTilde(v any) (any, error) {
 				if err != nil {
 					return nil, err
 				}
+				// Normalize path separators for glob consistency on Windows
+				if runtime.GOOS == "windows" {
+					dir = strings.ReplaceAll(dir, "\\", "/")
+				}
 				v.Segments[0] = glob.Literal{Data: dir}
 				return v, nil
 			}
@@ -194,6 +209,10 @@ func doTilde(v any) (any, error) {
 			dir, err := getHome("")
 			if err != nil {
 				return nil, err
+			}
+			// Normalize path separators for glob consistency on Windows
+			if runtime.GOOS == "windows" {
+				dir = strings.ReplaceAll(dir, "\\", "/")
 			}
 			v.DirOverride = dir
 			return v, nil

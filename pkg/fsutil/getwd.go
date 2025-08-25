@@ -26,10 +26,18 @@ func TildeAbbr(path string) string {
 		return path
 	}
 	if err == nil {
-		if path == home {
+		// Normalize both paths to forward slashes for consistent comparison on Windows
+		normalizedHome := home
+		normalizedPath := path
+		if runtime.GOOS == "windows" {
+			normalizedHome = strings.ReplaceAll(home, "\\", "/")
+			normalizedPath = strings.ReplaceAll(path, "\\", "/")
+		}
+		
+		if normalizedPath == normalizedHome {
 			return "~"
-		} else if strings.HasPrefix(path, home+"/") || (runtime.GOOS == "windows" && strings.HasPrefix(path, home+"\\")) {
-			return "~" + path[len(home):]
+		} else if strings.HasPrefix(normalizedPath, normalizedHome+"/") {
+			return "~" + normalizedPath[len(normalizedHome):]
 		}
 	}
 	return path
