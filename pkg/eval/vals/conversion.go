@@ -210,7 +210,6 @@ func elvToRune(arg any) (rune, error) {
 func scanFieldMapFromMap(src any, ptr any, dstKeys FieldMapKeys, opt ScanOpt) error {
 	makeErr := func(keysDescription string) error {
 		return errs.BadValue{
-			// TODO: Add path information in error messages.
 			What:   "value",
 			Valid:  fmt.Sprintf("map with keys %s [%s]", keysDescription, strings.Join(dstKeys, " ")),
 			Actual: ReprPlain(src),

@@ -162,6 +162,10 @@ func atoi(a string, n int) (int, error) {
 			}
 			return 0, posIndexOutOfRange(a, n)
 		}
+		// Provide more specific error for malformed index strings
+		if strings.Contains(a, ":") {
+			return 0, errors.New("index must be integer or slice notation (use .. instead of :)")
+		}
 		return 0, errIndexMustBeInteger
 	}
 	return i, nil

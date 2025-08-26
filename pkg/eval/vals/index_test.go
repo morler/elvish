@@ -1,6 +1,7 @@
 package vals
 
 import (
+	"errors"
 	"os"
 	"testing"
 
@@ -111,8 +112,7 @@ func TestIndex(t *testing.T) {
 
 		// Malformed list indices.
 		Args(li4, "a").Rets(tt.Any, errIndexMustBeInteger),
-		// TODO(xiaq): Make the error more accurate.
-		Args(li4, "1:3:2").Rets(tt.Any, errIndexMustBeInteger),
+		Args(li4, "1:3:2").Rets(tt.Any, errors.New("index must be integer or slice notation (use .. instead of :)")),
 
 		// Map indices
 		// ============
