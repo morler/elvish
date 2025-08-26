@@ -59,6 +59,20 @@ func fg(pids ...int) error {
 	if len(pids) == 0 {
 		return errs.ArityMismatch{What: "arguments", ValidLow: 1, ValidHigh: -1, Actual: len(pids)}
 	}
+
+	// Use the new job controller interface
+	controller, err := NewJobController()
+	if err != nil {
+		// Fallback to legacy implementation if job controller fails
+		return fgLegacy(pids...)
+	}
+	defer controller.Close()
+
+	return fgUnix(controller, pids...)
+}
+
+// fgLegacy provides the original Unix fg implementation as fallback.
+func fgLegacy(pids ...int) error {
 	var thepgid int
 	for i, pid := range pids {
 		pgid, err := syscall.Getpgid(pid)

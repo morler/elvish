@@ -37,3 +37,17 @@ external-sh
 ~> search-external random-invalid-command
 Exception: exec: "random-invalid-command": executable file not found in $PATH
   [tty]:1:1-38: search-external random-invalid-command
+
+//////////
+# fg cmd #
+//////////
+
+## fg with no arguments ##
+~> fg
+Exception: job not found
+  [tty]:1:1-2: fg
+
+## fg with invalid PID ##
+~> fg 99999
+Exception: The parameter is incorrect.
+  [tty]:1:1-8: fg 99999

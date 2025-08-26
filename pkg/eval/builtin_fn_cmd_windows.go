@@ -8,6 +8,13 @@ func execFn(...any) error {
 	return errNotSupportedOnWindows
 }
 
-func fg(...int) error {
-	return errNotSupportedOnWindows
+// fg implements foreground job control on Windows using Job Objects.
+func fg(pids ...int) error {
+	controller, err := NewJobController()
+	if err != nil {
+		return err
+	}
+	defer controller.Close()
+
+	return fgWindows(controller, pids...)
 }
