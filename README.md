@@ -28,6 +28,11 @@ Elvish is:
 Elvish is pre-1.0. This means that breaking changes will still happen from time
 to time, but it's stable enough for both scripting and interactive use.
 
+## Language / 语言
+
+- [English Version](README.md) - Current page
+- [中文版本](README_CN.md) - Chinese version
+
 ## Documentation
 
 [![User docs](https://img.shields.io/badge/User_Docs-37a779?style=for-the-badge)](https://elv.sh)

@@ -1,9 +1,16 @@
 💡 Tip: If you are looking for docs for Elvish users, like tutorials and
 reference pages, refer to Elvish's website [elv.sh](https://elv.sh) instead.
 
+## Language / 语言
+
+- [English Version](README.md) - Current page
+- [中文版本](README_CN.md) - Chinese version
+
 This directory contains developer documentation:
 
 -   🏗️ [Building Elvish from source](building.md)
+
+-   🪟 [Windows用户指南](windows.md)
 
 -   📦 [Packaging Elvish](packaging.md)
 
