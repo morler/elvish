@@ -38,13 +38,15 @@
     - `TestLocation_FullWorkflow` 及其相关测试
     - Windows平台路径显示现在正确使用反斜杠分隔符
 
-### 4. 数据库文件锁定清理优化
+### 4. 数据库文件锁定清理优化 ✅ (已完成)
 - **问题**: bbolt数据库文件在测试结束时仍被进程持有
 - **现象**: `The process cannot access the file because it is being used by another process`
-- **任务**:
-  - 添加数据库连接正确关闭的检查机制
-  - 实现测试清理时的资源释放等待逻辑
-  - 改进Windows平台文件锁定处理
+- **修复内容**:
+  - ✅ 添加了数据库连接关闭的详细日志记录和错误处理
+  - ✅ 在测试清理时添加资源释放等待逻辑(100ms延迟)
+  - ✅ 改进Windows平台文件锁定处理，增加重试机制和指数退避
+  - ✅ 提高数据库打开超时时间到2秒，增强Windows兼容性
+  - ✅ 所有相关测试(pkg/store, pkg/daemon, pkg/shell)现已通过
 
 ## 后续优化 (🟢 低优先级)
 

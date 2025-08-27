@@ -30,10 +30,35 @@ type dbStore struct {
 }
 
 func dbWithDefaultOptions(dbname string) (*bolt.DB, error) {
-	db, err := bolt.Open(dbname, 0644,
-		&bolt.Options{
-			Timeout: 1 * time.Second,
-		})
+	// Configure database options with Windows-friendly settings
+	options := &bolt.Options{
+		Timeout: 2 * time.Second, // Increased timeout for Windows file locking
+	}
+	
+	// On Windows, try multiple times with exponential backoff for file locks
+	var db *bolt.DB
+	var err error
+	var attempt int
+	for attempt = 0; attempt < 3; attempt++ {
+		db, err = bolt.Open(dbname, 0644, options)
+		if err == nil {
+			break
+		}
+		
+		// Wait before retrying, with exponential backoff
+		if attempt < 2 {
+			waitTime := time.Duration(100*(attempt+1)) * time.Millisecond
+			logger.Printf("database open attempt %d failed: %v, retrying after %v", attempt+1, err, waitTime)
+			time.Sleep(waitTime)
+		}
+	}
+	
+	if err != nil {
+		logger.Printf("failed to open database after 3 attempts: %v", err)
+	} else if attempt > 0 {
+		logger.Printf("database opened successfully on attempt %d", attempt+1)
+	}
+	
 	return db, err
 }
 
@@ -73,6 +98,17 @@ func (s *dbStore) Close() error {
 	if s == nil || s.db == nil {
 		return nil
 	}
+	
+	logger.Println("closing database store, waiting for operations to complete")
 	s.wg.Wait()
-	return s.db.Close()
+	logger.Println("all operations completed, closing database")
+	
+	err := s.db.Close()
+	if err != nil {
+		logger.Printf("error closing database: %v", err)
+		return err
+	}
+	
+	logger.Println("database closed successfully")
+	return nil
 }

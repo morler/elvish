@@ -112,6 +112,8 @@ func inProcessActivateFunc(t *testing.T) daemondefs.ActivateFunc {
 			close(sigCh)
 			select {
 			case <-daemonDone:
+				// Daemon shut down successfully, wait a bit for file system cleanup
+				time.Sleep(testutil.Scaled(100 * time.Millisecond))
 			case <-time.After(testutil.Scaled(2 * time.Second)):
 				t.Errorf("timed out waiting for daemon to quit")
 			}
