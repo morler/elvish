@@ -159,7 +159,7 @@ type locationList struct {
 func (l locationList) filter(p func(string) bool) locationList {
 	var filteredDirs []storedefs.Dir
 	for _, dir := range l.dirs {
-		if p(fsutil.TildeAbbr(dir.Path)) {
+		if p(fsutil.TildeAbbrNative(dir.Path)) {
 			filteredDirs = append(filteredDirs, dir)
 		}
 	}
@@ -168,7 +168,7 @@ func (l locationList) filter(p func(string) bool) locationList {
 
 func (l locationList) Show(i int) ui.Text {
 	return ui.T(fmt.Sprintf("%s %s",
-		showScore(l.dirs[i].Score), fsutil.TildeAbbr(l.dirs[i].Path)))
+		showScore(l.dirs[i].Score), fsutil.TildeAbbrNative(l.dirs[i].Path)))
 }
 
 func (l locationList) Len() int { return len(l.dirs) }
