@@ -18,9 +18,7 @@ const (
 	_Config_name_1 = "LongOnly"
 )
 
-var (
-	_Config_index_0 = [...]uint8{0, 19, 43}
-)
+var _Config_index_0 = [...]uint8{0, 19, 43}
 
 func (i Config) String() string {
 	switch {
@@ -33,6 +31,7 @@ func (i Config) String() string {
 		return "Config(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
 }
+
 func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.
@@ -52,6 +51,7 @@ func (i Arity) String() string {
 	}
 	return _Arity_name[_Arity_index[i]:_Arity_index[i+1]]
 }
+
 func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.

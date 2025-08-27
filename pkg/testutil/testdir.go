@@ -91,11 +91,11 @@ func ApplyDirIn(dir Dir, root string) {
 		path := filepath.Join(root, name)
 		switch file := file.(type) {
 		case string:
-			must.OK(os.WriteFile(path, []byte(file), 0644))
+			must.OK(os.WriteFile(path, []byte(file), 0o644))
 		case File:
 			must.OK(os.WriteFile(path, []byte(file.Content), file.Perm))
 		case Dir:
-			must.OK(os.MkdirAll(path, 0755))
+			must.OK(os.MkdirAll(path, 0o755))
 			ApplyDirIn(file, path)
 		default:
 			panic(fmt.Sprintf("file is neither string, Dir, or Symlink: %v", file))

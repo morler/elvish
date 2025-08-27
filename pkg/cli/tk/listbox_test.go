@@ -18,7 +18,8 @@ var listBoxRenderVerticalTests = []renderTest{
 		Name: "placeholder when NItems is 0",
 		Given: NewListBox(ListBoxSpec{
 			Placeholder: ui.T("nothing"),
-			State:       ListBoxState{Items: TestItems{}}}),
+			State:       ListBoxState{Items: TestItems{}},
+		}),
 		Width: 10, Height: 3,
 		Want: bb(10).Write("nothing"),
 	},
@@ -52,7 +53,9 @@ var listBoxRenderVerticalTests = []renderTest{
 		Name: "scrollbar when not showing last item in full",
 		Given: NewListBox(ListBoxSpec{
 			State: ListBoxState{
-				Items: TestItems{Prefix: "item\n", NItems: 2}, Selected: 0}}),
+				Items: TestItems{Prefix: "item\n", NItems: 2}, Selected: 0,
+			},
+		}),
 		Width: 10, Height: 3,
 		Want: bb(10).
 			Write("item     ", ui.Inverse).
@@ -66,7 +69,9 @@ var listBoxRenderVerticalTests = []renderTest{
 		Name: "scrollbar when not showing only item in full",
 		Given: NewListBox(ListBoxSpec{
 			State: ListBoxState{
-				Items: TestItems{Prefix: "item\n", NItems: 1}, Selected: 0}}),
+				Items: TestItems{Prefix: "item\n", NItems: 1}, Selected: 0,
+			},
+		}),
 		Width: 10, Height: 1,
 		Want: bb(10).
 			Write("item     ", ui.Inverse).
@@ -78,7 +83,9 @@ var listBoxRenderVerticalTests = []renderTest{
 			ListBoxSpec{
 				Padding: 1,
 				State: ListBoxState{
-					Items: TestItems{Prefix: "item\n", NItems: 2}, Selected: 0}}),
+					Items: TestItems{Prefix: "item\n", NItems: 2}, Selected: 0,
+				},
+			}),
 		Width: 4, Height: 4,
 
 		Want: bb(4).
@@ -94,7 +101,10 @@ var listBoxRenderVerticalTests = []renderTest{
 			State: ListBoxState{
 				Items: TestItems{
 					Prefix: "x", NItems: 2,
-					Style: ui.Stylings(ui.FgBlue, ui.BgGreen)}}}),
+					Style: ui.Stylings(ui.FgBlue, ui.BgGreen),
+				},
+			},
+		}),
 		Width: 6, Height: 2,
 
 		Want: bb(6).
@@ -112,7 +122,9 @@ var listBoxRenderVerticalTests = []renderTest{
 			Padding: 1, ExtendStyle: true,
 			State: ListBoxState{Items: TestItems{
 				Prefix: "x", NItems: 2,
-				Style: ui.Stylings(ui.FgBlue, ui.BgGreen)}}}),
+				Style: ui.Stylings(ui.FgBlue, ui.BgGreen),
+			}},
+		}),
 		Width: 6, Height: 2,
 
 		Want: bb(6).
@@ -130,7 +142,8 @@ func TestListBox_Render_Vertical(t *testing.T) {
 func TestListBox_Render_Vertical_MutatesState(t *testing.T) {
 	// Calling Render alters the First field to reflect the first item rendered.
 	w := NewListBox(ListBoxSpec{
-		State: ListBoxState{Items: TestItems{NItems: 10}, Selected: 4, First: 0}})
+		State: ListBoxState{Items: TestItems{NItems: 10}, Selected: 4, First: 0},
+	})
 	// Items shown will be 3, 4, 5
 	w.Render(10, 3)
 	state := w.CopyState()
@@ -153,7 +166,8 @@ var listBoxRenderHorizontalTests = []renderTest{
 		Name: "placeholder when NItems is 0",
 		Given: NewListBox(ListBoxSpec{
 			Horizontal: true, Placeholder: ui.T("nothing"),
-			State: ListBoxState{Items: TestItems{}}}),
+			State: ListBoxState{Items: TestItems{}},
+		}),
 		Width: 10, Height: 3,
 		Want: bb(10).Write("nothing"),
 	},
@@ -161,7 +175,8 @@ var listBoxRenderHorizontalTests = []renderTest{
 		Name: "all items when there is enough space, using minimal height",
 		Given: NewListBox(ListBoxSpec{
 			Horizontal: true,
-			State:      ListBoxState{Items: TestItems{NItems: 4}, Selected: 0}}),
+			State:      ListBoxState{Items: TestItems{NItems: 4}, Selected: 0},
+		}),
 		Width: 14, Height: 3,
 		// Available height is 3, but only need 2 lines.
 		Want: bb(14).
@@ -174,7 +189,8 @@ var listBoxRenderHorizontalTests = []renderTest{
 		Name: "padding",
 		Given: NewListBox(ListBoxSpec{
 			Horizontal: true, Padding: 1,
-			State: ListBoxState{Items: TestItems{NItems: 4, Prefix: "x"}, Selected: 0}}),
+			State: ListBoxState{Items: TestItems{NItems: 4, Prefix: "x"}, Selected: 0},
+		}),
 		Width: 14, Height: 3,
 		Want: bb(14).
 			Write(" x0 ", ui.Inverse).
@@ -188,7 +204,9 @@ var listBoxRenderHorizontalTests = []renderTest{
 			Horizontal: true, Padding: 1, ExtendStyle: true,
 			State: ListBoxState{Items: TestItems{
 				NItems: 2, Prefix: "x",
-				Style: ui.Stylings(ui.FgBlue, ui.BgGreen)}}}),
+				Style: ui.Stylings(ui.FgBlue, ui.BgGreen),
+			}},
+		}),
 		Width: 14, Height: 3,
 		Want: bb(14).
 			Write(" x0 ", ui.FgBlue, ui.BgGreen, ui.Inverse).
@@ -199,7 +217,8 @@ var listBoxRenderHorizontalTests = []renderTest{
 		Name: "long lines cropped, with full scrollbar",
 		Given: NewListBox(ListBoxSpec{
 			Horizontal: true,
-			State:      ListBoxState{Items: TestItems{NItems: 2}, Selected: 0}}),
+			State:      ListBoxState{Items: TestItems{NItems: 2}, Selected: 0},
+		}),
 		Width: 4, Height: 3,
 		Want: bb(4).
 			Write("item", ui.Inverse).
@@ -210,7 +229,8 @@ var listBoxRenderHorizontalTests = []renderTest{
 		Name: "scrollbar when not showing all items",
 		Given: NewListBox(ListBoxSpec{
 			Horizontal: true,
-			State:      ListBoxState{Items: TestItems{NItems: 4}, Selected: 0}}),
+			State:      ListBoxState{Items: TestItems{NItems: 4}, Selected: 0},
+		}),
 		Width: 6, Height: 3,
 		Want: bb(6).
 			Write("item 0", ui.Inverse).
@@ -223,7 +243,8 @@ var listBoxRenderHorizontalTests = []renderTest{
 		Name: "scrollbar when not showing all items",
 		Given: NewListBox(ListBoxSpec{
 			Horizontal: true,
-			State:      ListBoxState{Items: TestItems{NItems: 4}, Selected: 0}}),
+			State:      ListBoxState{Items: TestItems{NItems: 4}, Selected: 0},
+		}),
 		Width: 10, Height: 3,
 		Want: bb(10).
 			Write("item 0", ui.Inverse).Write("  it").
@@ -235,7 +256,8 @@ var listBoxRenderHorizontalTests = []renderTest{
 		Name: "not showing scrollbar with height = 1",
 		Given: NewListBox(ListBoxSpec{
 			Horizontal: true,
-			State:      ListBoxState{Items: TestItems{NItems: 4}, Selected: 0}}),
+			State:      ListBoxState{Items: TestItems{NItems: 4}, Selected: 0},
+		}),
 		Width: 10, Height: 1,
 		Want: bb(10).
 			Write("item 0", ui.Inverse).Write("  it"),
@@ -251,7 +273,9 @@ func TestListBox_Render_Horizontal_MutatesState(t *testing.T) {
 	w := NewListBox(ListBoxSpec{
 		Horizontal: true,
 		State: ListBoxState{
-			Items: TestItems{Prefix: "x", NItems: 10}, Selected: 4, First: 0}})
+			Items: TestItems{Prefix: "x", NItems: 10}, Selected: 4, First: 0,
+		},
+	})
 	// Only a single column of 3 items shown: x3-x5
 	w.Render(2, 4)
 	state := w.CopyState()
@@ -346,7 +370,8 @@ func TestListBox_Handle_EnterEmitsAccept(t *testing.T) {
 			acceptedItems = it
 			acceptedIndex = i
 		},
-		State: ListBoxState{Items: TestItems{NItems: 10}, Selected: 5}})
+		State: ListBoxState{Items: TestItems{NItems: 10}, Selected: 5},
+	})
 	w.Handle(term.K(ui.Enter))
 
 	if acceptedItems != (TestItems{NItems: 10}) {
@@ -359,7 +384,7 @@ func TestListBox_Handle_EnterEmitsAccept(t *testing.T) {
 
 func TestListBox_Select_ChangeState(t *testing.T) {
 	// number of items = 10, height = 3
-	var tests = []struct {
+	tests := []struct {
 		name   string
 		before int
 		f      func(ListBoxState) int
@@ -411,7 +436,9 @@ func TestListBox_Select_ChangeState(t *testing.T) {
 			w := NewListBox(ListBoxSpec{
 				State: ListBoxState{
 					Items: TestItems{NItems: 10}, ContentHeight: 3,
-					Selected: test.before}})
+					Selected: test.before,
+				},
+			})
 			w.Select(test.f)
 			if selected := w.CopyState().Selected; selected != test.after {
 				t.Errorf("selected = %d, want %d", selected, test.after)
@@ -429,7 +456,8 @@ func TestListBox_Select_CallOnSelect(t *testing.T) {
 			gotItemsCh <- it
 			gotSelectedCh <- i
 		},
-		State: ListBoxState{Items: it, Selected: 5}})
+		State: ListBoxState{Items: it, Selected: 5},
+	})
 
 	verifyOnSelect := func(wantSelected int) {
 		if gotItems := <-gotItemsCh; gotItems != it {

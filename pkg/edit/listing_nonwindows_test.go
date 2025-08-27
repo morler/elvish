@@ -49,7 +49,9 @@ func TestLocationAddon_Workspace(t *testing.T) {
 		testutil.Dir{
 			"ws1": testutil.Dir{
 				"bin": testutil.Dir{},
-				"tmp": testutil.Dir{}}})
+				"tmp": testutil.Dir{},
+			},
+		})
 	err := os.Chdir("ws1/tmp")
 	if err != nil {
 		t.Skip("chdir:", err)
@@ -79,7 +81,9 @@ func TestLocation_AddDir(t *testing.T) {
 		testutil.Dir{
 			"bin": testutil.Dir{},
 			"ws1": testutil.Dir{
-				"bin": testutil.Dir{}}})
+				"bin": testutil.Dir{},
+			},
+		})
 	evals(f.Evaler, `set edit:location:workspaces = [&ws=$E:HOME/ws.]`)
 
 	chdir := func(path string) {

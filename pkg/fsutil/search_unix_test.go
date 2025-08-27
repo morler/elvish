@@ -19,9 +19,9 @@ func TestEachExternal(t *testing.T) {
 		"dir":  testutil.Dir{},
 		"file": "",
 		"cmdx": "#!/bin/sh",
-		"cmd1": testutil.File{Perm: 0755, Content: "#!/bin/sh"},
-		"cmd2": testutil.File{Perm: 0755, Content: "#!/bin/sh"},
-		"cmd3": testutil.File{Perm: 0755, Content: ""},
+		"cmd1": testutil.File{Perm: 0o755, Content: "#!/bin/sh"},
+		"cmd2": testutil.File{Perm: 0o755, Content: "#!/bin/sh"},
+		"cmd3": testutil.File{Perm: 0o755, Content: ""},
 	})
 
 	wantCmds := []string{"cmd1", "cmd2", "cmd3"}

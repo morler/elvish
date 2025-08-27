@@ -13,7 +13,8 @@ func TestDedupCursor(t *testing.T) {
 	wantCmds := []storedefs.Cmd{
 		{Text: "0", Seq: 0},
 		{Text: "1", Seq: 1},
-		{Text: "2", Seq: 2}}
+		{Text: "2", Seq: 2},
+	}
 
 	testCursorIteration(t, c, wantCmds)
 	// Go back again, this time with a full stack

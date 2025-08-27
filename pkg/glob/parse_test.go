@@ -12,18 +12,31 @@ var parseCases = []struct {
 	{``, []Segment{}},
 	{`foo`, []Segment{Literal{"foo"}}},
 	{`*foo*bar`, []Segment{
-		Wild{Star, false, nil}, Literal{"foo"},
-		Wild{Star, false, nil}, Literal{"bar"}}},
+		Wild{Star, false, nil},
+		Literal{"foo"},
+		Wild{Star, false, nil},
+		Literal{"bar"},
+	}},
 	{`foo**bar`, []Segment{
-		Literal{"foo"}, Wild{StarStar, false, nil}, Literal{"bar"}}},
+		Literal{"foo"}, Wild{StarStar, false, nil}, Literal{"bar"},
+	}},
 	{`/usr/a**b/c`, []Segment{
-		Slash{}, Literal{"usr"}, Slash{}, Literal{"a"},
-		Wild{StarStar, false, nil}, Literal{"b"}, Slash{}, Literal{"c"}}},
+		Slash{},
+		Literal{"usr"},
+		Slash{},
+		Literal{"a"},
+		Wild{StarStar, false, nil},
+		Literal{"b"},
+		Slash{},
+		Literal{"c"},
+	}},
 	{`??b`, []Segment{
-		Wild{Question, false, nil}, Wild{Question, false, nil}, Literal{"b"}}},
+		Wild{Question, false, nil}, Wild{Question, false, nil}, Literal{"b"},
+	}},
 	// Multiple slashes should be parsed as one.
 	{`//a//b`, []Segment{
-		Slash{}, Literal{"a"}, Slash{}, Literal{"b"}}},
+		Slash{}, Literal{"a"}, Slash{}, Literal{"b"},
+	}},
 	// Escaping.
 	{`\*\?b`, []Segment{
 		Literal{"*?b"},

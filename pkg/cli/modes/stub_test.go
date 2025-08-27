@@ -29,7 +29,8 @@ func TestStub_Handling(t *testing.T) {
 	bindingCalled := make(chan bool)
 	startStub(f.App, StubSpec{
 		Bindings: tk.MapBindings{
-			term.K('a'): func(tk.Widget) { bindingCalled <- true }},
+			term.K('a'): func(tk.Widget) { bindingCalled <- true },
+		},
 	})
 
 	f.TTY.Inject(term.K('a'))

@@ -111,8 +111,10 @@ func notify(app cli.App, x any) error {
 	case ui.Text:
 		t = x.Clone()
 	default:
-		return errs.BadValue{What: "argument to edit:notify",
-			Valid: "string, styled segment or styled text", Actual: vals.Kind(x)}
+		return errs.BadValue{
+			What:  "argument to edit:notify",
+			Valid: "string, styled segment or styled text", Actual: vals.Kind(x),
+		}
 	}
 	app.Notify(t)
 	return nil

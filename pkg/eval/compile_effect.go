@@ -126,12 +126,14 @@ func (op *pipelineOp) exec(fm *Frame) Exception {
 			readerGone := new(atomic.Bool)
 			newFm.ports[1] = &Port{
 				File: writer, Chan: ch,
-				sendStop: sendStop, sendError: sendError, readerGone: readerGone}
+				sendStop: sendStop, sendError: sendError, readerGone: readerGone,
+			}
 			*growAccess(&fops, 1) = formOwnedPort{File: true, Chan: true}
 			nextIn = &Port{
 				File: reader, Chan: ch,
 				// Store in input port for ease of retrieval later
-				sendStop: sendStop, sendError: sendError, readerGone: readerGone}
+				sendStop: sendStop, sendError: sendError, readerGone: readerGone,
+			}
 		}
 		f := func(form *formOp, fops []formOwnedPort, pexc *Exception) {
 			exc := form.exec(newFm, &fops)
@@ -302,7 +304,8 @@ func (op *formOp) exec(fm *Frame, fops *[]formOwnedPort) (errRet Exception) {
 		}
 		// TODO(xiaq): Point to the particular key.
 		return fm.errorp(op, errs.BadValue{
-			What: "option key", Valid: "string", Actual: vals.Kind(k)})
+			What: "option key", Valid: "string", Actual: vals.Kind(k),
+		})
 	})
 	if exc != nil {
 		return exc
@@ -332,7 +335,8 @@ func evalForCommand(fm *Frame, op valuesOp, what string) (Callable, error) {
 	return nil, fm.errorp(op, errs.BadValue{
 		What:   what,
 		Valid:  "callable or string containing slash",
-		Actual: vals.ReprPlain(value)})
+		Actual: vals.ReprPlain(value),
+	})
 }
 
 func allTrue(vs []any) bool {
@@ -361,7 +365,7 @@ func (cp *compiler) redirOps(ns []*parse.Redir) []*redirOp {
 	return ops
 }
 
-const defaultFileRedirPerm = 0644
+const defaultFileRedirPerm = 0o644
 
 // redir compiles a Redir into a op.
 func (cp *compiler) redirOp(n *parse.Redir) *redirOp {
@@ -434,7 +438,8 @@ func (op *redirOp) exec(fm *Frame, fops *[]formOwnedPort) Exception {
 			// close
 			*dstPort = &Port{
 				// Ensure that writing to value output throws an exception
-				sendStop: closedSendStop, sendError: &ErrPortDoesNotSupportValueOutput}
+				sendStop: closedSendStop, sendError: &ErrPortDoesNotSupportValueOutput,
+			}
 		case src >= len(fm.ports) || fm.ports[src] == nil:
 			return fm.errorp(op, InvalidFD{FD: src})
 		default:
@@ -460,7 +465,8 @@ func (op *redirOp) exec(fm *Frame, fops *[]formOwnedPort) Exception {
 		if _, isMap := src.(vals.Map); !isMap && !vals.IsFieldMap(src) {
 			return fm.errorp(op.srcOp, errs.BadValue{
 				What:  "redirection source",
-				Valid: "string, file or map", Actual: vals.Kind(src)})
+				Valid: "string, file or map", Actual: vals.Kind(src),
+			})
 		}
 		var srcFile *os.File
 		switch op.mode {
@@ -471,7 +477,8 @@ func (op *redirOp) exec(fm *Frame, fops *[]formOwnedPort) Exception {
 				return fm.errorp(op.srcOp, errs.BadValue{
 					What:   "map for input redirection",
 					Valid:  "map with file in the 'r' field",
-					Actual: vals.ReprPlain(src)})
+					Actual: vals.ReprPlain(src),
+				})
 			}
 			srcFile = f
 		case parse.Write:
@@ -481,7 +488,8 @@ func (op *redirOp) exec(fm *Frame, fops *[]formOwnedPort) Exception {
 				return fm.errorp(op.srcOp, errs.BadValue{
 					What:   "map for output redirection",
 					Valid:  "map with file in the 'w' field",
-					Actual: vals.ReprPlain(src)})
+					Actual: vals.ReprPlain(src),
+				})
 			}
 			srcFile = f
 		default:
@@ -534,7 +542,8 @@ func evalForFd(fm *Frame, op valuesOp, closeOK bool, what string) (int, error) {
 		valid = "fd name or number or '-'"
 	}
 	return -1, fm.errorp(op, errs.BadValue{
-		What: what, Valid: valid, Actual: vals.ReprPlain(value)})
+		What: what, Valid: valid, Actual: vals.ReprPlain(value),
+	})
 }
 
 type seqOp struct{ subops []effectOp }

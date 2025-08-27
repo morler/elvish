@@ -7,5 +7,5 @@ import (
 )
 
 func createNamedPipe(fname string) error {
-	return unix.Mkfifo(fname, 0600)
+	return unix.Mkfifo(fname, 0o600)
 }

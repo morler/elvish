@@ -23,7 +23,6 @@ func TestChdir(t *testing.T) {
 	defer back()
 
 	err := ev.Chdir(dst)
-
 	if err != nil {
 		t.Errorf("Chdir => error %v", err)
 	}

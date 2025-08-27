@@ -113,28 +113,36 @@ func checkRlimitsMapKeys(val any) error {
 	err := vals.IterateKeys(val, func(k any) bool {
 		ks, ok := k.(string)
 		if !ok {
-			errKey = errs.BadValue{What: "key of $unix:rlimits",
-				Valid: "string", Actual: vals.Kind(k)}
+			errKey = errs.BadValue{
+				What:  "key of $unix:rlimits",
+				Valid: "string", Actual: vals.Kind(k),
+			}
 			return false
 		}
 		if _, valid := wantedKeys[ks]; !valid {
-			errKey = errs.BadValue{What: "key of $unix:rlimits",
-				Valid: "valid resource key", Actual: vals.ReprPlain(k)}
+			errKey = errs.BadValue{
+				What:  "key of $unix:rlimits",
+				Valid: "valid resource key", Actual: vals.ReprPlain(k),
+			}
 			return false
 		}
 		delete(wantedKeys, ks)
 		return true
 	})
 	if err != nil {
-		return errs.BadValue{What: "$unix:rlimits",
-			Valid: "map", Actual: vals.Kind(val)}
+		return errs.BadValue{
+			What:  "$unix:rlimits",
+			Valid: "map", Actual: vals.Kind(val),
+		}
 	}
 	if errKey != nil {
 		return errKey
 	}
 	if len(wantedKeys) > 0 {
-		return errs.BadValue{What: "$unix:rlimits",
-			Valid: "map containing all resource keys", Actual: vals.ReprPlain(val)}
+		return errs.BadValue{
+			What:  "$unix:rlimits",
+			Valid: "map containing all resource keys", Actual: vals.ReprPlain(val),
+		}
 	}
 	return nil
 }
@@ -158,15 +166,19 @@ func checkRlimitMapKeys(val any) error {
 	var errKey error
 	err := vals.IterateKeys(val, func(k any) bool {
 		if k != "cur" && k != "max" {
-			errKey = errs.BadValue{What: "key of rlimit value",
-				Valid: "cur or max", Actual: vals.ReprPlain(k)}
+			errKey = errs.BadValue{
+				What:  "key of rlimit value",
+				Valid: "cur or max", Actual: vals.ReprPlain(k),
+			}
 			return false
 		}
 		return true
 	})
 	if err != nil {
-		return errs.BadValue{What: "rlimit value",
-			Valid: "map", Actual: vals.Kind(val)}
+		return errs.BadValue{
+			What:  "rlimit value",
+			Valid: "map", Actual: vals.Kind(val),
+		}
 	}
 	return errKey
 }
@@ -179,6 +191,8 @@ func indexRlimitMap(m any, key string) (rlimT, error) {
 	if r, ok := parseRlimT(val); ok {
 		return r, nil
 	}
-	return 0, errs.BadValue{What: key + " in rlimit value",
-		Valid: rlimTValid, Actual: vals.ReprPlain(val)}
+	return 0, errs.BadValue{
+		What:  key + " in rlimit value",
+		Valid: rlimTValid, Actual: vals.ReprPlain(val),
+	}
 }

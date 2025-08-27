@@ -27,10 +27,10 @@ func TestComplete(t *testing.T) {
 	lscolors.SetTestLsColors(t)
 	testutil.InTempDir(t)
 	testutil.ApplyDir(testutil.Dir{
-		"a.exe":   testutil.File{Perm: 0755, Content: ""},
+		"a.exe":   testutil.File{Perm: 0o755, Content: ""},
 		"non-exe": "",
 		"d": testutil.Dir{
-			"a.exe": testutil.File{Perm: 0755, Content: ""},
+			"a.exe": testutil.File{Perm: 0o755, Content: ""},
 		},
 	})
 	testutil.Set(t, &eachExternal, func(f func(string)) {
@@ -120,35 +120,41 @@ func TestComplete(t *testing.T) {
 		Args(cb("ls "), ev, cfg).Rets(
 			&Result{
 				Name: "argument", Replace: r(3, 3),
-				Items: allFileNameItems},
+				Items: allFileNameItems,
+			},
 			nil),
 		Args(cb("ls a"), ev, cfg).Rets(
 			&Result{
 				Name: "argument", Replace: r(3, 4),
-				Items: []modes.CompletionItem{fci("a.exe", " ")}},
+				Items: []modes.CompletionItem{fci("a.exe", " ")},
+			},
 			nil),
 		// GenerateForSudo completing external commands.
 		Args(cb("sudo "), ev, cfg).Rets(
 			&Result{
 				Name: "argument", Replace: r(5, 5),
-				Items: []modes.CompletionItem{ci("external-cmd1"), ci("external-cmd2")}},
+				Items: []modes.CompletionItem{ci("external-cmd1"), ci("external-cmd2")},
+			},
 			nil),
 		// GenerateForSudo completing non-command arguments.
 		Args(cb("sudo ls "), ev, cfg).Rets(
 			&Result{
 				Name: "argument", Replace: r(8, 8),
-				Items: allFileNameItems},
+				Items: allFileNameItems,
+			},
 			nil),
 		// Custom arg completer, new argument
 		Args(cb("ls a "), ev, argGeneratorDebugCfg).Rets(
 			&Result{
 				Name: "argument", Replace: r(5, 5),
-				Items: []modes.CompletionItem{ci(`[]string{"ls", "a", ""}`)}},
+				Items: []modes.CompletionItem{ci(`[]string{"ls", "a", ""}`)},
+			},
 			nil),
 		Args(cb("ls a b"), ev, argGeneratorDebugCfg).Rets(
 			&Result{
 				Name: "argument", Replace: r(5, 6),
-				Items: []modes.CompletionItem{ci(`[]string{"ls", "a", "b"}`)}},
+				Items: []modes.CompletionItem{ci(`[]string{"ls", "a", "b"}`)},
+			},
 			nil),
 
 		// Complete for special command "set".
@@ -252,13 +258,15 @@ func TestComplete(t *testing.T) {
 				Name: "command", Replace: r(0, 2),
 				Items: []modes.CompletionItem{
 					ci("e:external-cmd1"), ci("e:external-cmd2"),
-				}},
+				},
+			},
 			nil),
 		// Commands newly defined by fn are supported too.
 		Args(cb("fn new-fn { }; new-"), ev, cfg).Rets(
 			&Result{
 				Name: "command", Replace: r(15, 19),
-				Items: []modes.CompletionItem{ci("new-fn")}},
+				Items: []modes.CompletionItem{ci("new-fn")},
+			},
 			nil),
 
 		// TODO(xiaq): Add tests for completing indices.
@@ -270,7 +278,8 @@ func TestComplete(t *testing.T) {
 		Args(cb("p > a"), ev, cfg).Rets(
 			&Result{
 				Name: "redir", Replace: r(4, 5),
-				Items: []modes.CompletionItem{fci("a.exe", " ")}},
+				Items: []modes.CompletionItem{fci("a.exe", " ")},
+			},
 			nil),
 
 		// Completing variables.
@@ -287,7 +296,8 @@ func TestComplete(t *testing.T) {
 					ci("local-fn1~"), ci("local-fn2~"),
 					ci("local-ns1:"), ci("local-ns2:"),
 					ci("local-var1"), ci("local-var2"),
-				}},
+				},
+			},
 			nil),
 		// Variables with a prefix.
 		Args(cb("p $local-"), ev, cfg).Rets(
@@ -297,31 +307,36 @@ func TestComplete(t *testing.T) {
 					ci("local-fn1~"), ci("local-fn2~"),
 					ci("local-ns1:"), ci("local-ns2:"),
 					ci("local-var1"), ci("local-var2"),
-				}},
+				},
+			},
 			nil),
 		// Variables newly defined in the code, in the current scope.
 		Args(cb("var new-var; p $new-"), ev, cfg).Rets(
 			&Result{
 				Name: "variable", Replace: r(16, 20),
-				Items: []modes.CompletionItem{ci("new-var")}},
+				Items: []modes.CompletionItem{ci("new-var")},
+			},
 			nil),
 		// Sigils in "var" are not part of the variable name.
 		Args(cb("var @new-var = a b; p $new-"), ev, cfg).Rets(
 			&Result{
 				Name: "variable", Replace: r(23, 27),
-				Items: []modes.CompletionItem{ci("new-var")}},
+				Items: []modes.CompletionItem{ci("new-var")},
+			},
 			nil),
 		// Function parameters are recognized as newly defined variables too.
 		Args(cb("{ |new-var| p $new-"), ev, cfg).Rets(
 			&Result{
 				Name: "variable", Replace: r(15, 19),
-				Items: []modes.CompletionItem{ci("new-var")}},
+				Items: []modes.CompletionItem{ci("new-var")},
+			},
 			nil),
 		// Variables newly defined in the code, in an outer scope.
 		Args(cb("var new-var; { p $new-"), ev, cfg).Rets(
 			&Result{
 				Name: "variable", Replace: r(18, 22),
-				Items: []modes.CompletionItem{ci("new-var")}},
+				Items: []modes.CompletionItem{ci("new-var")},
+			},
 			nil),
 		// Variables newly defined in the code, but in a scope not visible from
 		// the point of completion, are not included.
@@ -336,7 +351,8 @@ func TestComplete(t *testing.T) {
 		Args(cb("fn new-fn { }; p $new-"), ev, cfg).Rets(
 			&Result{
 				Name: "variable", Replace: r(18, 22),
-				Items: []modes.CompletionItem{ci("new-fn~")}},
+				Items: []modes.CompletionItem{ci("new-fn~")},
+			},
 			nil),
 
 		// Variables in a namespace.
@@ -344,7 +360,8 @@ func TestComplete(t *testing.T) {
 		Args(cb("p $local-ns1:"), ev, cfg).Rets(
 			&Result{
 				Name: "variable", Replace: r(13, 13),
-				Items: []modes.CompletionItem{ci("lorem")}},
+				Items: []modes.CompletionItem{ci("lorem")},
+			},
 			nil),
 		// Variables in the special e: namespace.
 		//       012345
@@ -353,7 +370,8 @@ func TestComplete(t *testing.T) {
 				Name: "variable", Replace: r(5, 5),
 				Items: []modes.CompletionItem{
 					ci("external-cmd1~"), ci("external-cmd2~"),
-				}},
+				},
+			},
 			nil),
 		// Variable in the special E: namespace.
 		//       012345
@@ -362,7 +380,8 @@ func TestComplete(t *testing.T) {
 				Name: "variable", Replace: r(5, 5),
 				Items: []modes.CompletionItem{
 					ci("ENV1"), ci("ENV2"),
-				}},
+				},
+			},
 			nil),
 		// Variables in a nonexistent namespace.
 		//       01234567
@@ -393,7 +412,8 @@ func TestComplete(t *testing.T) {
 				&Result{
 					Name: "command", Replace: r(0, 2),
 					Items: []modes.CompletionItem{
-						fci("./a.exe", " "), fci(`./d\`, "")},
+						fci("./a.exe", " "), fci(`./d\`, ""),
+					},
 				},
 				nil),
 		)
@@ -405,7 +425,8 @@ func TestComplete(t *testing.T) {
 				&Result{
 					Name: "command", Replace: r(0, 2),
 					Items: []modes.CompletionItem{
-						fci(`.\a.exe`, " "), fci(`.\d\`, "")},
+						fci(`.\a.exe`, " "), fci(`.\d\`, ""),
+					},
 				},
 				nil),
 		)
@@ -423,7 +444,8 @@ func TestComplete(t *testing.T) {
 			Args(cb("p > d"), ev, cfg).Rets(
 				&Result{
 					Name: "redir", Replace: r(4, 5),
-					Items: []modes.CompletionItem{fci("d/", ""), fci("d2/", "")}},
+					Items: []modes.CompletionItem{fci("d/", ""), fci("d2/", "")},
+				},
 				nil,
 			),
 
@@ -431,13 +453,15 @@ func TestComplete(t *testing.T) {
 			Args(cb("./"), ev, cfg).Rets(
 				&Result{
 					Name: "command", Replace: r(0, 2),
-					Items: allLocalCommandItems},
+					Items: allLocalCommandItems,
+				},
 				nil),
 			// After sudo.
 			Args(cb("sudo ./"), ev, cfg).Rets(
 				&Result{
 					Name: "argument", Replace: r(5, 7),
-					Items: allLocalCommandItems},
+					Items: allLocalCommandItems,
+				},
 				nil),
 		)
 	}
@@ -450,7 +474,8 @@ func ci(s string) modes.CompletionItem { return modes.CompletionItem{ToShow: ui.
 func fci(s, suffix string) modes.CompletionItem {
 	return modes.CompletionItem{
 		ToShow:   ui.T(s, ui.StylingFromSGR(lscolors.GetColorist().GetStyle(s))),
-		ToInsert: parse.Quote(s) + suffix}
+		ToInsert: parse.Quote(s) + suffix,
+	}
 }
 
 func r(i, j int) diag.Ranging { return diag.Ranging{From: i, To: j} }

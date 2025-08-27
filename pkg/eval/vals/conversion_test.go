@@ -100,15 +100,19 @@ func TestScanToGo_MapToFieldMap(t *testing.T) {
 		// Missing key is not OK
 		Args(MakeMap("foo", "lorem", "bar", "ipsum"), ScanOpt(0)).
 			Rets(fieldMap{},
-				errs.BadValue{What: "value",
+				errs.BadValue{
+					What:   "value",
 					Valid:  "map with keys being exactly [foo bar foo-bar]",
-					Actual: "[&bar=ipsum &foo=lorem]"}),
+					Actual: "[&bar=ipsum &foo=lorem]",
+				}),
 		// Extra key is not OK
 		Args(MakeMap("foo", "lorem", "bar", "ipsum", "foo-bar", 23, "more", "x"), ScanOpt(0)).
 			Rets(fieldMap{},
-				errs.BadValue{What: "value",
+				errs.BadValue{
+					What:   "value",
 					Valid:  "map with keys being exactly [foo bar foo-bar]",
-					Actual: "[&bar=ipsum &foo=lorem &foo-bar=(num 23) &more=x]"}),
+					Actual: "[&bar=ipsum &foo=lorem &foo-bar=(num 23) &more=x]",
+				}),
 		// Mismatched type is not OK
 		Args(MakeMap("foo", "lorem", "bar", "ipsum", "foo-bar", "bad"), ScanOpt(0)).
 			Rets(fieldMap{}, cannotParseAs{"integer", "bad"}),
@@ -119,15 +123,19 @@ func TestScanToGo_MapToFieldMap(t *testing.T) {
 		// Extra key is not OK - len(map) > len(fieldMap)
 		Args(MakeMap("foo", "lorem", "bar", "ipsum", "foo-bar", 23, "more", "x"), AllowMissingMapKey).
 			Rets(fieldMap{},
-				errs.BadValue{What: "value",
+				errs.BadValue{
+					What:   "value",
 					Valid:  "map with keys constrained to [foo bar foo-bar]",
-					Actual: "[&bar=ipsum &foo=lorem &foo-bar=(num 23) &more=x]"}),
+					Actual: "[&bar=ipsum &foo=lorem &foo-bar=(num 23) &more=x]",
+				}),
 		// Extra key is not OK - len(map) < len(fieldMap)
 		Args(MakeMap("foo", "lorem", "more", "x"), AllowMissingMapKey).
 			Rets(fieldMap{},
-				errs.BadValue{What: "value",
+				errs.BadValue{
+					What:   "value",
 					Valid:  "map with keys constrained to [foo bar foo-bar]",
-					Actual: "[&foo=lorem &more=x]"}),
+					Actual: "[&foo=lorem &more=x]",
+				}),
 		// Mismatched type is not OK
 		Args(MakeMap("foo-bar", "bad"), AllowMissingMapKey).
 			Rets(fieldMap{}, cannotParseAs{"integer", "bad"}),
@@ -138,15 +146,19 @@ func TestScanToGo_MapToFieldMap(t *testing.T) {
 		// Missing key is not OK - len(map) < len(fieldMap)
 		Args(MakeMap("foo", "lorem", "bar", "ipsum"), AllowExtraMapKey).
 			Rets(fieldMap{},
-				errs.BadValue{What: "value",
+				errs.BadValue{
+					What:   "value",
 					Valid:  "map with keys containing at least [foo bar foo-bar]",
-					Actual: "[&bar=ipsum &foo=lorem]"}),
+					Actual: "[&bar=ipsum &foo=lorem]",
+				}),
 		// Missing key is not OK - len(map) > len(fieldMap)
 		Args(MakeMap("foo", "lorem", "bar", "ipsum", "more1", "1", "more2", "2"), AllowExtraMapKey).
 			Rets(fieldMap{},
-				errs.BadValue{What: "value",
+				errs.BadValue{
+					What:   "value",
 					Valid:  "map with keys containing at least [foo bar foo-bar]",
-					Actual: "[&bar=ipsum &foo=lorem &more1=1 &more2=2]"}),
+					Actual: "[&bar=ipsum &foo=lorem &more1=1 &more2=2]",
+				}),
 		// Mismatched type is not OK
 		Args(MakeMap("foo", "lorem", "bar", "ipsum", "foo-bar", "bad"), AllowExtraMapKey).
 			Rets(fieldMap{}, cannotParseAs{"integer", "bad"}),
@@ -256,11 +268,15 @@ func TestScanListElementsToGo(t *testing.T) {
 		Args(MakeList("a"), 0).Rets([]any{0},
 			cannotParseAs{"integer", "a"}),
 		Args(MakeList("1"), 0, 0).Rets([]any{0, 0},
-			errs.ArityMismatch{What: "list elements",
-				ValidLow: 2, ValidHigh: 2, Actual: 1}),
+			errs.ArityMismatch{
+				What:     "list elements",
+				ValidLow: 2, ValidHigh: 2, Actual: 1,
+			}),
 		Args(MakeList("1"), 0, 0, Optional(0)).Rets([]any{0, 0, 0},
-			errs.ArityMismatch{What: "list elements",
-				ValidLow: 2, ValidHigh: 3, Actual: 1}),
+			errs.ArityMismatch{
+				What:     "list elements",
+				ValidLow: 2, ValidHigh: 3, Actual: 1,
+			}),
 	)
 }
 

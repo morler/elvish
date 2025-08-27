@@ -335,8 +335,10 @@ func (cn *Compound) parse(ps *parser) {
 func (cn *Compound) tilde(ps *parser) {
 	if ps.peek() == '~' {
 		ps.next()
-		base := node{Ranging: diag.Ranging{From: ps.pos - 1, To: ps.pos},
-			sourceText: "~", parent: nil, children: nil}
+		base := node{
+			Ranging:    diag.Ranging{From: ps.pos - 1, To: ps.pos},
+			sourceText: "~", parent: nil, children: nil,
+		}
 		pn := &Primary{node: base, Type: Tilde, Value: "~"}
 		in := &Indexing{node: base}
 		in.Head = pn

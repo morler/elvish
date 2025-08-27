@@ -46,7 +46,7 @@ func main() {
 		result, unsupported := format(text)
 		handleUnsupported(file, unsupported)
 		if *overwrite {
-			err := os.WriteFile(file, []byte(result), 0644)
+			err := os.WriteFile(file, []byte(result), 0o644)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "write %s: %v\n", file, err)
 				os.Exit(2)

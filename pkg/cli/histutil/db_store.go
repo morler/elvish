@@ -29,7 +29,8 @@ func (s dbStore) AddCmd(cmd storedefs.Cmd) (int, error) {
 
 func (s dbStore) Cursor(prefix string) Cursor {
 	return &dbStoreCursor{
-		s.db, prefix, s.upper, storedefs.Cmd{Seq: s.upper}, ErrEndOfHistory}
+		s.db, prefix, s.upper, storedefs.Cmd{Seq: s.upper}, ErrEndOfHistory,
+	}
 }
 
 type dbStoreCursor struct {

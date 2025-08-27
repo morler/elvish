@@ -39,8 +39,10 @@ func complexCandidate(fm *eval.Frame, opts complexCandidateOpts, stem string) (c
 	case ui.Text:
 		display = displayOpt
 	default:
-		return complexItem{}, errs.BadValue{What: "&display",
-			Valid: "string or styled", Actual: vals.ReprPlain(displayOpt)}
+		return complexItem{}, errs.BadValue{
+			What:  "&display",
+			Valid: "string or styled", Actual: vals.ReprPlain(displayOpt),
+		}
 	}
 	return complexItem{
 		Stem:       stem,
@@ -83,7 +85,8 @@ func completionStart(ed *Editor, bindings tk.Bindings, ev *eval.Evaler, cfg comp
 				if len(prefix) > len(rep) && strings.HasPrefix(prefix, rep) {
 					s.Pending = tk.PendingCode{
 						Content: prefix,
-						From:    result.Replace.From, To: result.Replace.To}
+						From:    result.Replace.From, To: result.Replace.To,
+					}
 					s.ApplyPending()
 					insertedPrefix = true
 				}
@@ -321,7 +324,8 @@ func adaptMatcherMap(nt notifier, ev *eval.Evaler, m vals.Map) complete.Filterer
 			eval.CallCfg{Args: []any{seed}, From: "[editor matcher]"},
 			eval.EvalCfg{Ports: []*eval.Port{
 				// TODO: Supply the Chan component of port 2.
-				{Chan: input, File: eval.DevNull}, port1, {File: os.Stderr}}})
+				{Chan: input, File: eval.DevNull}, port1, {File: os.Stderr},
+			}})
 		outputs := collect()
 
 		if err != nil {
@@ -395,7 +399,8 @@ func adaptArgGeneratorMap(ev *eval.Evaler, m vals.Map) complete.ArgGenerator {
 			eval.CallCfg{Args: argValues, From: "[editor arg generator]"},
 			eval.EvalCfg{Ports: []*eval.Port{
 				// TODO: Supply the Chan component of port 2.
-				nil, port1, {File: os.Stderr}}})
+				nil, port1, {File: os.Stderr},
+			}})
 		done()
 
 		return output, err

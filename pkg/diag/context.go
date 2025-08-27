@@ -27,8 +27,10 @@ type Context struct {
 func NewContext(name, source string, r Ranger) *Context {
 	rg := r.Range()
 	d := getContextDetails(source, rg)
-	return &Context{name, rg,
-		d.startLine, d.startCol, d.endLine, d.endCol, d.body, d.head, d.tail}
+	return &Context{
+		name, rg,
+		d.startLine, d.startCol, d.endLine, d.endCol, d.body, d.head, d.tail,
+	}
 }
 
 // Show shows the context.

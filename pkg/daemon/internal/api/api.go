@@ -46,8 +46,7 @@ type DelCmdRequest struct {
 	Seq int
 }
 
-type DelCmdResponse struct {
-}
+type DelCmdResponse struct{}
 
 type CmdRequest struct {
 	Seq int

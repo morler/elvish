@@ -18,9 +18,11 @@ import (
 
 var (
 	errMethodNotFound = &jsonrpc2.Error{
-		Code: jsonrpc2.CodeMethodNotFound, Message: "method not found"}
+		Code: jsonrpc2.CodeMethodNotFound, Message: "method not found",
+	}
 	errInvalidParams = &jsonrpc2.Error{
-		Code: jsonrpc2.CodeInvalidParams, Message: "invalid params"}
+		Code: jsonrpc2.CodeInvalidParams, Message: "invalid params",
+	}
 )
 
 type server struct {
@@ -250,11 +252,11 @@ func (s *server) completion(_ context.Context, params lsp.CompletionParams) (any
 	result, err := complete.Complete(
 		complete.CodeBuffer{
 			Content: code,
-			Dot:     pos},
+			Dot:     pos,
+		},
 		s.evaler,
 		complete.Config{},
 	)
-
 	if err != nil {
 		return []lsp.CompletionItem{}, nil
 	}
@@ -263,7 +265,7 @@ func (s *server) completion(_ context.Context, params lsp.CompletionParams) (any
 	lspRange := lspRangeFromRange(code, result.Replace)
 
 	// Enhanced completion item kind determination with shadowing consideration
-	var getCompletionKind = func(name, contextName string) lsp.CompletionItemKind {
+	getCompletionKind := func(name, contextName string) lsp.CompletionItemKind {
 		switch contextName {
 		case "command":
 			// Check if command is locally defined

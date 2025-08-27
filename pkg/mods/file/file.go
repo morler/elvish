@@ -37,13 +37,17 @@ func isTTY(fm *eval.Frame, file any) (bool, error) {
 	case string:
 		var fd int
 		if err := vals.ScanToGo(file, &fd); err != nil {
-			return false, errs.BadValue{What: "argument to file:is-tty",
-				Valid: "file value or numerical FD", Actual: parse.Quote(file)}
+			return false, errs.BadValue{
+				What:  "argument to file:is-tty",
+				Valid: "file value or numerical FD", Actual: parse.Quote(file),
+			}
 		}
 		return isTTYPort(fm, fd), nil
 	default:
-		return false, errs.BadValue{What: "argument to file:is-tty",
-			Valid: "file value or numerical FD", Actual: vals.ToString(file)}
+		return false, errs.BadValue{
+			What:  "argument to file:is-tty",
+			Valid: "file value or numerical FD", Actual: vals.ToString(file),
+		}
 	}
 }
 
@@ -74,8 +78,10 @@ var errIfNotExistsAndIfExistsBothError = errors.New("both &if-not-exists and &if
 func openOutput(opts openOutputOpts, name string) (vals.File, error) {
 	perm := opts.CreatePerm
 	if perm < 0 || perm > 0o777 {
-		return nil, errs.OutOfRange{What: "create-perm option",
-			ValidLow: "0", ValidHigh: "0o777", Actual: fmt.Sprintf("%O", perm)}
+		return nil, errs.OutOfRange{
+			What:     "create-perm option",
+			ValidLow: "0", ValidHigh: "0o777", Actual: fmt.Sprintf("%O", perm),
+		}
 	}
 
 	mode := os.O_WRONLY
@@ -88,8 +94,10 @@ func openOutput(opts openOutputOpts, name string) (vals.File, error) {
 	case "error":
 		// Do nothing: not creating is the default.
 	default:
-		return nil, errs.BadValue{What: "if-not-exists option",
-			Valid: "create or error", Actual: parse.Quote(opts.IfNotExists)}
+		return nil, errs.BadValue{
+			What:  "if-not-exists option",
+			Valid: "create or error", Actual: parse.Quote(opts.IfNotExists),
+		}
 	}
 	switch opts.IfExists {
 	case "truncate":
@@ -104,8 +112,10 @@ func openOutput(opts openOutputOpts, name string) (vals.File, error) {
 		}
 		mode |= os.O_EXCL
 	default:
-		return nil, errs.BadValue{What: "if-exists option",
-			Valid: "truncate, append, update or error", Actual: parse.Quote(opts.IfExists)}
+		return nil, errs.BadValue{
+			What:  "if-exists option",
+			Valid: "truncate, append, update or error", Actual: parse.Quote(opts.IfExists),
+		}
 	}
 
 	return os.OpenFile(name, mode, fs.FileMode(perm))
@@ -140,8 +150,10 @@ func seek(opts seekOpts, f vals.File, rawOffset vals.Num) error {
 	case "end":
 		whence = io.SeekEnd
 	default:
-		return errs.BadValue{What: "whence",
-			Valid: "start, current or end", Actual: parse.Quote(opts.Whence)}
+		return errs.BadValue{
+			What:  "whence",
+			Valid: "start, current or end", Actual: parse.Quote(opts.Whence),
+		}
 	}
 	_, err = f.Seek(offset, whence)
 	return err
@@ -165,8 +177,10 @@ func truncate(name string, rawSize vals.Num) error {
 
 func toInt64(n vals.Num, what string, validLow int64, validLowString string) (int64, error) {
 	outOfRange := func() error {
-		return errs.OutOfRange{What: what,
-			ValidLow: validLowString, ValidHigh: "2^64-1", Actual: vals.ToString(n)}
+		return errs.OutOfRange{
+			What:     what,
+			ValidLow: validLowString, ValidHigh: "2^64-1", Actual: vals.ToString(n),
+		}
 	}
 	var i int64
 	switch n := n.(type) {
@@ -179,7 +193,8 @@ func toInt64(n vals.Num, what string, validLow int64, validLowString string) (in
 			return 0, outOfRange()
 		}
 	default:
-		return 0, errs.BadValue{What: what,
+		return 0, errs.BadValue{
+			What:  what,
 			Valid: "exact integer", Actual: vals.ToString(n),
 		}
 	}

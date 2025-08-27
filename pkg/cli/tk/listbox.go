@@ -155,7 +155,8 @@ func (w *listBox) renderHorizontal(width, height int) *term.Buffer {
 		colBuf := croppedLines{
 			lines: col, padding: w.Padding,
 			selectFrom: selectedRow, selectTo: selectedRow + 1,
-			extendStyle: w.ExtendStyle}.Render(colWidth, colHeight)
+			extendStyle: w.ExtendStyle,
+		}.Render(colWidth, colHeight)
 		buf.ExtendRight(colBuf, false)
 
 		remainedWidth -= colWidth
@@ -232,7 +233,8 @@ func (w *listBox) renderVertical(width, height int) *term.Buffer {
 
 	var rd Renderer = croppedLines{
 		lines: allLines, padding: w.Padding,
-		selectFrom: selectFrom, selectTo: selectTo, extendStyle: w.ExtendStyle}
+		selectFrom: selectFrom, selectTo: selectTo, extendStyle: w.ExtendStyle,
+	}
 	if first > 0 || i < n || hasCropped {
 		rd = VScrollbarContainer{
 			Content:   rd,

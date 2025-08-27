@@ -89,7 +89,8 @@ func (p *Program) Run(fds [3]*os.File, args []string) error {
 	if !interactive {
 		exit := script(
 			ev, fds, args, &scriptCfg{
-				Cmd: p.codeInArg, CompileOnly: p.compileOnly, JSON: *p.json})
+				Cmd: p.codeInArg, CompileOnly: p.compileOnly, JSON: *p.json,
+			})
 		return prog.Exit(exit)
 	}
 
@@ -105,7 +106,8 @@ func (p *Program) Run(fds [3]*os.File, args []string) error {
 
 	interact(ev, fds, &interactCfg{
 		RC:             ev.EffectiveRcPath,
-		ActivateDaemon: p.ActivateDaemon, SpawnConfig: spawnCfg})
+		ActivateDaemon: p.ActivateDaemon, SpawnConfig: spawnCfg,
+	})
 	return nil
 }
 
@@ -189,7 +191,8 @@ func evalInTTY(fds [3]*os.File, ev *eval.Evaler, ed editor, src parse.Source) er
 	defer restore()
 	ctx, done := eval.ListenInterrupts()
 	err := ev.Eval(src, eval.EvalCfg{
-		Ports: ports, Interrupts: ctx, PutInFg: true})
+		Ports: ports, Interrupts: ctx, PutInFg: true,
+	})
 	done()
 	if ed != nil {
 		ed.RunAfterCommandHooks(src, time.Since(start).Seconds(), err)

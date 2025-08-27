@@ -66,7 +66,7 @@ func ReadFileString(fname string) string {
 // MkdirAll calls os.MkdirAll for each argument.
 func MkdirAll(names ...string) {
 	for _, name := range names {
-		OK(os.MkdirAll(name, 0700))
+		OK(os.MkdirAll(name, 0o700))
 	}
 }
 
@@ -74,7 +74,7 @@ func MkdirAll(names ...string) {
 // don't exist.
 func CreateEmpty(names ...string) {
 	for _, name := range names {
-		OK(os.MkdirAll(filepath.Dir(name), 0700))
+		OK(os.MkdirAll(filepath.Dir(name), 0o700))
 		file := OK1(os.Create(name))
 		OK(file.Close())
 	}
@@ -83,6 +83,6 @@ func CreateEmpty(names ...string) {
 // WriteFile writes data to a file, after creating all ancestor directories that
 // don't exist.
 func WriteFile(filename, data string) {
-	OK(os.MkdirAll(filepath.Dir(filename), 0700))
-	OK(os.WriteFile(filename, []byte(data), 0600))
+	OK(os.MkdirAll(filepath.Dir(filename), 0o700))
+	OK(os.WriteFile(filename, []byte(data), 0o600))
 }

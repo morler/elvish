@@ -40,7 +40,7 @@ func TestTempDir_CleanupRemovesDirRecursively(t *testing.T) {
 	c := &cleanuper{}
 	dir := TempDir(c)
 
-	err := os.WriteFile(filepath.Join(dir, "a"), []byte("test"), 0600)
+	err := os.WriteFile(filepath.Join(dir, "a"), []byte("test"), 0o600)
 	if err != nil {
 		panic(err)
 	}

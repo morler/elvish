@@ -19,35 +19,40 @@ var codeAreaRenderTests = []renderTest{
 	{
 		Name: "prompt only",
 		Given: NewCodeArea(CodeAreaSpec{
-			Prompt: p(ui.T("~>", ui.Bold))}),
+			Prompt: p(ui.T("~>", ui.Bold)),
+		}),
 		Width: 10, Height: 24,
 		Want: bb(10).WriteStringSGR("~>", "1").SetDotHere(),
 	},
 	{
 		Name: "rprompt only",
 		Given: NewCodeArea(CodeAreaSpec{
-			RPrompt: p(ui.T("RP", ui.Inverse))}),
+			RPrompt: p(ui.T("RP", ui.Inverse)),
+		}),
 		Width: 10, Height: 24,
 		Want: bb(10).SetDotHere().WriteSpaces(8).WriteStringSGR("RP", "7"),
 	},
 	{
 		Name: "code only with dot at beginning",
 		Given: NewCodeArea(CodeAreaSpec{State: CodeAreaState{
-			Buffer: CodeBuffer{Content: "code", Dot: 0}}}),
+			Buffer: CodeBuffer{Content: "code", Dot: 0},
+		}}),
 		Width: 10, Height: 24,
 		Want: bb(10).SetDotHere().Write("code"),
 	},
 	{
 		Name: "code only with dot at middle",
 		Given: NewCodeArea(CodeAreaSpec{State: CodeAreaState{
-			Buffer: CodeBuffer{Content: "code", Dot: 2}}}),
+			Buffer: CodeBuffer{Content: "code", Dot: 2},
+		}}),
 		Width: 10, Height: 24,
 		Want: bb(10).Write("co").SetDotHere().Write("de"),
 	},
 	{
 		Name: "code only with dot at end",
 		Given: NewCodeArea(CodeAreaSpec{State: CodeAreaState{
-			Buffer: CodeBuffer{Content: "code", Dot: 4}}}),
+			Buffer: CodeBuffer{Content: "code", Dot: 4},
+		}}),
 		Width: 10, Height: 24,
 		Want: bb(10).Write("code").SetDotHere(),
 	},
@@ -56,7 +61,8 @@ var codeAreaRenderTests = []renderTest{
 		Given: NewCodeArea(CodeAreaSpec{
 			Prompt:  p(ui.T("~>")),
 			RPrompt: p(ui.T("RP")),
-			State:   CodeAreaState{Buffer: CodeBuffer{Content: "code", Dot: 4}}}),
+			State:   CodeAreaState{Buffer: CodeBuffer{Content: "code", Dot: 4}},
+		}),
 		Width: 10, Height: 24,
 		Want: bb(10).Write("~>code").SetDotHere().Write("  RP"),
 	},
@@ -66,7 +72,8 @@ var codeAreaRenderTests = []renderTest{
 		Given: NewCodeArea(CodeAreaSpec{
 			Prompt:  p(ui.T("~>")),
 			RPrompt: p(ui.T("RP")),
-			State:   CodeAreaState{Buffer: CodeBuffer{Content: "code", Dot: 4}, HideRPrompt: true}}),
+			State:   CodeAreaState{Buffer: CodeBuffer{Content: "code", Dot: 4}, HideRPrompt: true},
+		}),
 		Width: 10, Height: 24,
 		Want: bb(10).Write("~>code").SetDotHere(),
 	},
@@ -75,7 +82,8 @@ var codeAreaRenderTests = []renderTest{
 		Given: NewCodeArea(CodeAreaSpec{
 			Prompt:  p(ui.T("~>")),
 			RPrompt: p(ui.T("1234")),
-			State:   CodeAreaState{Buffer: CodeBuffer{Content: "code", Dot: 4}}}),
+			State:   CodeAreaState{Buffer: CodeBuffer{Content: "code", Dot: 4}},
+		}),
 		Width: 10, Height: 24,
 		Want: bb(10).Write("~>code").SetDotHere(),
 	},
@@ -85,7 +93,8 @@ var codeAreaRenderTests = []renderTest{
 			Highlighter: func(code string) (ui.Text, []ui.Text) {
 				return ui.T(code, ui.Bold), nil
 			},
-			State: CodeAreaState{Buffer: CodeBuffer{Content: "code", Dot: 4}}}),
+			State: CodeAreaState{Buffer: CodeBuffer{Content: "code", Dot: 4}},
+		}),
 		Width: 10, Height: 24,
 		Want: bb(10).WriteStringSGR("code", "1").SetDotHere(),
 	},
@@ -96,7 +105,8 @@ var codeAreaRenderTests = []renderTest{
 			Highlighter: func(code string) (ui.Text, []ui.Text) {
 				return ui.T(code), []ui.Text{ui.T("static error")}
 			},
-			State: CodeAreaState{Buffer: CodeBuffer{Content: "code", Dot: 4}}}),
+			State: CodeAreaState{Buffer: CodeBuffer{Content: "code", Dot: 4}},
+		}),
 		Width: 10, Height: 24,
 		Want: bb(10).Write("> code").SetDotHere().
 			Newline().Write("static error"),
@@ -109,7 +119,9 @@ var codeAreaRenderTests = []renderTest{
 				return ui.T(code), []ui.Text{ui.T("static error")}
 			},
 			State: CodeAreaState{
-				Buffer: CodeBuffer{Content: "code", Dot: 4}, HideTips: true}}),
+				Buffer: CodeBuffer{Content: "code", Dot: 4}, HideTips: true,
+			},
+		}),
 		Width: 10, Height: 24,
 		Want: bb(10).Write("> code").SetDotHere(),
 	},
@@ -224,7 +236,8 @@ var codeAreaHandleTests = []handleTest{
 		Events: []term.Event{
 			term.PasteSetting(true),
 			term.K('"'), term.K('x'),
-			term.PasteSetting(false)},
+			term.PasteSetting(false),
+		},
 		WantNewState: CodeAreaState{Buffer: CodeBuffer{Content: "\"x", Dot: 2}},
 	},
 	{
@@ -233,7 +246,8 @@ var codeAreaHandleTests = []handleTest{
 		Events: []term.Event{
 			term.PasteSetting(true),
 			term.K('a'), term.K(ui.F1), term.K('b'),
-			term.PasteSetting(false)},
+			term.PasteSetting(false),
+		},
 		WantNewState: CodeAreaState{Buffer: CodeBuffer{Content: "ab", Dot: 2}},
 	},
 	{
@@ -242,7 +256,8 @@ var codeAreaHandleTests = []handleTest{
 		Events: []term.Event{
 			term.PasteSetting(true),
 			term.K('"'), term.K('x'),
-			term.PasteSetting(false)},
+			term.PasteSetting(false),
+		},
 		WantNewState: CodeAreaState{Buffer: CodeBuffer{Content: "'\"x'", Dot: 4}},
 	},
 	{
@@ -250,20 +265,23 @@ var codeAreaHandleTests = []handleTest{
 		Given: NewCodeArea(CodeAreaSpec{}),
 		Events: []term.Event{
 			term.K('c'), term.K('o'), term.K('d'), term.K('e'),
-			term.K(ui.Backspace)},
+			term.K(ui.Backspace),
+		},
 		WantNewState: CodeAreaState{Buffer: CodeBuffer{Content: "cod", Dot: 3}},
 	},
 	{
 		Name: "backspace at middle of buffer",
 		Given: NewCodeArea(CodeAreaSpec{State: CodeAreaState{
-			Buffer: CodeBuffer{Content: "code", Dot: 2}}}),
+			Buffer: CodeBuffer{Content: "code", Dot: 2},
+		}}),
 		Events:       []term.Event{term.K(ui.Backspace)},
 		WantNewState: CodeAreaState{Buffer: CodeBuffer{Content: "cde", Dot: 1}},
 	},
 	{
 		Name: "backspace at beginning of buffer",
 		Given: NewCodeArea(CodeAreaSpec{State: CodeAreaState{
-			Buffer: CodeBuffer{Content: "code", Dot: 0}}}),
+			Buffer: CodeBuffer{Content: "code", Dot: 0},
+		}}),
 		Events:       []term.Event{term.K(ui.Backspace)},
 		WantNewState: CodeAreaState{Buffer: CodeBuffer{Content: "code", Dot: 0}},
 	},
@@ -271,7 +289,8 @@ var codeAreaHandleTests = []handleTest{
 		Name:  "backspace deleting unicode character",
 		Given: NewCodeArea(CodeAreaSpec{}),
 		Events: []term.Event{
-			term.K('你'), term.K('好'), term.K(ui.Backspace)},
+			term.K('你'), term.K('好'), term.K(ui.Backspace),
+		},
 		WantNewState: CodeAreaState{Buffer: CodeBuffer{Content: "你", Dot: 3}},
 	},
 	// Regression test for https://b.elv.sh/1178
@@ -280,7 +299,8 @@ var codeAreaHandleTests = []handleTest{
 		Given: NewCodeArea(CodeAreaSpec{}),
 		Events: []term.Event{
 			term.K('c'), term.K('o'), term.K('d'), term.K('e'),
-			term.K('H', ui.Ctrl)},
+			term.K('H', ui.Ctrl),
+		},
 		WantNewState: CodeAreaState{Buffer: CodeBuffer{Content: "cod", Dot: 3}},
 	},
 	{
@@ -371,8 +391,10 @@ var codeAreaHandleTests = []handleTest{
 				f("h", "hello")
 			},
 		}),
-		Events: []term.Event{term.K('g'), term.K(' '), term.K(ui.Backspace),
-			term.K('h'), term.K(' ')},
+		Events: []term.Event{
+			term.K('g'), term.K(' '), term.K(ui.Backspace),
+			term.K('h'), term.K(' '),
+		},
 		WantNewState: CodeAreaState{Buffer: CodeBuffer{Content: "gh ", Dot: 3}},
 	},
 	{
@@ -418,10 +440,12 @@ var codeAreaHandleTests = []handleTest{
 	},
 	{
 		Name: "key bindings",
-		Given: NewCodeArea(CodeAreaSpec{Bindings: MapBindings{
-			term.K('a'): func(w Widget) {
-				w.(*codeArea).State.Buffer.InsertAtDot("b")
-			}},
+		Given: NewCodeArea(CodeAreaSpec{
+			Bindings: MapBindings{
+				term.K('a'): func(w Widget) {
+					w.(*codeArea).State.Buffer.InsertAtDot("b")
+				},
+			},
 		}),
 		Events:       []term.Event{term.K('a')},
 		WantNewState: CodeAreaState{Buffer: CodeBuffer{Content: "b", Dot: 1}},
@@ -429,11 +453,14 @@ var codeAreaHandleTests = []handleTest{
 	{
 		// Regression test for #890.
 		Name: "key bindings do not apply when pasting",
-		Given: NewCodeArea(CodeAreaSpec{Bindings: MapBindings{
-			term.K('\n'): func(w Widget) {}},
+		Given: NewCodeArea(CodeAreaSpec{
+			Bindings: MapBindings{
+				term.K('\n'): func(w Widget) {},
+			},
 		}),
 		Events: []term.Event{
-			term.PasteSetting(true), term.K('\n'), term.PasteSetting(false)},
+			term.PasteSetting(true), term.K('\n'), term.PasteSetting(false),
+		},
 		WantNewState: CodeAreaState{Buffer: CodeBuffer{Content: "\n", Dot: 1}},
 	},
 }
@@ -479,7 +506,8 @@ func TestCodeArea_Handle_EnterEmitsSubmit(t *testing.T) {
 	submitted := false
 	w := NewCodeArea(CodeAreaSpec{
 		OnSubmit: func() { submitted = true },
-		State:    CodeAreaState{Buffer: CodeBuffer{Content: "code", Dot: 4}}})
+		State:    CodeAreaState{Buffer: CodeBuffer{Content: "code", Dot: 4}},
+	})
 	w.Handle(term.K('\n'))
 	if submitted != true {
 		t.Errorf("OnSubmit not triggered")
@@ -488,7 +516,8 @@ func TestCodeArea_Handle_EnterEmitsSubmit(t *testing.T) {
 
 func TestCodeArea_Handle_DefaultNoopSubmit(t *testing.T) {
 	w := NewCodeArea(CodeAreaSpec{State: CodeAreaState{
-		Buffer: CodeBuffer{Content: "code", Dot: 4}}})
+		Buffer: CodeBuffer{Content: "code", Dot: 4},
+	}})
 	w.Handle(term.K('\n'))
 	// No panic, we are good
 }

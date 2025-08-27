@@ -14,9 +14,13 @@ var comboBoxRenderTests = []renderTest{
 		Given: NewComboBox(ComboBoxSpec{
 			CodeArea: CodeAreaSpec{
 				State: CodeAreaState{
-					Buffer: CodeBuffer{Content: "filter", Dot: 6}}},
+					Buffer: CodeBuffer{Content: "filter", Dot: 6},
+				},
+			},
 			ListBox: ListBoxSpec{
-				State: ListBoxState{Items: TestItems{NItems: 2}}}}),
+				State: ListBoxState{Items: TestItems{NItems: 2}},
+			},
+		}),
 		Width: 10, Height: 24,
 		Want: term.NewBufferBuilder(10).
 			Write("filter").SetDotHere().
@@ -28,10 +32,13 @@ var comboBoxRenderTests = []renderTest{
 		Given: NewComboBox(ComboBoxSpec{
 			CodeArea: CodeAreaSpec{
 				State: CodeAreaState{
-					Buffer: CodeBuffer{Content: "filter", Dot: 6}}},
+					Buffer: CodeBuffer{Content: "filter", Dot: 6},
+				},
+			},
 			OnFilter: func(w ComboBox, filter string) {
 				w.ListBox().Reset(TestItems{NItems: 2}, 0)
-			}}),
+			},
+		}),
 		Width: 10, Height: 24,
 		Want: term.NewBufferBuilder(10).
 			Write("filter").SetDotHere().
@@ -53,7 +60,9 @@ func TestComboBox_Handle(t *testing.T) {
 			lastFilter = filter
 		},
 		ListBox: ListBoxSpec{
-			State: ListBoxState{Items: TestItems{NItems: 2}}}})
+			State: ListBoxState{Items: TestItems{NItems: 2}},
+		},
+	})
 
 	handled := w.Handle(term.K(ui.Down))
 	if !handled {
@@ -95,7 +104,8 @@ func TestRefilter(t *testing.T) {
 	w := NewComboBox(ComboBoxSpec{
 		OnFilter: func(w ComboBox, filter string) {
 			onFilter <- filter
-		}})
+		},
+	})
 	<-onFilter // Ignore the initial OnFilter call.
 	w.CodeArea().MutateState(func(s *CodeAreaState) { s.Buffer.Content = "new" })
 	w.Refilter()

@@ -36,7 +36,6 @@ func init() {
 
 		"-ifaddrs": _ifaddrs,
 	})
-
 }
 
 var nopGoFn = NewGoFn("nop", nop)
@@ -83,8 +82,10 @@ func call(fm *Frame, fn Callable, argsVal vals.List, optsVal vals.Map) error {
 		k, v := it.Elem()
 		ks, ok := k.(string)
 		if !ok {
-			return errs.BadValue{What: "option key",
-				Valid: "string", Actual: vals.Kind(k)}
+			return errs.BadValue{
+				What:  "option key",
+				Valid: "string", Actual: vals.Kind(k),
+			}
 		}
 		opts[ks] = v
 	}

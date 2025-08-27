@@ -55,7 +55,8 @@ func highlight(code string, cfg Config, lateCb func(ui.Text)) (ui.Text, []ui.Tex
 		}
 		tips = append(tips, ui.T(err.Error()))
 		errorRegions = append(errorRegions, region{
-			r.From, r.To, semanticRegion, errorRegion})
+			r.From, r.To, semanticRegion, errorRegion,
+		})
 	}
 
 	tree, errParse := parse.Parse(parse.Source{Name: "[interactive]", Code: code}, parse.Config{})

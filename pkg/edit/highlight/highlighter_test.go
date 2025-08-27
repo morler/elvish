@@ -13,8 +13,10 @@ import (
 	"src.elv.sh/pkg/ui"
 )
 
-var any = anyMatcher{}
-var noTips []ui.Text
+var (
+	any    = anyMatcher{}
+	noTips []ui.Text
+)
 
 var styles = ui.RuneStylesheet{
 	'?':  ui.Stylings(ui.FgBrightWhite, ui.BgRed),
@@ -205,7 +207,8 @@ func TestHighlighter_HasCommand_LateResult_Async(t *testing.T) {
 		HasCommand: func(cmd string) bool {
 			time.Sleep(testutil.Scaled(10 * time.Millisecond))
 			return cmd == "ls"
-		}})
+		},
+	})
 
 	testThat(t, hl, c{
 		given:       "ls",
@@ -228,7 +231,8 @@ func TestHighlighter_HasCommand_LateResult_Sync(t *testing.T) {
 		HasCommand: func(cmd string) bool {
 			time.Sleep(testutil.Scaled(time.Millisecond))
 			return cmd == "ls"
-		}})
+		},
+	})
 
 	testThat(t, hl, c{
 		given:       "ls",
@@ -262,7 +266,8 @@ func TestHighlighter_HasCommand_LateResultOutOfOrder(t *testing.T) {
 			time.Sleep(testutil.Scaled(10 * time.Millisecond))
 			close(hlSecond)
 			return cmd == "ls"
-		}})
+		},
+	})
 
 	hl.Get("l")
 

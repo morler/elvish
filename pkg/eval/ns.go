@@ -67,7 +67,8 @@ func CombineNs(ns1, ns2 *Ns) *Ns {
 func (ns *Ns) clone() *Ns {
 	return &Ns{
 		append([]vars.Var(nil), ns.slots...),
-		append([]staticVarInfo(nil), ns.infos...)}
+		append([]staticVarInfo(nil), ns.infos...),
+	}
 }
 
 // Ns returns ns itself.

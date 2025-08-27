@@ -55,8 +55,10 @@ func toString(fm *Frame, args ...any) error {
 
 func base(fm *Frame, b int, nums ...vals.Num) error {
 	if b < 2 || b > 36 {
-		return errs.OutOfRange{What: "base",
-			ValidLow: "2", ValidHigh: "36", Actual: strconv.Itoa(b)}
+		return errs.OutOfRange{
+			What:     "base",
+			ValidLow: "2", ValidHigh: "36", Actual: strconv.Itoa(b),
+		}
 	}
 	// Don't output anything yet in case some arguments are invalid.
 	results := make([]string, len(nums))
@@ -74,12 +76,16 @@ func base(fm *Frame, b int, nums ...vals.Num) error {
 				z.SetString(fmt.Sprintf("%.0f", num), 10)
 				results[i] = z.Text(b)
 			} else {
-				return errs.BadValue{What: "number",
-					Valid: "integer", Actual: vals.ReprPlain(num)}
+				return errs.BadValue{
+					What:  "number",
+					Valid: "integer", Actual: vals.ReprPlain(num),
+				}
 			}
 		default:
-			return errs.BadValue{What: "number",
-				Valid: "integer", Actual: vals.ReprPlain(num)}
+			return errs.BadValue{
+				What:  "number",
+				Valid: "integer", Actual: vals.ReprPlain(num),
+			}
 		}
 	}
 

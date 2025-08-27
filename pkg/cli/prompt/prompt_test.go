@@ -19,7 +19,8 @@ func TestPrompt_DefaultCompute(t *testing.T) {
 
 func TestPrompt_ShowsComputedPrompt(t *testing.T) {
 	prompt := New(Config{
-		Compute: func() ui.Text { return ui.T(">>> ") }})
+		Compute: func() ui.Text { return ui.T(">>> ") },
+	})
 
 	prompt.Trigger(false)
 	testUpdate(t, prompt, ui.T(">>> "))

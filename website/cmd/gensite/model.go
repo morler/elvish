@@ -143,5 +143,6 @@ func getArticle(a article, am articleMeta, dir string) article {
 	css := catInDir(dir, am.ExtraCSS)
 	js := catInDir(dir, am.ExtraJS)
 	return article{
-		am, a.IsHomepage, a.Category, content, css, js, rfc3339Time(modTime)}
+		am, a.IsHomepage, a.Category, content, css, js, rfc3339Time(modTime),
+	}
 }

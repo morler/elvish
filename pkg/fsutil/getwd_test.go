@@ -14,9 +14,9 @@ import (
 
 func TestGetwd(t *testing.T) {
 	tmpdir := testutil.InTempDir(t)
-	must.OK(os.Mkdir("a", 0700))
+	must.OK(os.Mkdir("a", 0o700))
 
-	var tests = []struct {
+	tests := []struct {
 		name   string
 		home   string
 		chdir  string

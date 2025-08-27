@@ -24,8 +24,10 @@ type baseDot struct {
 }
 
 func newBaseDot(bc *siteConf, css string) *baseDot {
-	b := &baseDot{bc.Title, bc.Author, bc.RootURL,
-		bc.Index.Title, bc.Categories, make(map[string]string), css}
+	b := &baseDot{
+		bc.Title, bc.Author, bc.RootURL,
+		bc.Index.Title, bc.Categories, make(map[string]string), css,
+	}
 	for _, m := range bc.Categories {
 		b.CategoryMap[m.Name] = m.Title
 	}
@@ -85,7 +87,7 @@ func newTemplate(name, root string, sources ...string) *template.Template {
 }
 
 func openForWrite(fname string) *os.File {
-	file, err := os.OpenFile(fname, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	file, err := os.OpenFile(fname, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o644)
 	if err != nil {
 		log.Fatal(err)
 	}

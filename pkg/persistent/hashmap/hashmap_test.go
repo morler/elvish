@@ -29,8 +29,10 @@ const (
 	N3 = nodeCap*nodeCap*nodeCap + 1
 )
 
-type testKey uint64
-type anotherTestKey uint32
+type (
+	testKey        uint64
+	anotherTestKey uint32
+)
 
 func equalFunc(k1, k2 any) bool {
 	switch k1 := k1.(type) {

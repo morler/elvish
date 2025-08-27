@@ -72,7 +72,7 @@ func daemonPaths(p *prog.DaemonPaths) (*daemondefs.SpawnConfig, error) {
 		if err != nil {
 			return nil, err
 		}
-		err = os.MkdirAll(filepath.Dir(db), 0700)
+		err = os.MkdirAll(filepath.Dir(db), 0o700)
 		if err != nil {
 			return nil, err
 		}

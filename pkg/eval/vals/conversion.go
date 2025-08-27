@@ -288,12 +288,16 @@ func ScanListElementsToGo(src List, ptrs ...any) error {
 		case len(ptrs):
 			ptrs[len(ptrs)-1] = o.ptr
 		default:
-			return errs.ArityMismatch{What: "list elements",
-				ValidLow: len(ptrs) - 1, ValidHigh: len(ptrs), Actual: src.Len()}
+			return errs.ArityMismatch{
+				What:     "list elements",
+				ValidLow: len(ptrs) - 1, ValidHigh: len(ptrs), Actual: src.Len(),
+			}
 		}
 	} else if src.Len() != len(ptrs) {
-		return errs.ArityMismatch{What: "list elements",
-			ValidLow: len(ptrs), ValidHigh: len(ptrs), Actual: src.Len()}
+		return errs.ArityMismatch{
+			What:     "list elements",
+			ValidLow: len(ptrs), ValidHigh: len(ptrs), Actual: src.Len(),
+		}
 	}
 
 	i := 0

@@ -70,7 +70,8 @@ var testCases = []struct {
 		node: &Form{},
 		want: ast{"Form", fs{
 			"Head": "ls",
-			"Args": []string{"x", "y"}}},
+			"Args": []string{"x", "y"},
+		}},
 	},
 	{
 		name: "redirection",
@@ -79,7 +80,8 @@ var testCases = []struct {
 		want: ast{"Form", fs{
 			"Head": "a",
 			"Redirs": []ast{
-				{"Redir", fs{"Mode": Write, "Right": "b"}}},
+				{"Redir", fs{"Mode": Write, "Right": "b"}},
+			},
 		}},
 	},
 	{
@@ -96,7 +98,8 @@ var testCases = []struct {
 				{"Redir", fs{"Left": "5", "Mode": Read, "Right": "c"}},
 				{"Redir", fs{"Left": "6", "Mode": ReadWrite, "Right": "d"}},
 			},
-		}}},
+		}},
+	},
 	{
 		name: "command options",
 		code: "a &a=1 x &b=2",
@@ -156,7 +159,8 @@ var testCases = []struct {
 		node: &Filter{},
 		want: ast{"Filter", fs{
 			"Args": []string{"foo", "bar"},
-			"Opts": []string{"&a=b", "&x=y"}}},
+			"Opts": []string{"&a=b", "&x=y"},
+		}},
 	},
 	{
 		name: "filter with leading and trailing whitespaces",
@@ -171,7 +175,8 @@ var testCases = []struct {
 		code: `b"foo"?$c*'xyz'`,
 		node: &Compound{},
 		want: ast{"Compound", fs{
-			"Indexings": []string{"b", `"foo"`, "?", "$c", "*", "'xyz'"}}},
+			"Indexings": []string{"b", `"foo"`, "?", "$c", "*", "'xyz'"},
+		}},
 	},
 
 	// Indexing
@@ -180,14 +185,16 @@ var testCases = []struct {
 		code: "$b[c][d][\ne\n]",
 		node: &Indexing{},
 		want: ast{"Indexing", fs{
-			"Head": "$b", "Indices": []string{"c", "d", "\ne\n"}}},
+			"Head": "$b", "Indices": []string{"c", "d", "\ne\n"},
+		}},
 	},
 	{
 		name: "indexing expression with empty index",
 		code: "$a[]",
 		node: &Indexing{},
 		want: ast{"Indexing", fs{
-			"Head": "$a", "Indices": []string{""}}},
+			"Head": "$a", "Indices": []string{""},
+		}},
 	},
 
 	// Primary
@@ -273,22 +280,28 @@ var testCases = []struct {
 		want: a(
 			ast{"Compound/Indexing/Primary", fs{
 				"Type":     List,
-				"Elements": []ast{}}},
+				"Elements": []ast{},
+			}},
 			ast{"Compound/Indexing/Primary", fs{
 				"Type":     List,
-				"Elements": []ast{}}},
+				"Elements": []ast{},
+			}},
 			ast{"Compound/Indexing/Primary", fs{
 				"Type":     List,
-				"Elements": []string{"1"}}},
+				"Elements": []string{"1"},
+			}},
 			ast{"Compound/Indexing/Primary", fs{
 				"Type":     List,
-				"Elements": []string{"2"}}},
+				"Elements": []string{"2"},
+			}},
 			ast{"Compound/Indexing/Primary", fs{
 				"Type":     List,
-				"Elements": []string{"3"}}},
+				"Elements": []string{"3"},
+			}},
 			ast{"Compound/Indexing/Primary", fs{
 				"Type":     List,
-				"Elements": []string{"4", "5", "6", "7"}}},
+				"Elements": []string{"4", "5", "6", "7"},
+			}},
 		),
 	},
 	{
@@ -298,29 +311,36 @@ var testCases = []struct {
 		want: a(
 			ast{"Compound/Indexing/Primary", fs{
 				"Type":     Map,
-				"MapPairs": []ast{{"MapPair", fs{"Key": "k", "Value": "v"}}}}},
+				"MapPairs": []ast{{"MapPair", fs{"Key": "k", "Value": "v"}}},
+			}},
 			ast{"Compound/Indexing/Primary", fs{
 				"Type":     Map,
-				"MapPairs": []ast{{"MapPair", fs{"Key": "k", "Value": "v"}}}}},
+				"MapPairs": []ast{{"MapPair", fs{"Key": "k", "Value": "v"}}},
+			}},
 			ast{"Compound/Indexing/Primary", fs{
 				"Type":     Map,
-				"MapPairs": []ast{{"MapPair", fs{"Key": "k", "Value": "v"}}}}},
+				"MapPairs": []ast{{"MapPair", fs{"Key": "k", "Value": "v"}}},
+			}},
 			ast{"Compound/Indexing/Primary", fs{
 				"Type":     Map,
-				"MapPairs": []ast{{"MapPair", fs{"Key": "k", "Value": "v"}}}}},
+				"MapPairs": []ast{{"MapPair", fs{"Key": "k", "Value": "v"}}},
+			}},
 			ast{"Compound/Indexing/Primary", fs{
 				"Type":     Map,
-				"MapPairs": []ast{{"MapPair", fs{"Key": "k", "Value": "v"}}}}},
+				"MapPairs": []ast{{"MapPair", fs{"Key": "k", "Value": "v"}}},
+			}},
 			ast{"Compound/Indexing/Primary", fs{
 				"Type":     Map,
-				"MapPairs": []ast{{"MapPair", fs{"Key": "k", "Value": "v"}}}}},
+				"MapPairs": []ast{{"MapPair", fs{"Key": "k", "Value": "v"}}},
+			}},
 			ast{"Compound/Indexing/Primary", fs{
 				"Type": Map,
 				"MapPairs": []ast{
 					{"MapPair", fs{"Key": "a", "Value": "b"}},
 					{"MapPair", fs{"Key": "c", "Value": "d"}},
 					{"MapPair", fs{"Key": "e", "Value": "f"}},
-				}}},
+				},
+			}},
 		),
 	},
 	{
@@ -360,15 +380,18 @@ var testCases = []struct {
 		node: &Chunk{},
 		want: a(
 			ast{"Compound/Indexing/Primary", fs{
-				"Type": OutputCapture, "Chunk": ""}},
+				"Type": OutputCapture, "Chunk": "",
+			}},
 			ast{"Compound/Indexing/Primary", fs{
 				"Type": OutputCapture, "Chunk": ast{
 					"Chunk", fs{"Pipelines": []string{"b", "c"}},
-				}}},
+				},
+			}},
 			ast{"Compound/Indexing/Primary", fs{
 				"Type": OutputCapture, "Chunk": ast{
 					"Chunk", fs{"Pipelines": []string{"c", "d"}},
-				}}},
+				},
+			}},
 		),
 	},
 	{
@@ -377,7 +400,8 @@ var testCases = []struct {
 		node: &Chunk{},
 		want: a(
 			ast{"Compound/Indexing/Primary", fs{
-				"Type": ExceptionCapture, "Chunk": ""}},
+				"Type": ExceptionCapture, "Chunk": "",
+			}},
 			ast{"Compound/Indexing/Primary", fs{
 				"Type": ExceptionCapture, "Chunk": "b;c",
 			}}),
@@ -388,7 +412,8 @@ var testCases = []struct {
 		node: &Primary{},
 		want: ast{"Primary", fs{
 			"Type":   Braced,
-			"Braced": []string{"", "a", "c", "g", ""}}},
+			"Braced": []string{"", "a", "c", "g", ""},
+		}},
 	},
 	{
 		name: "tilde",
@@ -486,7 +511,8 @@ var testCases = []struct {
 		code: "a b^\nc",
 		node: &Chunk{},
 		want: ast{
-			"Chunk/Pipeline/Form", fs{"Head": "a", "Args": []string{"b", "c"}}},
+			"Chunk/Pipeline/Form", fs{"Head": "a", "Args": []string{"b", "c"}},
+		},
 	},
 	{
 		name:         "unterminated line continuation",
@@ -514,8 +540,10 @@ var testCases = []struct {
 		code: "a { \rfoo\r\nbar }",
 		node: &Chunk{},
 		want: a(
-			ast{"Compound/Indexing/Primary",
-				fs{"Type": Lambda, "Chunk": "foo\r\nbar "}},
+			ast{
+				"Compound/Indexing/Primary",
+				fs{"Type": Lambda, "Chunk": "foo\r\nbar "},
+			},
 		),
 	},
 	{
@@ -525,21 +553,24 @@ var testCases = []struct {
 		want: a(
 			ast{"Compound/Indexing/Primary", fs{
 				"Type":     List,
-				"Elements": []string{"a", "b"}}}),
+				"Elements": []string{"a", "b"},
+			}}),
 	},
 	{
 		name: "carriage return in line continuation",
 		code: "a b^\rc",
 		node: &Chunk{},
 		want: ast{
-			"Chunk/Pipeline/Form", fs{"Head": "a", "Args": []string{"b", "c"}}},
+			"Chunk/Pipeline/Form", fs{"Head": "a", "Args": []string{"b", "c"}},
+		},
 	},
 	{
 		name: "carriage return + newline as a single newline in line continuation",
 		code: "a b^\r\nc",
 		node: &Chunk{},
 		want: ast{
-			"Chunk/Pipeline/Form", fs{"Head": "a", "Args": []string{"b", "c"}}},
+			"Chunk/Pipeline/Form", fs{"Head": "a", "Args": []string{"b", "c"}},
+		},
 	},
 
 	// Comment
@@ -551,7 +582,8 @@ var testCases = []struct {
 			"Chunk", fs{"Pipelines": []ast{
 				{"Pipeline/Form", fs{"Head": "a"}},
 				{"Pipeline/Form", fs{"Head": "b"}},
-			}}},
+			}},
+		},
 	},
 	{
 		name: "comments in lists",

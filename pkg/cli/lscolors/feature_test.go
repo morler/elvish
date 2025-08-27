@@ -81,28 +81,28 @@ func TestDetermineFeature(t *testing.T) {
 	blk, err := findDevice(os.ModeDevice)
 	test("block device", blk, featureBlockDevice, opt{setupErr: err})
 
-	err = mkdirMode("d", 0700)
+	err = mkdirMode("d", 0o700)
 	test("normal dir", "d", featureDirectory, opt{setupErr: err})
 	// Regression test for b.elv.sh/1710.
 	test("directory with mh=true", "d", featureDirectory, opt{setupErr: err, mh: true})
 
-	err = mkdirMode("d-wws", 0777|os.ModeSticky)
+	err = mkdirMode("d-wws", 0o777|os.ModeSticky)
 	test("world-writable sticky dir", "d-wws", featureWorldWritableStickyDirectory, opt{setupErr: err})
-	err = mkdirMode("d-ww", 0777)
+	err = mkdirMode("d-ww", 0o777)
 	test("world-writable dir", "d-ww", featureWorldWritableDirectory, opt{setupErr: err})
-	err = mkdirMode("d-s", 0700|os.ModeSticky)
+	err = mkdirMode("d-s", 0o700|os.ModeSticky)
 	test("sticky dir", "d-s", featureStickyDirectory, opt{setupErr: err})
 
-	err = createMode("xu", 0100)
+	err = createMode("xu", 0o100)
 	test("executable by user", "xu", featureExecutable, opt{setupErr: err})
-	err = createMode("xg", 0010)
+	err = createMode("xg", 0o010)
 	test("executable by group", "xg", featureExecutable, opt{setupErr: err})
-	err = createMode("xo", 0001)
+	err = createMode("xo", 0o001)
 	test("executable by other", "xo", featureExecutable, opt{setupErr: err})
 
-	err = createMode("su", 0600|os.ModeSetuid)
+	err = createMode("su", 0o600|os.ModeSetuid)
 	test("setuid", "su", featureSetuid, opt{setupErr: err})
-	err = createMode("sg", 0600|os.ModeSetgid)
+	err = createMode("sg", 0o600|os.ModeSetgid)
 	test("setgid", "sg", featureSetgid, opt{setupErr: err})
 
 	test("nonexistent file", "nonexistent", featureInvalid, opt{wantErr: true})
@@ -123,7 +123,6 @@ func createMode(fname string, mode os.FileMode) error {
 	}
 	f.Close()
 	return checkMode(fname, mode)
-
 }
 
 func findDevice(typ os.FileMode) (string, error) {

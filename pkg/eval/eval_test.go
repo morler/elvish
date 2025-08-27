@@ -64,7 +64,8 @@ func TestCall(t *testing.T) {
 		CallCfg{
 			Args: []any{passedArg},
 			Opts: map[string]any{"opt": passedOpt},
-			From: "[TestCall]"},
+			From: "[TestCall]",
+		},
 		EvalCfg{})
 
 	if gotArg != passedArg {
@@ -82,12 +83,18 @@ var checkTests = []struct {
 	wantCompileErr bool
 }{
 	{name: "no error", code: "put $nil"},
-	{name: "parse error only", code: "put [",
-		wantParseErr: true},
-	{name: "compile error only", code: "put $x",
-		wantCompileErr: true},
-	{name: "both parse and compile error", code: "put [$x",
-		wantParseErr: true, wantCompileErr: true},
+	{
+		name: "parse error only", code: "put [",
+		wantParseErr: true,
+	},
+	{
+		name: "compile error only", code: "put $x",
+		wantCompileErr: true,
+	},
+	{
+		name: "both parse and compile error", code: "put [$x",
+		wantParseErr: true, wantCompileErr: true,
+	},
 }
 
 func TestCheck(t *testing.T) {

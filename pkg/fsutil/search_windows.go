@@ -29,7 +29,8 @@ func isExecutableExt(ext string) bool {
 		}
 	} else {
 		validExts = map[string]bool{
-			".com": true, ".exe": true, ".bat": true, ".cmd": true}
+			".com": true, ".exe": true, ".bat": true, ".cmd": true,
+		}
 	}
 
 	return validExts[strings.ToLower(ext)]

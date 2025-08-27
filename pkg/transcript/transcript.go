@@ -469,7 +469,8 @@ func parseSession(n *Node, fl fileLines) error {
 			// Code doesn't include the trailing newline, so a simple
 			// strings.Join is appropriate.
 			strings.Join(code, "\n"), codeLineFrom, codeLineTo,
-			strutil.JoinLines(output), outputLineFrom, outputLineTo})
+			strutil.JoinLines(output), outputLineFrom, outputLineTo,
+		})
 	}
 	n.Directives = directives
 	n.Interactions = interactions

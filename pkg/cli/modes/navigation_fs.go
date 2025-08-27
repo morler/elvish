@@ -92,7 +92,8 @@ func (f file) Name() string { return f.name }
 func (f file) ShowName() ui.Text {
 	sgrStyle := f.colorist.GetStyle(f.path)
 	return ui.Text{&ui.Segment{
-		Style: ui.StyleFromSGR(sgrStyle), Text: f.name}}
+		Style: ui.StyleFromSGR(sgrStyle), Text: f.name,
+	}}
 }
 
 func (f file) IsDirDeep() bool {

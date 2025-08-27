@@ -10,8 +10,10 @@ import (
 	. "src.elv.sh/pkg/store/storedefs"
 )
 
-var logger = logutil.GetLogger("[store] ")
-var initDB = map[string](func(*bolt.Tx) error){}
+var (
+	logger = logutil.GetLogger("[store] ")
+	initDB = map[string](func(*bolt.Tx) error){}
+)
 
 // DBStore is the permanent storage backend for elvish. It is not thread-safe.
 // In particular, the store may be closed while another goroutine is still
@@ -34,17 +36,17 @@ func dbWithDefaultOptions(dbname string) (*bolt.DB, error) {
 	options := &bolt.Options{
 		Timeout: 2 * time.Second, // Increased timeout for Windows file locking
 	}
-	
+
 	// On Windows, try multiple times with exponential backoff for file locks
 	var db *bolt.DB
 	var err error
 	var attempt int
 	for attempt = 0; attempt < 3; attempt++ {
-		db, err = bolt.Open(dbname, 0644, options)
+		db, err = bolt.Open(dbname, 0o644, options)
 		if err == nil {
 			break
 		}
-		
+
 		// Wait before retrying, with exponential backoff
 		if attempt < 2 {
 			waitTime := time.Duration(100*(attempt+1)) * time.Millisecond
@@ -52,13 +54,13 @@ func dbWithDefaultOptions(dbname string) (*bolt.DB, error) {
 			time.Sleep(waitTime)
 		}
 	}
-	
+
 	if err != nil {
 		logger.Printf("failed to open database after 3 attempts: %v", err)
 	} else if attempt > 0 {
 		logger.Printf("database opened successfully on attempt %d", attempt+1)
 	}
-	
+
 	return db, err
 }
 
@@ -98,17 +100,17 @@ func (s *dbStore) Close() error {
 	if s == nil || s.db == nil {
 		return nil
 	}
-	
+
 	logger.Println("closing database store, waiting for operations to complete")
 	s.wg.Wait()
 	logger.Println("all operations completed, closing database")
-	
+
 	err := s.db.Close()
 	if err != nil {
 		logger.Printf("error closing database: %v", err)
 		return err
 	}
-	
+
 	logger.Println("database closed successfully")
 	return nil
 }

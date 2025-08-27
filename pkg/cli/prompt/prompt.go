@@ -65,7 +65,9 @@ func New(cfg Config) *Prompt {
 	p := &Prompt{
 		cfg,
 		"", make(chan struct{}, 1), make(chan struct{}, 1),
-		unknownContent, sync.RWMutex{}}
+		unknownContent,
+		sync.RWMutex{},
+	}
 	// TODO: Don't keep a goroutine running.
 	go p.loop()
 	return p

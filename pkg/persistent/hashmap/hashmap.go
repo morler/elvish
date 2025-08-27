@@ -524,7 +524,8 @@ func (n *collisionNode) assoc(shift, hash uint32, k, v any, h Hash, eq Equal) (n
 		idx := n.findIndex(k, eq)
 		if idx != -1 {
 			return &collisionNode{
-				n.hash, replaceEntry(n.entries, uint32(idx), k, v)}, false
+				n.hash, replaceEntry(n.entries, uint32(idx), k, v),
+			}, false
 		}
 		newEntries := make([]mapEntry, len(n.entries)+1)
 		copy(newEntries[:len(n.entries)], n.entries[:])

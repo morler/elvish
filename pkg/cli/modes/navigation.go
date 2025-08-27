@@ -220,7 +220,8 @@ func updateState(w *navigation, selectName string) {
 	colView.MutateState(func(s *tk.ColViewState) {
 		*s = tk.ColViewState{
 			Columns: []tk.Widget{
-				tk.Empty{}, tk.Empty{}, tk.Empty{}},
+				tk.Empty{}, tk.Empty{}, tk.Empty{},
+			},
 			FocusColumn: 1,
 		}
 	})

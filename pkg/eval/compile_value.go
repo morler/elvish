@@ -302,8 +302,11 @@ func (cp *compiler) primaryOp(n *parse.Primary) valuesOp {
 			cp.errorpf(n, "%s", err)
 		}
 		vs := []any{
-			globPattern{Pattern: glob.Pattern{Segments: []glob.Segment{seg}, DirOverride: ""},
-				Flags: 0, Buts: nil, TypeCb: nil}}
+			globPattern{
+				Pattern: glob.Pattern{Segments: []glob.Segment{seg}, DirOverride: ""},
+				Flags:   0, Buts: nil, TypeCb: nil,
+			},
+		}
 		return literalValues(n, vs...)
 	case parse.Tilde:
 		cp.errorpf(n, "compiler bug: Tilde not handled in .compound")
@@ -489,7 +492,8 @@ type lambdaOp struct {
 func (op *lambdaOp) exec(fm *Frame) ([]any, Exception) {
 	capture := &Ns{
 		make([]vars.Var, len(op.capture.infos)),
-		make([]staticVarInfo, len(op.capture.infos))}
+		make([]staticVarInfo, len(op.capture.infos)),
+	}
 	for i, info := range op.capture.infos {
 		if info.local {
 			capture.slots[i] = fm.local.slots[info.index]
@@ -616,8 +620,10 @@ func evalForValue(fm *Frame, op valuesOp, what string) (any, Exception) {
 		return nil, exc
 	}
 	if len(values) != 1 {
-		return nil, fm.errorp(op, errs.ArityMismatch{What: what,
-			ValidLow: 1, ValidHigh: 1, Actual: len(values)})
+		return nil, fm.errorp(op, errs.ArityMismatch{
+			What:     what,
+			ValidLow: 1, ValidHigh: 1, Actual: len(values),
+		})
 	}
 	return values[0], nil
 }

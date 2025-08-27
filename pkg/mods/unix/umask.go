@@ -84,7 +84,8 @@ func parseUmask(v any) (int, error) {
 			i, err = strconv.ParseInt(v, 0, 0)
 			if err != nil {
 				return -1, errs.BadValue{
-					What: "umask", Valid: validUmaskMsg, Actual: vals.ToString(v)}
+					What: "umask", Valid: validUmaskMsg, Actual: vals.ToString(v),
+				}
 			}
 		}
 		umask = int(i)
@@ -94,25 +95,30 @@ func parseUmask(v any) (int, error) {
 		intPart, fracPart := math.Modf(v)
 		if fracPart != 0 {
 			return -1, errs.BadValue{
-				What: "umask", Valid: validUmaskMsg, Actual: vals.ToString(v)}
+				What: "umask", Valid: validUmaskMsg, Actual: vals.ToString(v),
+			}
 		}
 		umask = int(intPart)
 	case *big.Int:
 		return -1, errs.OutOfRange{
 			What: "umask", ValidLow: "0", ValidHigh: "0o777",
-			Actual: vals.ToString(v)}
+			Actual: vals.ToString(v),
+		}
 	case *big.Rat:
 		return -1, errs.BadValue{
-			What: "umask", Valid: validUmaskMsg, Actual: vals.ToString(v)}
+			What: "umask", Valid: validUmaskMsg, Actual: vals.ToString(v),
+		}
 	default:
 		return -1, errs.BadValue{
-			What: "umask", Valid: validUmaskMsg, Actual: vals.Kind(v)}
+			What: "umask", Valid: validUmaskMsg, Actual: vals.Kind(v),
+		}
 	}
 
 	if umask < 0 || umask > 0o777 {
 		return -1, errs.OutOfRange{
 			What: "umask", ValidLow: "0", ValidHigh: "0o777",
-			Actual: fmt.Sprintf("%O", umask)}
+			Actual: fmt.Sprintf("%O", umask),
+		}
 	}
 	return umask, nil
 }

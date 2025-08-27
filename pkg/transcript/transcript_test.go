@@ -45,7 +45,8 @@ func TestParseSessionsInFS(t *testing.T) {
 					[]*Node{{
 						"x", nil, nil,
 						[]*Node{{"", nil, []Interaction{{"~> ", "echo foo", 2, 3, "foo\n", 3, 4}}, nil, 2, 4}},
-						1, 5}},
+						1, 5,
+					}},
 					1, 5,
 				},
 				{"d2/bar.elvts", nil, []Interaction{{"~> ", "echo bar", 1, 2, "bar\n", 2, 3}}, nil, 1, 3},
@@ -73,7 +74,8 @@ func TestParseSessionsInFS(t *testing.T) {
 				var v
 				`)).
 			Rets([]*Node{
-				{"a.elv", nil, nil,
+				{
+					"a.elv", nil, nil,
 					[]*Node{
 						{"f", nil, nil, []*Node{
 							{"", nil, []Interaction{{"~> ", "f 1", 2, 3, "1\n", 3, 4}}, nil, 2, 4},
@@ -83,7 +85,8 @@ func TestParseSessionsInFS(t *testing.T) {
 							{"", nil, []Interaction{{"~> ", "echo $v", 13, 14, "foo\n", 14, 15}}, nil, 13, 15},
 						}, 12, 16},
 					},
-					1, 16},
+					1, 16,
+				},
 			}, error(nil)),
 
 		It("uses fields after elvish-transcript in session name in .elv files").
@@ -138,8 +141,10 @@ func TestParseSessionsInFS(t *testing.T) {
 				fn x { }
 				`)).
 			Rets([]*Node{{
-				"a.elv", nil, nil, []*Node{{
-					"x", nil, nil, []*Node{{
+				"a.elv", nil, nil,
+				[]*Node{{
+					"x", nil, nil,
+					[]*Node{{
 						"", nil,
 						[]Interaction{{"~> ", "nop top", 3, 4, "", 4, 4}},
 						[]*Node{{
@@ -147,7 +152,8 @@ func TestParseSessionsInFS(t *testing.T) {
 							[]Interaction{{"~> ", "nop h1", 7, 8, "", 8, 8}},
 							[]*Node{{
 								"h2", nil,
-								[]Interaction{{"~> ", "nop h2", 10, 11, "", 11, 11}}, nil,
+								[]Interaction{{"~> ", "nop h2", 10, 11, "", 11, 11}},
+								nil,
 								9, 11,
 							}},
 							5, 11,
@@ -175,7 +181,8 @@ func TestParseSessionsInFS(t *testing.T) {
 				"a.elvts", nil, nil,
 				[]*Node{{
 					"h1", nil,
-					[]Interaction{{"~> ", "echo foo", 4, 5, "foo\n", 5, 6}}, nil,
+					[]Interaction{{"~> ", "echo foo", 4, 5, "foo\n", 5, 6}},
+					nil,
 					1, 8,
 				}},
 				1, 8,
@@ -212,7 +219,8 @@ func TestParseSessionsInFS(t *testing.T) {
 					},
 					{
 						"section 2", nil,
-						[]Interaction{{"~> ", "nop in section 2", 13, 14, "", 14, 14}}, nil,
+						[]Interaction{{"~> ", "nop in section 2", 13, 14, "", 14, 14}},
+						nil,
 						12, 14,
 					},
 				},
@@ -233,7 +241,8 @@ func TestParseSessionsInFS(t *testing.T) {
 				`)).
 			Rets([]*Node{{
 				"a.elvts", nil,
-				[]Interaction{{"~> ", "echo foo; echo bar", 2, 3, "foo\nbar\n", 4, 7}}, nil,
+				[]Interaction{{"~> ", "echo foo; echo bar", 2, 3, "foo\nbar\n", 4, 7}},
+				nil,
 				1, 10,
 			}}),
 
@@ -278,7 +287,8 @@ func TestParseSessionsInFS(t *testing.T) {
 				[]Interaction{
 					{"~> ", "echo foo\necho bar", 1, 3, "foo\nbar\n", 3, 5},
 					{"~> ", "echo lorem\necho ipsum", 5, 7, "lorem\nipsum\n", 7, 9},
-				}, nil,
+				},
+				nil,
 				1, 9,
 			}}),
 
@@ -292,7 +302,8 @@ func TestParseSessionsInFS(t *testing.T) {
 				[]Interaction{
 					{"~> ", "nop", 1, 2, "", 2, 2},
 					{"~> ", "nop", 2, 3, "", 3, 3},
-				}, nil,
+				},
+				nil,
 				1, 3,
 			}}),
 
@@ -308,7 +319,8 @@ func TestParseSessionsInFS(t *testing.T) {
 				[]Interaction{
 					{"~/foo> ", "echo foo", 1, 2, "foo\n", 2, 3},
 					{"/opt/bar> ", "echo bar", 3, 4, "bar\n", 4, 5},
-				}, nil,
+				},
+				nil,
 				1, 5,
 			}}),
 
@@ -325,7 +337,8 @@ func TestParseSessionsInFS(t *testing.T) {
 			Rets([]*Node{{
 				"a.elvts",
 				[]string{"directive 1", "directive 2"},
-				[]Interaction{{"~> ", "nop", 7, 8, "", 8, 8}}, nil,
+				[]Interaction{{"~> ", "nop", 7, 8, "", 8, 8}},
+				nil,
 				1, 8,
 			}}),
 

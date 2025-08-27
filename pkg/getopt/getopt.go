@@ -259,7 +259,8 @@ func parseShort(s string, specs []*OptionSpec) ([]*Option, bool) {
 		// Unknown option, treat as taking an optional argument
 		parsed := &Option{
 			Spec: &OptionSpec{r, "", OptionalArgument}, Unknown: true,
-			Argument: s[i+len(string(r)):]}
+			Argument: s[i+len(string(r)):],
+		}
 		opts = append(opts, parsed)
 		break
 	}
@@ -289,9 +290,11 @@ func parseLong(s string, specs []*OptionSpec) (*Option, bool) {
 	// Unknown option, treat as taking an optional argument
 	if eq == -1 {
 		return &Option{
-			Spec: &OptionSpec{0, s, OptionalArgument}, Unknown: true, Long: true}, false
+			Spec: &OptionSpec{0, s, OptionalArgument}, Unknown: true, Long: true,
+		}, false
 	}
 	return &Option{
 		Spec: &OptionSpec{0, s[:eq], OptionalArgument}, Unknown: true,
-		Long: true, Argument: s[eq+1:]}, false
+		Long: true, Argument: s[eq+1:],
+	}, false
 }

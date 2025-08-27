@@ -117,8 +117,10 @@ func (p *inlineParser) render() {
 				emptyToNewline(utf8.DecodeRuneInString(p.text[p.pos:])))
 			bufIdx := p.buf.push(textPiece(p.text[begin:p.pos]))
 			p.delims.push(
-				&delim{typ: b, bufIdx: bufIdx,
-					n: p.pos - begin, canOpen: canOpen, canClose: canClose})
+				&delim{
+					typ: b, bufIdx: bufIdx,
+					n: p.pos - begin, canOpen: canOpen, canClose: canClose,
+				})
 		case ']':
 			// https://spec.commonmark.org/0.31.2/#look-for-link-or-image.
 			var opener *delim
@@ -153,9 +155,11 @@ func (p *inlineParser) render() {
 			unlink(opener)
 			if opener.typ == '[' {
 				p.buf.pieces[opener.bufIdx] = piece{
-					before: []InlineOp{{Type: OpLinkStart, Dest: dest, Text: title}}}
+					before: []InlineOp{{Type: OpLinkStart, Dest: dest, Text: title}},
+				}
 				p.buf.push(piece{
-					after: []InlineOp{{Type: OpLinkEnd, Dest: dest, Text: title}}})
+					after: []InlineOp{{Type: OpLinkEnd, Dest: dest, Text: title}},
+				})
 			} else {
 				// Use the pieces after "![" to build the image alt text.
 				var altBuilder strings.Builder
@@ -165,7 +169,8 @@ func (p *inlineParser) render() {
 				p.buf.pieces = p.buf.pieces[:opener.bufIdx]
 				alt := altBuilder.String()
 				p.buf.push(piece{
-					main: InlineOp{Type: OpImage, Dest: dest, Alt: alt, Text: title}})
+					main: InlineOp{Type: OpImage, Dest: dest, Alt: alt, Text: title},
+				})
 			}
 		case '`':
 			// https://spec.commonmark.org/0.31.2/#code-spans
@@ -177,8 +182,11 @@ func (p *inlineParser) render() {
 				continue
 			}
 			p.buf.push(piece{
-				main: InlineOp{Type: OpCodeSpan,
-					Text: normalizeCodeSpanContent(p.text[p.pos:closer])}})
+				main: InlineOp{
+					Type: OpCodeSpan,
+					Text: normalizeCodeSpanContent(p.text[p.pos:closer]),
+				},
+			})
 			p.pos = closer + (p.pos - begin)
 		case '<':
 			// https://spec.commonmark.org/0.31.2/#raw-html

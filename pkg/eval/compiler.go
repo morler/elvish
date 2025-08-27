@@ -44,10 +44,13 @@ type scopePragma struct {
 func compile(b, g *staticNs, modules []string, tree parse.Tree, w io.Writer) (nsOp, []string, error) {
 	g = g.clone()
 	cp := &compiler{
-		b, []*staticNs{g}, []*staticUpNs{new(staticUpNs)},
+		b,
+		[]*staticNs{g},
+		[]*staticUpNs{new(staticUpNs)},
 		[]*scopePragma{{unknownCommandIsExternal: true}},
 		modules,
-		w, newDeprecationRegistry(), tree.Source, nil, nil}
+		w, newDeprecationRegistry(), tree.Source, nil, nil,
+	}
 	chunkOp := cp.chunkOp(tree.Root)
 	return nsOp{chunkOp, g}, cp.autofixes, diag.PackErrors(cp.errors)
 }
@@ -170,7 +173,8 @@ func (cp *compiler) deprecate(r diag.Ranger, msg string, minLevel int) {
 	if prog.DeprecationLevel >= minLevel && cp.deprecations.register(dep) {
 		err := diag.Error[deprecationTag]{
 			Message: msg,
-			Context: *diag.NewContext(cp.src.Name, cp.src.Code, r.Range())}
+			Context: *diag.NewContext(cp.src.Name, cp.src.Code, r.Range()),
+		}
 		fmt.Fprintln(cp.warn, err.Show(""))
 	}
 }

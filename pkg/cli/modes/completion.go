@@ -61,7 +61,8 @@ func NewCompletion(app cli.App, cfg CompletionSpec) (Completion, error) {
 				text := it.(completionItems)[i].ToInsert
 				codeArea.MutateState(func(s *tk.CodeAreaState) {
 					s.Pending = tk.PendingCode{
-						From: cfg.Replace.From, To: cfg.Replace.To, Content: text}
+						From: cfg.Replace.From, To: cfg.Replace.To, Content: text,
+					}
 				})
 			},
 			OnAccept: func(it tk.Items, i int) {

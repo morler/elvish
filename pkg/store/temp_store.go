@@ -17,8 +17,9 @@ func MustTempStore(c testutil.Cleanuper) DBStore {
 	if err != nil {
 		panic(fmt.Sprintf("open temp file: %v", err))
 	}
-	db, err := bolt.Open(f.Name(), 0644, &bolt.Options{
-		Timeout: time.Second, NoSync: true, NoFreelistSync: true})
+	db, err := bolt.Open(f.Name(), 0o644, &bolt.Options{
+		Timeout: time.Second, NoSync: true, NoFreelistSync: true,
+	})
 	if err != nil {
 		panic(fmt.Sprintf("open boltdb: %v", err))
 	}

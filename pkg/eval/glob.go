@@ -139,8 +139,10 @@ func (gp globPattern) Concat(v any) (any, error) {
 		var segs []glob.Segment
 		segs = append(segs, gp.Segments...)
 		segs = append(segs, stringToSegments(rhs)...)
-		return globPattern{Pattern: glob.Pattern{Segments: segs}, Flags: gp.Flags,
-			Buts: gp.Buts, TypeCb: gp.TypeCb}, nil
+		return globPattern{
+			Pattern: glob.Pattern{Segments: segs}, Flags: gp.Flags,
+			Buts: gp.Buts, TypeCb: gp.TypeCb,
+		}, nil
 	case globPattern:
 		// We know rhs contains exactly one segment.
 		gp.append(rhs.Segments[0])
@@ -165,8 +167,10 @@ func (gp globPattern) RConcat(v any) (any, error) {
 		segs := stringToSegments(lhs)
 		// We know gp contains exactly one segment.
 		segs = append(segs, gp.Segments[0])
-		return globPattern{Pattern: glob.Pattern{Segments: segs}, Flags: gp.Flags,
-			Buts: gp.Buts, TypeCb: gp.TypeCb}, nil
+		return globPattern{
+			Pattern: glob.Pattern{Segments: segs}, Flags: gp.Flags,
+			Buts: gp.Buts, TypeCb: gp.TypeCb,
+		}, nil
 	}
 
 	return nil, vals.ErrConcatNotImplemented

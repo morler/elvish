@@ -84,8 +84,7 @@ func (e SetReadOnlyVar) Error() string {
 // terminated. It could be raised directly by builtin commands, or when an
 // external command gets terminated by SIGPIPE after Elvish detects the read end
 // of the pipe has exited earlier.
-type ReaderGone struct {
-}
+type ReaderGone struct{}
 
 // Error implements the error interface.
 func (e ReaderGone) Error() string {

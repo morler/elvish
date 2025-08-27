@@ -31,8 +31,10 @@ func specialModesFromIterable(v any) (fs.FileMode, error) {
 		case "sticky":
 			mode |= fs.ModeSticky
 		default:
-			errElem = errs.BadValue{What: "special mode",
-				Valid: "setuid, setgid or sticky", Actual: vals.ToString(elem)}
+			errElem = errs.BadValue{
+				What:  "special mode",
+				Valid: "setuid, setgid or sticky", Actual: vals.ToString(elem),
+			}
 			return false
 		}
 		return true

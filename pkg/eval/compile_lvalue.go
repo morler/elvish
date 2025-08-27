@@ -89,8 +89,11 @@ func (cp *compiler) compileIndexingLValue(n *parse.Indexing, f lvalueFlag) lvalu
 		if len(segs) == 1 {
 			// Unqualified name - implicit local
 			name := segs[0]
-			ref = &varRef{localScope,
-				staticVarInfo{name, false, false}, cp.thisScope().add(name), nil}
+			ref = &varRef{
+				localScope,
+				staticVarInfo{name, false, false},
+				cp.thisScope().add(name), nil,
+			}
 		} else {
 			cp.errorpf(n, "cannot create variable $%s; "+
 				"new variables can only be created in the current scope",
@@ -148,8 +151,10 @@ func doAssign(fm *Frame, r diag.Ranger, lhs lvaluesGroup, rhs valuesOp, rc resto
 	// Now perform assignment.
 	if rest := lhs.rest; rest == -1 {
 		if len(variables) != len(values) {
-			return fm.errorp(r, errs.ArityMismatch{What: "assignment right-hand-side",
-				ValidLow: len(variables), ValidHigh: len(variables), Actual: len(values)})
+			return fm.errorp(r, errs.ArityMismatch{
+				What:     "assignment right-hand-side",
+				ValidLow: len(variables), ValidHigh: len(variables), Actual: len(values),
+			})
 		}
 		for i, variable := range variables {
 			exc := set(fm, lhs.lvalues[i], variable, values[i], rc)
@@ -159,8 +164,10 @@ func doAssign(fm *Frame, r diag.Ranger, lhs lvaluesGroup, rhs valuesOp, rc resto
 		}
 	} else {
 		if len(values) < len(variables)-1 {
-			return fm.errorp(r, errs.ArityMismatch{What: "assignment right-hand-side",
-				ValidLow: len(variables) - 1, ValidHigh: -1, Actual: len(values)})
+			return fm.errorp(r, errs.ArityMismatch{
+				What:     "assignment right-hand-side",
+				ValidLow: len(variables) - 1, ValidHigh: -1, Actual: len(values),
+			})
 		}
 		for i := 0; i < rest; i++ {
 			exc := set(fm, lhs.lvalues[i], variables[i], values[i], rc)

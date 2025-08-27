@@ -53,10 +53,12 @@ func TestConvertEvent(t *testing.T) {
 
 func charKeyEvent(r uint16, mod uint32) *ewindows.KeyEvent {
 	return &ewindows.KeyEvent{
-		BKeyDown: 1, DwControlKeyState: mod, UChar: [2]byte{byte(r), byte(r >> 8)}}
+		BKeyDown: 1, DwControlKeyState: mod, UChar: [2]byte{byte(r), byte(r >> 8)},
+	}
 }
 
 func funcKeyEvent(code uint16, mod uint32) *ewindows.KeyEvent {
 	return &ewindows.KeyEvent{
-		BKeyDown: 1, DwControlKeyState: mod, WVirtualKeyCode: code}
+		BKeyDown: 1, DwControlKeyState: mod, WVirtualKeyCode: code,
+	}
 }

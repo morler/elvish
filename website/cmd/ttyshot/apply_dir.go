@@ -26,11 +26,11 @@ func ApplyDir(dir Dir, root string) error {
 		var err error
 		switch file := file.(type) {
 		case string:
-			err = os.WriteFile(path, []byte(file), 0644)
+			err = os.WriteFile(path, []byte(file), 0o644)
 		case File:
 			err = os.WriteFile(path, []byte(file.Content), file.Perm)
 		case Dir:
-			err = os.MkdirAll(path, 0755)
+			err = os.MkdirAll(path, 0o755)
 			if err == nil {
 				err = ApplyDir(file, path)
 			}

@@ -12,13 +12,17 @@ import (
 )
 
 var (
-	mkdirs = []string{"a", "b", "c", "d1", "d1/e", "d1/e/f", "d1/e/f/g",
-		"d2", "d2/e", "d2/e/f", "d2/e/f/g"}
+	mkdirs = []string{
+		"a", "b", "c", "d1", "d1/e", "d1/e/f", "d1/e/f/g",
+		"d2", "d2/e", "d2/e/f", "d2/e/f/g",
+	}
 	mkdirDots = []string{".el"}
-	creates   = []string{"a/X", "a/Y", "b/X", "c/Y",
+	creates   = []string{
+		"a/X", "a/Y", "b/X", "c/Y",
 		"dX", "dXY",
 		"lorem", "ipsum",
-		"d1/e/f/g/X", "d2/e/f/g/X"}
+		"d1/e/f/g/X", "d2/e/f/g/X",
+	}
 	createDots = []string{".x", ".el/x"}
 	symlinks   = []struct {
 		path   string
@@ -78,7 +82,7 @@ func testGlob(t *testing.T, abs bool) {
 	dir = filepath.ToSlash(dir)
 
 	for _, dir := range append(mkdirs, mkdirDots...) {
-		err := os.Mkdir(dir, 0755)
+		err := os.Mkdir(dir, 0o755)
 		if err != nil {
 			panic(err)
 		}

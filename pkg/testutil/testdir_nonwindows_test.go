@@ -13,11 +13,11 @@ func TestApplyDir_CreatesFileWithPerm(t *testing.T) {
 	ApplyDir(Dir{
 		// For some unknown reason, termux on Android does not set the
 		// group and other permission bits correctly, so we use 700 here.
-		"a": File{0700, "a content"},
+		"a": File{0o700, "a content"},
 	})
 
 	testFileContent(t, "a", "a content")
-	testFilePerm(t, "a", 0700)
+	testFilePerm(t, "a", 0o700)
 }
 
 func testFilePerm(t *testing.T, filename string, wantPerm os.FileMode) {

@@ -30,7 +30,7 @@ func secureRunDir() (string, error) {
 	username := os.Getenv(env.USERNAME)
 
 	runDir := filepath.Join(os.TempDir(), "elvish-"+username)
-	err := os.MkdirAll(runDir, 0700)
+	err := os.MkdirAll(runDir, 0o700)
 	if err != nil {
 		return "", fmt.Errorf("mkdir: %v", err)
 	}

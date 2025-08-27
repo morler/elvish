@@ -26,7 +26,8 @@ func TestClaimFile(t *testing.T) {
 		"a0.log": "",
 		"a1.log": "",
 		"a8.log": "",
-		"d":      testutil.Dir{}})
+		"d":      testutil.Dir{},
+	})
 
 	for _, test := range claimFileTests {
 		name := claimFileAndGetName(test.dir, test.pattern)

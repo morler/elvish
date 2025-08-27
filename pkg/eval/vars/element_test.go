@@ -16,14 +16,16 @@ var elementTests = []struct {
 	{
 		"single level",
 		vals.MakeMap("k1", "v1", "k2", "v2"),
-		[]any{"k1"}, "new v1",
+		[]any{"k1"},
+		"new v1",
 		vals.MakeMap("k1", "new v1", "k2", "v2"),
 	},
 	{
 		"multi level",
 		vals.MakeMap(
 			"k1", vals.MakeMap("k1a", "v1a", "k1b", "v1b"), "k2", "v2"),
-		[]any{"k1", "k1a"}, "new v1a",
+		[]any{"k1", "k1a"},
+		"new v1a",
 		vals.MakeMap(
 			"k1", vals.MakeMap("k1a", "new v1a", "k1b", "v1b"), "k2", "v2"),
 	},

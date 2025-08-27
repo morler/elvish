@@ -39,7 +39,8 @@ func (s hybridStore) AllCmds() ([]storedefs.Cmd, error) {
 
 func (s hybridStore) Cursor(prefix string) Cursor {
 	return &hybridStoreCursor{
-		s.shared.Cursor(prefix), s.session.Cursor(prefix), false}
+		s.shared.Cursor(prefix), s.session.Cursor(prefix), false,
+	}
 }
 
 type hybridStoreCursor struct {

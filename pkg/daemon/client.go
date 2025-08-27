@@ -13,11 +13,9 @@ import (
 
 const retriesOnShutdown = 3
 
-var (
-	// ErrDaemonUnreachable is returned when the daemon cannot be reached after
-	// several retries.
-	ErrDaemonUnreachable = errors.New("daemon offline")
-)
+// ErrDaemonUnreachable is returned when the daemon cannot be reached after
+// several retries.
+var ErrDaemonUnreachable = errors.New("daemon offline")
 
 // Implementation of the Client interface.
 type client struct {

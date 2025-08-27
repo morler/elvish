@@ -33,6 +33,7 @@ func (i PrimaryType) String() string {
 	}
 	return _PrimaryType_name[_PrimaryType_index[i]:_PrimaryType_index[i+1]]
 }
+
 func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.
@@ -54,6 +55,7 @@ func (i RedirMode) String() string {
 	}
 	return _RedirMode_name[_RedirMode_index[i]:_RedirMode_index[i+1]]
 }
+
 func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.

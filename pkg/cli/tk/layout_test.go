@@ -59,8 +59,10 @@ var layoutRenderTests = []struct {
 	},
 	{
 		"VScrollbarContainer",
-		VScrollbarContainer{Label{ui.T("abcd1234")},
-			VScrollbar{4, 0, 1}},
+		VScrollbarContainer{
+			Label{ui.T("abcd1234")},
+			VScrollbar{4, 0, 1},
+		},
 		5, 2,
 		bb(5).Write("abcd").WriteStyled(vscrollbarThumb).
 			Newline().Write("1234").WriteStyled(vscrollbarTrough),

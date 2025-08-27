@@ -90,7 +90,8 @@ func initLastcmd(ed *Editor, ev *eval.Evaler, histStore histutil.Store, commonBi
 			AddGoFn("start", func() {
 				// TODO: Specify wordifier
 				w, err := modes.NewLastcmd(ed.app, modes.LastcmdSpec{
-					Bindings: bindings, Store: histStore})
+					Bindings: bindings, Store: histStore,
+				})
 				startMode(ed.app, w, err)
 			}))
 }

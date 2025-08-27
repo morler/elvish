@@ -16,42 +16,63 @@ var bufferBuilderWritesTests = []struct {
 	// Writing nothing.
 	{NewBufferBuilder(10), "", "", &Buffer{Width: 10, Lines: [][]Cell{{}}}},
 	// Writing a single rune.
-	{NewBufferBuilder(10), "a", "1",
-		&Buffer{Width: 10, Lines: [][]Cell{{{"a", "1"}}}}},
+	{
+		NewBufferBuilder(10), "a", "1",
+		&Buffer{Width: 10, Lines: [][]Cell{{{"a", "1"}}}},
+	},
 	// Writing control character.
-	{NewBufferBuilder(10), "\033", "",
-		&Buffer{Width: 10, Lines: [][]Cell{{{"^[", "7"}}}}},
+	{
+		NewBufferBuilder(10), "\033", "",
+		&Buffer{Width: 10, Lines: [][]Cell{{{"^[", "7"}}}},
+	},
 	// Writing styled control character.
-	{NewBufferBuilder(10), "a\033b", "1",
+	{
+		NewBufferBuilder(10), "a\033b", "1",
 		&Buffer{Width: 10, Lines: [][]Cell{{
 			{"a", "1"},
 			{"^[", "1;7"},
-			{"b", "1"}}}}},
+			{"b", "1"},
+		}}},
+	},
 	// Writing text containing a newline.
-	{NewBufferBuilder(10), "a\nb", "1",
+	{
+		NewBufferBuilder(10), "a\nb", "1",
 		&Buffer{Width: 10, Lines: [][]Cell{
-			{{"a", "1"}}, {{"b", "1"}}}}},
+			{{"a", "1"}}, {{"b", "1"}},
+		}},
+	},
 	// Writing text containing a newline when there is indent.
-	{NewBufferBuilder(10).SetIndent(2), "a\nb", "1",
+	{
+		NewBufferBuilder(10).SetIndent(2), "a\nb", "1",
 		&Buffer{Width: 10, Lines: [][]Cell{
 			{{"a", "1"}},
 			{{" ", ""}, {" ", ""}, {"b", "1"}},
-		}}},
+		}},
+	},
 	// Writing long text that triggers wrapping.
-	{NewBufferBuilder(4), "aaaab", "1",
+	{
+		NewBufferBuilder(4), "aaaab", "1",
 		&Buffer{Width: 4, Lines: [][]Cell{
 			{{"a", "1"}, {"a", "1"}, {"a", "1"}, {"a", "1"}},
-			{{"b", "1"}}}}},
+			{{"b", "1"}},
+		}},
+	},
 	// Writing long text that triggers wrapping when there is indent.
-	{NewBufferBuilder(4).SetIndent(2), "aaaab", "1",
+	{
+		NewBufferBuilder(4).SetIndent(2), "aaaab", "1",
 		&Buffer{Width: 4, Lines: [][]Cell{
 			{{"a", "1"}, {"a", "1"}, {"a", "1"}, {"a", "1"}},
-			{{" ", ""}, {" ", ""}, {"b", "1"}}}}},
+			{{" ", ""}, {" ", ""}, {"b", "1"}},
+		}},
+	},
 	// Writing long text that triggers eager wrapping.
-	{NewBufferBuilder(4).SetIndent(2).SetEagerWrap(true), "aaaa", "1",
+	{
+		NewBufferBuilder(4).SetIndent(2).SetEagerWrap(true), "aaaa", "1",
 		&Buffer{Width: 4, Lines: [][]Cell{
 			{{"a", "1"}, {"a", "1"}, {"a", "1"}, {"a", "1"}},
-			{{" ", ""}, {" ", ""}}}}},
+			{{" ", ""}, {" ", ""}},
+		}},
+	},
 }
 
 // TestBufferBuilderWrites tests BufferBuilder.Writes by calling Writes on a
@@ -106,5 +127,6 @@ func TestBufferBuilder(t *testing.T) {
 func cloneBufferBuilder(bb *BufferBuilder) *BufferBuilder {
 	return &BufferBuilder{
 		bb.Width, bb.Col, bb.Indent,
-		bb.EagerWrap, cloneLines(bb.Lines), bb.Dot}
+		bb.EagerWrap, cloneLines(bb.Lines), bb.Dot,
+	}
 }

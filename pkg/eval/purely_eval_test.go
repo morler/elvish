@@ -14,7 +14,7 @@ import (
 func TestPurelyEvalCompound(t *testing.T) {
 	home := testutil.InTempHome(t)
 
-	var tests = []struct {
+	tests := []struct {
 		code      string
 		upto      int
 		wantValue string

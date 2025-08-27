@@ -57,7 +57,7 @@ func isNotExist(e eval.Exception) bool {
 
 type mkdirOpts struct{ Perm int }
 
-func (opts *mkdirOpts) SetDefaultOptions() { opts.Perm = 0755 }
+func (opts *mkdirOpts) SetDefaultOptions() { opts.Perm = 0o755 }
 
 func mkdir(opts mkdirOpts, path string) error {
 	return os.Mkdir(path, os.FileMode(opts.Perm))
@@ -69,7 +69,8 @@ func mkdirAll(opts mkdirOpts, path string) error {
 
 // ErrEmptyPath is thrown by remove and remove-all when given an empty path.
 var ErrEmptyPath = errs.BadValue{
-	What: "path", Valid: "non-empty string", Actual: "empty string"}
+	What: "path", Valid: "non-empty string", Actual: "empty string",
+}
 
 // Wraps [os.Remove] to reject empty paths.
 func remove(path string) error {
@@ -104,8 +105,10 @@ func (*chmodOpts) SetDefaultOptions() {}
 
 func chmod(opts chmodOpts, perm int, path string) error {
 	if perm < 0 || perm > 0x777 {
-		return errs.OutOfRange{What: "permission bits",
-			ValidLow: "0", ValidHigh: "0o777", Actual: strconv.Itoa(perm)}
+		return errs.OutOfRange{
+			What:     "permission bits",
+			ValidLow: "0", ValidHigh: "0o777", Actual: strconv.Itoa(perm),
+		}
 	}
 	mode := fs.FileMode(perm)
 	if opts.SpecialModes != nil {
@@ -188,7 +191,9 @@ func optionalTempPattern(args []string) (string, error) {
 	case 1:
 		return args[0], nil
 	default:
-		return "", errs.ArityMismatch{What: "arguments",
-			ValidLow: 0, ValidHigh: 1, Actual: len(args)}
+		return "", errs.ArityMismatch{
+			What:     "arguments",
+			ValidLow: 0, ValidHigh: 1, Actual: len(args),
+		}
 	}
 }

@@ -12,7 +12,8 @@ var textViewRenderTests = []renderTest{
 	{
 		Name: "text fits entirely",
 		Given: NewTextView(TextViewSpec{State: TextViewState{
-			Lines: []string{"line 1", "line 2", "line 3"}}}),
+			Lines: []string{"line 1", "line 2", "line 3"},
+		}}),
 		Width: 10, Height: 4,
 		Want: bb(10).
 			Write("line 1").Newline().
@@ -22,7 +23,8 @@ var textViewRenderTests = []renderTest{
 	{
 		Name: "text cropped horizontally",
 		Given: NewTextView(TextViewSpec{State: TextViewState{
-			Lines: []string{"a very long line"}}}),
+			Lines: []string{"a very long line"},
+		}}),
 		Width: 10, Height: 4,
 		Want: bb(10).
 			Write("a very lon").Buffer(),
@@ -30,7 +32,8 @@ var textViewRenderTests = []renderTest{
 	{
 		Name: "text cropped vertically",
 		Given: NewTextView(TextViewSpec{State: TextViewState{
-			Lines: []string{"line 1", "line 2", "line 3"}}}),
+			Lines: []string{"line 1", "line 2", "line 3"},
+		}}),
 		Width: 10, Height: 2,
 		Want: bb(10).
 			Write("line 1").Newline().
@@ -41,7 +44,9 @@ var textViewRenderTests = []renderTest{
 		Given: NewTextView(TextViewSpec{
 			Scrollable: true,
 			State: TextViewState{
-				Lines: []string{"line 1", "line 2", "line 3", "line 4"}}}),
+				Lines: []string{"line 1", "line 2", "line 3", "line 4"},
+			},
+		}),
 		Width: 10, Height: 2,
 		Want: bb(10).
 			Write("line 1   ").
@@ -53,7 +58,8 @@ var textViewRenderTests = []renderTest{
 		Name: "State.First adjusted to fit text",
 		Given: NewTextView(TextViewSpec{State: TextViewState{
 			First: 2,
-			Lines: []string{"line 1", "line 2", "line 3"}}}),
+			Lines: []string{"line 1", "line 2", "line 3"},
+		}}),
 		Width: 10, Height: 3,
 		Want: bb(10).
 			Write("line 1").Newline().
@@ -70,7 +76,8 @@ var textViewHandleTests = []handleTest{
 	{
 		Name: "up doing nothing when not scrollable",
 		Given: NewTextView(TextViewSpec{
-			State: TextViewState{Lines: []string{"1", "2", "3", "4"}, First: 1}}),
+			State: TextViewState{Lines: []string{"1", "2", "3", "4"}, First: 1},
+		}),
 		Event: term.K(ui.Up),
 
 		WantUnhandled: true,
@@ -79,7 +86,8 @@ var textViewHandleTests = []handleTest{
 		Name: "up moving window up when scrollable",
 		Given: NewTextView(TextViewSpec{
 			Scrollable: true,
-			State:      TextViewState{Lines: []string{"1", "2", "3", "4"}, First: 1}}),
+			State:      TextViewState{Lines: []string{"1", "2", "3", "4"}, First: 1},
+		}),
 		Event: term.K(ui.Up),
 
 		WantNewState: TextViewState{Lines: []string{"1", "2", "3", "4"}, First: 0},
@@ -88,7 +96,8 @@ var textViewHandleTests = []handleTest{
 		Name: "up doing nothing when already at top",
 		Given: NewTextView(TextViewSpec{
 			Scrollable: true,
-			State:      TextViewState{Lines: []string{"1", "2", "3", "4"}, First: 0}}),
+			State:      TextViewState{Lines: []string{"1", "2", "3", "4"}, First: 0},
+		}),
 		Event: term.K(ui.Up),
 
 		WantNewState: TextViewState{Lines: []string{"1", "2", "3", "4"}, First: 0},
@@ -97,7 +106,8 @@ var textViewHandleTests = []handleTest{
 		Name: "down moving window down when scrollable",
 		Given: NewTextView(TextViewSpec{
 			Scrollable: true,
-			State:      TextViewState{Lines: []string{"1", "2", "3", "4"}, First: 1}}),
+			State:      TextViewState{Lines: []string{"1", "2", "3", "4"}, First: 1},
+		}),
 		Event: term.K(ui.Down),
 
 		WantNewState: TextViewState{Lines: []string{"1", "2", "3", "4"}, First: 2},
@@ -106,7 +116,8 @@ var textViewHandleTests = []handleTest{
 		Name: "down doing nothing when already at bottom",
 		Given: NewTextView(TextViewSpec{
 			Scrollable: true,
-			State:      TextViewState{Lines: []string{"1", "2", "3", "4"}, First: 3}}),
+			State:      TextViewState{Lines: []string{"1", "2", "3", "4"}, First: 3},
+		}),
 		Event: term.K(ui.Down),
 
 		WantNewState: TextViewState{Lines: []string{"1", "2", "3", "4"}, First: 3},
@@ -114,7 +125,8 @@ var textViewHandleTests = []handleTest{
 	{
 		Name: "bindings",
 		Given: NewTextView(TextViewSpec{
-			Bindings: MapBindings{term.K('a'): func(Widget) {}}}),
+			Bindings: MapBindings{term.K('a'): func(Widget) {}},
+		}),
 		Event: term.K('a'),
 
 		WantNewState: TextViewState{},

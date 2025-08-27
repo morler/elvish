@@ -53,10 +53,12 @@ func TestUnifyNums(t *testing.T) {
 		Args([]Num{1, 2, 3, big.NewRat(1, 2)}, Int).
 			Rets([]*big.Rat{
 				big.NewRat(1, 1), big.NewRat(2, 1),
-				big.NewRat(3, 1), big.NewRat(1, 2)}),
+				big.NewRat(3, 1), big.NewRat(1, 2),
+			}),
 		Args([]Num{1, 2, bigInt(z), big.NewRat(1, 2)}, Int).
 			Rets([]*big.Rat{
-				big.NewRat(1, 1), big.NewRat(2, 1), bigRat(z), big.NewRat(1, 2)}),
+				big.NewRat(1, 1), big.NewRat(2, 1), bigRat(z), big.NewRat(1, 2),
+			}),
 
 		Args([]Num{1, 2, 3, 4.0}, Int).
 			Rets([]float64{1, 2, 3, 4}),
@@ -69,7 +71,8 @@ func TestUnifyNums(t *testing.T) {
 
 		Args([]Num{1, 2, 3, 4}, BigInt).
 			Rets([]*big.Int{
-				big.NewInt(1), big.NewInt(2), big.NewInt(3), big.NewInt(4)}),
+				big.NewInt(1), big.NewInt(2), big.NewInt(3), big.NewInt(4),
+			}),
 	)
 }
 

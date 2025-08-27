@@ -82,7 +82,6 @@ type replaceOpts struct {
 func (*replaceOpts) SetDefaultOptions() {}
 
 func replace(fm *eval.Frame, opts replaceOpts, argPattern string, argRepl any, source string) (string, error) {
-
 	pattern, err := makePattern(argPattern, opts.Posix, opts.Longest)
 	if err != nil {
 		return "", err
@@ -91,8 +90,10 @@ func replace(fm *eval.Frame, opts replaceOpts, argPattern string, argRepl any, s
 	if opts.Literal {
 		repl, ok := argRepl.(string)
 		if !ok {
-			return "", &errs.BadValue{What: "literal replacement",
-				Valid: "string", Actual: vals.Kind(argRepl)}
+			return "", &errs.BadValue{
+				What:  "literal replacement",
+				Valid: "string", Actual: vals.Kind(argRepl),
+			}
 		}
 		return pattern.ReplaceAllLiteralString(source, repl), nil
 	}
@@ -113,22 +114,28 @@ func replace(fm *eval.Frame, opts replaceOpts, argPattern string, argRepl any, s
 				return ""
 			}
 			if len(values) != 1 {
-				errReplace = &errs.ArityMismatch{What: "replacement function output",
-					ValidLow: 1, ValidHigh: 1, Actual: len(values)}
+				errReplace = &errs.ArityMismatch{
+					What:     "replacement function output",
+					ValidLow: 1, ValidHigh: 1, Actual: len(values),
+				}
 				return ""
 			}
 			output, ok := values[0].(string)
 			if !ok {
-				errReplace = &errs.BadValue{What: "replacement function output",
-					Valid: "string", Actual: vals.Kind(values[0])}
+				errReplace = &errs.BadValue{
+					What:  "replacement function output",
+					Valid: "string", Actual: vals.Kind(values[0]),
+				}
 				return ""
 			}
 			return output
 		}
 		return pattern.ReplaceAllStringFunc(source, replFunc), errReplace
 	default:
-		return "", &errs.BadValue{What: "replacement",
-			Valid: "string or function", Actual: vals.Kind(argRepl)}
+		return "", &errs.BadValue{
+			What:  "replacement",
+			Valid: "string or function", Actual: vals.Kind(argRepl),
+		}
 	}
 }
 

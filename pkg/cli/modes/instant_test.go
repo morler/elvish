@@ -79,7 +79,8 @@ func TestNewInstant_NoExecutor(t *testing.T) {
 func TestNewInstant_FocusedWidgetNotCodeArea(t *testing.T) {
 	testFocusedWidgetNotCodeArea(t, func(app cli.App) error {
 		_, err := NewInstant(app, InstantSpec{
-			Execute: func(string) ([]string, error) { return nil, nil }})
+			Execute: func(string) ([]string, error) { return nil, nil },
+		})
 		return err
 	})
 }

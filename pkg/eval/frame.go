@@ -66,7 +66,8 @@ func (fm *Frame) PrepareEval(src parse.Source, r diag.Ranger, ns *Ns) (*Ns, func
 		traceback = fm.addTraceback(r)
 	}
 	newFm := &Frame{
-		fm.Evaler, fm.ctx, fm.ports, traceback, fm.background, src, local, new(Ns), nil}
+		fm.Evaler, fm.ctx, fm.ports, traceback, fm.background, src, local, new(Ns), nil,
+	}
 	op, _, err := compile(fm.Evaler.Builtin().static(), local.static(), nil, tree, fm.ErrorFile())
 	if err != nil {
 		return nil, nil, err

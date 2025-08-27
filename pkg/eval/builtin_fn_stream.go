@@ -170,7 +170,8 @@ func order(fm *Frame, opts orderOptions, inputs Inputs) error {
 			} else if len(outputs) != 1 {
 				return errs.ArityMismatch{
 					What:     "number of outputs of the &key callback",
-					ValidLow: 1, ValidHigh: 1, Actual: len(outputs)}
+					ValidLow: 1, ValidHigh: 1, Actual: len(outputs),
+				}
 			}
 			keys[i] = outputs[0]
 		}
@@ -243,7 +244,8 @@ func (s *slice) Less(i, j int) bool {
 	if len(outputs) != 1 {
 		s.err = errs.ArityMismatch{
 			What:     "number of outputs of the &less-than callback",
-			ValidLow: 1, ValidHigh: 1, Actual: len(outputs)}
+			ValidLow: 1, ValidHigh: 1, Actual: len(outputs),
+		}
 		return true
 	}
 	if b, ok := outputs[0].(bool); ok {
@@ -251,7 +253,8 @@ func (s *slice) Less(i, j int) bool {
 	}
 	s.err = errs.BadValue{
 		What:  "output of the &less-than callback",
-		Valid: "boolean", Actual: vals.Kind(outputs[0])}
+		Valid: "boolean", Actual: vals.Kind(outputs[0]),
+	}
 	return true
 }
 
@@ -281,8 +284,10 @@ func keepIf(fm *Frame, f Callable, inputs Inputs) error {
 		} else {
 			b, ok := outputs[0].(bool)
 			if !ok {
-				err = errs.BadValue{What: "callback output",
-					Valid: "bool", Actual: vals.ReprPlain(outputs[0])}
+				err = errs.BadValue{
+					What:  "callback output",
+					Valid: "bool", Actual: vals.ReprPlain(outputs[0]),
+				}
 			} else if b {
 				err = fm.ValueOutput().Put(v)
 			}

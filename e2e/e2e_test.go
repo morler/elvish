@@ -43,7 +43,8 @@ func testTranscripts(t *testing.T, entrypoint string) {
 			Global: eval.BuildNs().AddVars(map[string]vars.Var{
 				"entrypoint": vars.NewReadOnly(entrypoint),
 				"workdir":    vars.NewReadOnly(workdir),
-			}).Ns()})
+			}).Ns(),
+		})
 	if err != nil {
 		t.Fatal(err)
 	}

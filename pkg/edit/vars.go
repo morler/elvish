@@ -21,7 +21,8 @@ func addVar(fm *eval.Frame, name string, val any) error {
 	if !isUnqualified(name) {
 		return errs.BadValue{
 			What:  "name argument to edit:add-var",
-			Valid: "unqualified variable name", Actual: name}
+			Valid: "unqualified variable name", Actual: name,
+		}
 	}
 	variable := eval.MakeVarFromName(name)
 	err := variable.Set(val)
@@ -36,7 +37,8 @@ func delVar(fm *eval.Frame, name string) error {
 	if !isUnqualified(name) {
 		return errs.BadValue{
 			What:  "name argument to edit:del-var",
-			Valid: "unqualified variable name", Actual: name}
+			Valid: "unqualified variable name", Actual: name,
+		}
 	}
 	fm.Evaler.DeleteFromGlobal(map[string]struct{}{name: {}})
 	return nil
@@ -50,12 +52,14 @@ func addVars(fm *eval.Frame, m vals.Map) error {
 		if !ok {
 			return errs.BadValue{
 				What:  "key of argument to edit:add-vars",
-				Valid: "string", Actual: vals.Kind(k)}
+				Valid: "string", Actual: vals.Kind(k),
+			}
 		}
 		if !isUnqualified(name) {
 			return errs.BadValue{
 				What:  "key of argument to edit:add-vars",
-				Valid: "unqualified variable name", Actual: name}
+				Valid: "unqualified variable name", Actual: name,
+			}
 		}
 		variable := eval.MakeVarFromName(name)
 		err := variable.Set(val)
@@ -76,12 +80,14 @@ func delVars(fm *eval.Frame, m vals.List) error {
 		if !ok {
 			return errs.BadValue{
 				What:  "element of argument to edit:del-vars",
-				Valid: "string", Actual: vals.Kind(n)}
+				Valid: "string", Actual: vals.Kind(n),
+			}
 		}
 		if !isUnqualified(name) {
 			return errs.BadValue{
 				What:  "element of argument to edit:del-vars",
-				Valid: "unqualified variable name", Actual: name}
+				Valid: "unqualified variable name", Actual: name,
+			}
 		}
 		names[name] = struct{}{}
 	}

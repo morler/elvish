@@ -27,7 +27,6 @@ func convertRlimT(x uint64) any {
 		z.Bits()[0] |= 1
 	}
 	return z
-
 }
 
 func parseRlimT(val any) (uint64, bool) {

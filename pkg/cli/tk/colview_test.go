@@ -54,7 +54,8 @@ func makeListbox(prefix string, n, selected int) Widget {
 		State: ListBoxState{
 			Items:    TestItems{Prefix: prefix, NItems: n},
 			Selected: selected,
-		}})
+		},
+	})
 }
 
 func TestColView_Render(t *testing.T) {
@@ -75,12 +76,14 @@ func TestColView_Handle(t *testing.T) {
 					Bindings: MapBindings{
 						term.K('a'): func(Widget) { handledBy <- 0 },
 						term.K('b'): func(Widget) { handledBy <- 0 },
-					}}),
+					},
+				}),
 				NewListBox(ListBoxSpec{
 					Bindings: MapBindings{
 						term.K('a'): func(Widget) { handledBy <- 1 },
 						term.K('b'): func(Widget) { handledBy <- 1 },
-					}}),
+					},
+				}),
 			},
 			FocusColumn: 1,
 		},

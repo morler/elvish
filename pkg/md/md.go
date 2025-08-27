@@ -430,7 +430,8 @@ func (p *blockParser) render() {
 			level := len(opener)
 			p.codec.Do(Op{
 				Type: OpHeading, LineNo: lineNo, Number: level, Info: attr,
-				Content: renderInline(strings.Trim(line, " \t"))})
+				Content: renderInline(strings.Trim(line, " \t")),
+			})
 		} else if m := codeFenceRegexp.FindStringSubmatch(line); m != nil {
 			p.tree.closeBlocks(matchedContainers, lineNo, p.codec)
 			indent, opener, info := len(m[1]), m[2], m[3]

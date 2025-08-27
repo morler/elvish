@@ -156,7 +156,8 @@ func TestNavigation_SelectedName_EmptyDirectory(t *testing.T) {
 
 	cursor := &testCursor{
 		root: testutil.Dir{"d": testutil.Dir{}},
-		pwd:  []string{"d"}}
+		pwd:  []string{"d"},
+	}
 	w := startNavigation(f.App, NavigationSpec{Cursor: cursor})
 
 	wantName := ""

@@ -9,10 +9,12 @@ import (
 	"src.elv.sh/pkg/ui"
 )
 
-var Dedent = testutil.Dedent
-var stylesheet = ui.RuneStylesheet{
-	'v': ui.FgGreen, '$': ui.FgMagenta,
-}
+var (
+	Dedent     = testutil.Dedent
+	stylesheet = ui.RuneStylesheet{
+		'v': ui.FgGreen, '$': ui.FgMagenta,
+	}
+)
 
 var highlightCodeBlockTests = []struct {
 	name string

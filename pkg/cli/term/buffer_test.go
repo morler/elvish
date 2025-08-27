@@ -159,18 +159,24 @@ var bufferExtendDownTests = []struct {
 }{
 	{
 		&Buffer{Width: 10, Lines: [][]Cell{
-			{{"a", ""}}, {{"b", ""}}}},
+			{{"a", ""}}, {{"b", ""}},
+		}},
 		&Buffer{Width: 11, Lines: [][]Cell{
-			{{"c", ""}}, {{"d", ""}}}},
+			{{"c", ""}}, {{"d", ""}},
+		}},
 		false,
 		&Buffer{Width: 11, Lines: [][]Cell{
-			{{"a", ""}}, {{"b", ""}},
-			{{"c", ""}}, {{"d", ""}}}},
+			{{"a", ""}},
+			{{"b", ""}},
+			{{"c", ""}},
+			{{"d", ""}},
+		}},
 	},
 	// Moving dot.
 	{
 		&Buffer{Width: 10, Lines: [][]Cell{
-			{{"a", ""}}, {{"b", ""}}}},
+			{{"a", ""}}, {{"b", ""}},
+		}},
 		&Buffer{
 			Width: 11,
 			Lines: [][]Cell{{{"c", ""}}, {{"d", ""}}},
@@ -180,8 +186,11 @@ var bufferExtendDownTests = []struct {
 		&Buffer{
 			Width: 11,
 			Lines: [][]Cell{
-				{{"a", ""}}, {{"b", ""}},
-				{{"c", ""}}, {{"d", ""}}},
+				{{"a", ""}},
+				{{"b", ""}},
+				{{"c", ""}},
+				{{"d", ""}},
+			},
 			Dot: Pos{3, 1},
 		},
 	},
@@ -211,7 +220,8 @@ var bufferExtendRightTests = []struct {
 		false,
 		&Buffer{Width: 2, Lines: [][]Cell{
 			{{"a", ""}, {"c", ""}},
-			{{"b", ""}, {"d", ""}}}},
+			{{"b", ""}, {"d", ""}},
+		}},
 	},
 	// With padding, equal height.
 	{
@@ -220,12 +230,14 @@ var bufferExtendRightTests = []struct {
 		false,
 		&Buffer{Width: 3, Lines: [][]Cell{
 			{{"a", ""}, {" ", ""}, {"c", ""}},
-			{{"b", ""}, {" ", ""}, {"d", ""}}}},
+			{{"b", ""}, {" ", ""}, {"d", ""}},
+		}},
 	},
 	// buf is higher.
 	{
 		&Buffer{Width: 1, Lines: [][]Cell{
-			{{"a", ""}}, {{"b", ""}}, {{"x", ""}}}},
+			{{"a", ""}}, {{"b", ""}}, {{"x", ""}},
+		}},
 		&Buffer{Width: 1, Lines: [][]Cell{
 			{{"c", ""}}, {{"d", ""}},
 		}},
@@ -233,7 +245,8 @@ var bufferExtendRightTests = []struct {
 		&Buffer{Width: 2, Lines: [][]Cell{
 			{{"a", ""}, {"c", ""}},
 			{{"b", ""}, {"d", ""}},
-			{{"x", ""}}}},
+			{{"x", ""}},
+		}},
 	},
 	// buf2 is higher.
 	{
@@ -245,7 +258,8 @@ var bufferExtendRightTests = []struct {
 		&Buffer{Width: 2, Lines: [][]Cell{
 			{{"a", ""}, {"c", ""}},
 			{{"b", ""}, {"d", ""}},
-			{{" ", ""}, {"e", ""}}}},
+			{{" ", ""}, {"e", ""}},
+		}},
 	},
 	// Moving the dot.
 	{
@@ -254,7 +268,8 @@ var bufferExtendRightTests = []struct {
 		true,
 		&Buffer{Width: 2, Dot: Pos{0, 1}, Lines: [][]Cell{
 			{{"a", ""}, {"c", ""}},
-			{{"b", ""}, {"d", ""}}}},
+			{{"b", ""}, {"d", ""}},
+		}},
 	},
 }
 

@@ -11,11 +11,9 @@ import (
 	"src.elv.sh/pkg/persistent/hash"
 )
 
-var (
-	// ErrNoOptAccepted is thrown when a Go function that does not accept any
-	// options gets passed options.
-	ErrNoOptAccepted = errors.New("function does not accept any options")
-)
+// ErrNoOptAccepted is thrown when a Go function that does not accept any
+// options gets passed options.
+var ErrNoOptAccepted = errors.New("function does not accept any options")
 
 // WrongArgType is thrown when calling a native function with an argument of the
 // wrong type.
@@ -171,17 +169,23 @@ var errorType = reflect.TypeOf((*error)(nil)).Elem()
 func (b *goFn) Call(f *Frame, args []any, opts map[string]any) error {
 	if b.variadicArg != nil {
 		if len(args) < len(b.normalArgs) {
-			return errs.ArityMismatch{What: "arguments",
-				ValidLow: len(b.normalArgs), ValidHigh: -1, Actual: len(args)}
+			return errs.ArityMismatch{
+				What:     "arguments",
+				ValidLow: len(b.normalArgs), ValidHigh: -1, Actual: len(args),
+			}
 		}
 	} else if b.inputs {
 		if len(args) != len(b.normalArgs) && len(args) != len(b.normalArgs)+1 {
-			return errs.ArityMismatch{What: "arguments",
-				ValidLow: len(b.normalArgs), ValidHigh: len(b.normalArgs) + 1, Actual: len(args)}
+			return errs.ArityMismatch{
+				What:     "arguments",
+				ValidLow: len(b.normalArgs), ValidHigh: len(b.normalArgs) + 1, Actual: len(args),
+			}
 		}
 	} else if len(args) != len(b.normalArgs) {
-		return errs.ArityMismatch{What: "arguments",
-			ValidLow: len(b.normalArgs), ValidHigh: len(b.normalArgs), Actual: len(args)}
+		return errs.ArityMismatch{
+			What:     "arguments",
+			ValidLow: len(b.normalArgs), ValidHigh: len(b.normalArgs), Actual: len(args),
+		}
 	}
 	if !b.rawOptions && b.options == nil && len(opts) > 0 {
 		return ErrNoOptAccepted

@@ -106,8 +106,7 @@ func (c *windowsJobController) CreateJob() (JobID, error) {
 
 	// Set job limits to allow breakaway and kill on job close
 	var extendedInfo JOBOBJECT_EXTENDED_LIMIT_INFORMATION
-	extendedInfo.BasicLimitInformation.LimitFlags =
-		JOB_OBJECT_LIMIT_BREAKAWAY_OK | JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+	extendedInfo.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_BREAKAWAY_OK | JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
 
 	ret2, _, err2 := procSetInformationJobObject.Call(
 		uintptr(handle),

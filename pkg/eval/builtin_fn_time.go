@@ -98,19 +98,25 @@ func (o *benchmarkOpts) SetDefaultOptions() {
 
 func (opts *benchmarkOpts) parse() (time.Duration, error) {
 	if opts.MinRuns < 0 {
-		return 0, errs.BadValue{What: "min-runs option",
-			Valid: "non-negative integer", Actual: strconv.Itoa(opts.MinRuns)}
+		return 0, errs.BadValue{
+			What:  "min-runs option",
+			Valid: "non-negative integer", Actual: strconv.Itoa(opts.MinRuns),
+		}
 	}
 
 	if opts.MinTime != "" {
 		d, err := time.ParseDuration(opts.MinTime)
 		if err != nil {
-			return 0, errs.BadValue{What: "min-time option",
-				Valid: "duration string", Actual: parse.Quote(opts.MinTime)}
+			return 0, errs.BadValue{
+				What:  "min-time option",
+				Valid: "duration string", Actual: parse.Quote(opts.MinTime),
+			}
 		}
 		if d < 0 {
-			return 0, errs.BadValue{What: "min-time option",
-				Valid: "non-negative duration", Actual: parse.Quote(opts.MinTime)}
+			return 0, errs.BadValue{
+				What:  "min-time option",
+				Valid: "non-negative duration", Actual: parse.Quote(opts.MinTime),
+			}
 		}
 		return d, nil
 	}

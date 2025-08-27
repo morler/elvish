@@ -47,7 +47,7 @@ func secureRunDir() (string, error) {
 		return runDir, nil
 	}
 	// Create new run directory.
-	err = os.MkdirAll(runDir, 0700)
+	err = os.MkdirAll(runDir, 0o700)
 	if err != nil {
 		return "", fmt.Errorf("create new run directory: %v", err)
 	}
@@ -72,5 +72,5 @@ func runDirPath() string {
 
 func secureAsRunDir(info os.FileInfo) bool {
 	stat := info.Sys().(*syscall.Stat_t)
-	return info.IsDir() && int(stat.Uid) == os.Getuid() && stat.Mode&077 == 0
+	return info.IsDir() && int(stat.Uid) == os.Getuid() && stat.Mode&0o77 == 0
 }

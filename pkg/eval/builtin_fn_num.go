@@ -83,7 +83,6 @@ func init() {
 
 		"range": rangeFn,
 	})
-
 }
 
 func num(n vals.Num) vals.Num {
@@ -95,8 +94,10 @@ func exactNum(n vals.Num) (vals.Num, error) {
 	if f, ok := n.(float64); ok {
 		r := new(big.Rat).SetFloat64(f)
 		if r == nil {
-			return nil, errs.BadValue{What: "argument here",
-				Valid: "finite float", Actual: vals.ToString(f)}
+			return nil, errs.BadValue{
+				What:  "argument here",
+				Valid: "finite float", Actual: vals.ToString(f),
+			}
 		}
 		return r, nil
 	}
@@ -113,7 +114,6 @@ func lt(nums ...vals.Num) bool {
 		func(a, b *big.Int) bool { return a.Cmp(b) < 0 },
 		func(a, b *big.Rat) bool { return a.Cmp(b) < 0 },
 		func(a, b float64) bool { return a < b })
-
 }
 
 func le(nums ...vals.Num) bool {
@@ -158,8 +158,8 @@ func ge(nums ...vals.Num) bool {
 
 func chainCompareNums(nums []vals.Num,
 	pInt func(a, b int) bool, pBigInt func(a, b *big.Int) bool,
-	pBigRat func(a, b *big.Rat) bool, pFloat64 func(a, b float64) bool) bool {
-
+	pBigRat func(a, b *big.Rat) bool, pFloat64 func(a, b float64) bool,
+) bool {
 	for i := 0; i < len(nums)-1; i++ {
 		r := unifyNums2And(nums[i], nums[i+1], pInt, pBigInt, pBigRat, pFloat64)
 		if !r {
@@ -171,8 +171,8 @@ func chainCompareNums(nums []vals.Num,
 
 func unifyNums2And[T any](a, b vals.Num,
 	fInt func(a, b int) T, fBigInt func(a, b *big.Int) T,
-	fBigRat func(a, b *big.Rat) T, fFloat64 func(a, b float64) T) T {
-
+	fBigRat func(a, b *big.Rat) T, fFloat64 func(a, b float64) T,
+) T {
 	a, b = vals.UnifyNums2(a, b, 0)
 	switch a := a.(type) {
 	case int:
@@ -362,7 +362,8 @@ func slash(fm *Frame, args ...vals.Num) error {
 
 // ErrDivideByZero is thrown when attempting to divide by zero.
 var ErrDivideByZero = errs.BadValue{
-	What: "divisor", Valid: "number other than exact 0", Actual: "exact 0"}
+	What: "divisor", Valid: "number other than exact 0", Actual: "exact 0",
+}
 
 func div(rawNums ...vals.Num) (vals.Num, error) {
 	for _, num := range rawNums[1:] {
@@ -431,8 +432,10 @@ func randFn() float64 { return withRand((*rand.Rand).Float64) }
 
 func randint(args ...vals.Num) (vals.Num, error) {
 	if len(args) == 0 || len(args) > 2 {
-		return -1, errs.ArityMismatch{What: "arguments",
-			ValidLow: 1, ValidHigh: 2, Actual: len(args)}
+		return -1, errs.ArityMismatch{
+			What:     "arguments",
+			ValidLow: 1, ValidHigh: 2, Actual: len(args),
+		}
 	}
 	for _, arg := range args {
 		if err := checkExactIntArg(arg); err != nil {
@@ -459,8 +462,10 @@ func randint(args ...vals.Num) (vals.Num, error) {
 
 func randIntSmallInt(low, high int) (vals.Num, error) {
 	if high <= low {
-		return 0, errs.BadValue{What: "high value",
-			Valid: fmt.Sprint("larger than ", low), Actual: strconv.Itoa(high)}
+		return 0, errs.BadValue{
+			What:  "high value",
+			Valid: fmt.Sprint("larger than ", low), Actual: strconv.Itoa(high),
+		}
 	}
 	x := withRand(func(r *rand.Rand) int { return r.Intn(high - low) })
 	return low + x, nil
@@ -468,8 +473,10 @@ func randIntSmallInt(low, high int) (vals.Num, error) {
 
 func randIntBigInt(low, high *big.Int) (vals.Num, error) {
 	if high.Cmp(low) <= 0 {
-		return 0, errs.BadValue{What: "high value",
-			Valid: fmt.Sprint("larger than ", low), Actual: high.String()}
+		return 0, errs.BadValue{
+			What:  "high value",
+			Valid: fmt.Sprint("larger than ", low), Actual: high.String(),
+		}
 	}
 	if low.Sign() == 0 {
 		return withRand(func(r *rand.Rand) *big.Int {
@@ -557,7 +564,8 @@ func rangeBuiltinNum[T builtinNum](nums []T, out ValueOutput) error {
 			step = nums[2]
 			if step <= 0 {
 				return errs.BadValue{
-					What: "step", Valid: "positive", Actual: vals.ToString(step)}
+					What: "step", Valid: "positive", Actual: vals.ToString(step),
+				}
 			}
 		} else {
 			step = 1
@@ -576,7 +584,8 @@ func rangeBuiltinNum[T builtinNum](nums []T, out ValueOutput) error {
 			step = nums[2]
 			if step >= 0 {
 				return errs.BadValue{
-					What: "step", Valid: "negative", Actual: vals.ToString(step)}
+					What: "step", Valid: "negative", Actual: vals.ToString(step),
+				}
 			}
 		} else {
 			step = -1
@@ -626,7 +635,8 @@ func rangeBigNum[T bigNum[T]](nums []T, out ValueOutput, d bigNumDesc[T]) error 
 			step = nums[2]
 			if step.Sign() <= 0 {
 				return errs.BadValue{
-					What: "step", Valid: "positive", Actual: vals.ToString(step)}
+					What: "step", Valid: "positive", Actual: vals.ToString(step),
+				}
 			}
 		} else {
 			step = d.one
@@ -646,7 +656,8 @@ func rangeBigNum[T bigNum[T]](nums []T, out ValueOutput, d bigNumDesc[T]) error 
 			step = nums[2]
 			if step.Sign() >= 0 {
 				return errs.BadValue{
-					What: "step", Valid: "negative", Actual: vals.ToString(step)}
+					What: "step", Valid: "negative", Actual: vals.ToString(step),
+				}
 			}
 		} else {
 			step = d.negOne

@@ -45,7 +45,6 @@ var isDoorFunc = isDoor
 
 func determineFeature(fname string, mh bool) (feature, error) {
 	stat, err := os.Lstat(fname)
-
 	if err != nil {
 		return featureInvalid, err
 	}

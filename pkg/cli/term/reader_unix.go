@@ -56,15 +56,14 @@ func readEvent(rd byteReaderWithTimeout) (event Event, err error) {
 	// Attempts to read a rune within a timeout of keySeqTimeout. It returns
 	// runeEndOfSeq if there is any error; the caller should terminate the
 	// current sequence when it sees that value.
-	readRune :=
-		func() rune {
-			r, e := readRune(rd, keySeqTimeout)
-			if e != nil {
-				return runeEndOfSeq
-			}
-			currentSeq += string(r)
-			return r
+	readRune := func() rune {
+		r, e := readRune(rd, keySeqTimeout)
+		if e != nil {
+			return runeEndOfSeq
 		}
+		currentSeq += string(r)
+		return r
+	}
 	badSeq := func(msg string) {
 		err = seqError{msg, currentSeq}
 	}
@@ -131,7 +130,8 @@ func readEvent(rd byteReaderWithTimeout) (event Event, err error) {
 				}
 				mod := mouseModify(int(cb))
 				event = MouseEvent{
-					Pos{int(cy) - 32, int(cx) - 32}, down, button, mod}
+					Pos{int(cy) - 32, int(cx) - 32}, down, button, mod,
+				}
 				return
 			}
 		CSISeq:

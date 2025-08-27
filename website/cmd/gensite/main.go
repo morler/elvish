@@ -65,7 +65,7 @@ func main() {
 		allPaths = append(allPaths, name)
 		// Create directory
 		catDir := dstFile(name)
-		err := os.MkdirAll(catDir, 0755)
+		err := os.MkdirAll(catDir, 0o755)
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -216,14 +216,16 @@ func (c *FmtCodec) Do(op Op) {
 	case OpBulletListStart:
 		c.containers.push(&fmtContainer{
 			typ:   fmtBulletItem,
-			punct: pickPunct('-', '*', c.poppedListPunct)})
+			punct: pickPunct('-', '*', c.poppedListPunct),
+		})
 	case OpBulletListEnd:
 		poppedListPunct = c.containers.pop().punct
 	case OpOrderedListStart:
 		c.containers.push(&fmtContainer{
 			typ:    fmtOrderedItem,
 			punct:  pickPunct('.', ')', c.poppedListPunct),
-			number: op.Number})
+			number: op.Number,
+		})
 	case OpOrderedListEnd:
 		poppedListPunct = c.containers.pop().punct
 	}
@@ -568,9 +570,7 @@ func (c *FmtCodec) writeSegmentsParagraph(segs []segment) {
 	}
 }
 
-var (
-	whitespaceRunRegexp = regexp.MustCompile(`[ \t\n]+`)
-)
+var whitespaceRunRegexp = regexp.MustCompile(`[ \t\n]+`)
 
 func (c *FmtCodec) writeSegmentsParagraphReflow(segs []segment, maxWidth int) {
 	// Rearrange the segments into spans with the following properties:

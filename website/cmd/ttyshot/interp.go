@@ -162,7 +162,8 @@ func spawnElvish(homePath string, tty *os.File) (<-chan error, error) {
 		Args: []string{
 			tmuxPath,
 			"-S", tmuxSock, "-f", "/dev/null", "-u", "-T", "256,RGB",
-			"new-session", elvishPath, "-sock", elvSock},
+			"new-session", elvishPath, "-sock", elvSock,
+		},
 		Dir: homePath,
 		Env: []string{
 			"HOME=" + homePath,

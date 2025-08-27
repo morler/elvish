@@ -110,7 +110,8 @@ func completeIndex(p np.Path, ev *eval.Evaler, cfg Config) (*context, []RawItem,
 		if len(indexing.Indices) == 1 {
 			if indexee := ev.PurelyEvalPrimary(indexing.Head); indexee != nil {
 				ctx := &context{
-					"index", expr.Value, expr.PrimarType, expr.Compound.Range()}
+					"index", expr.Value, expr.PrimarType, expr.Compound.Range(),
+				}
 				return ctx, generateIndices(indexee), nil
 			}
 		}
@@ -150,7 +151,8 @@ func completeVariable(p np.Path, ev *eval.Evaler, cfg Config) (*context, []RawIt
 
 	ctx := &context{
 		"variable", nameSeed, parse.Bareword,
-		diag.Ranging{From: begin, To: primary.Range().To}}
+		diag.Ranging{From: begin, To: primary.Range().To},
+	}
 
 	var items []RawItem
 	eachVariableInNs(ev, p, ns, func(varname string) {

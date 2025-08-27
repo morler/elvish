@@ -46,8 +46,8 @@ func TestException(t *testing.T) {
 func TestException_Show(t *testing.T) {
 	for _, p := range []*string{
 		ExceptionCauseStartMarker, ExceptionCauseEndMarker,
-		&diag.ContextBodyStartMarker, &diag.ContextBodyEndMarker} {
-
+		&diag.ContextBodyStartMarker, &diag.ContextBodyEndMarker,
+	} {
 		testutil.Set(t, p, "")
 	}
 
@@ -101,7 +101,8 @@ func TestErrorMethods(t *testing.T) {
 
 		Args(MakePipelineError([]Exception{
 			makeException(errors.New("err1")),
-			makeException(errors.New("err2"))})).Rets("(err1 | err2)"),
+			makeException(errors.New("err2")),
+		})).Rets("(err1 | err2)"),
 
 		Args(Return).Rets("return"),
 		Args(Break).Rets("break"),

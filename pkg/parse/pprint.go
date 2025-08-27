@@ -69,8 +69,8 @@ func pprintASTRec(n Node, wr io.Writer, indent int, leading string) {
 		return
 	}
 	// print heading
-	//b := n.n()
-	//fmt.Fprintf(wr, "%*s%s%s %s %d-%d", indent, "",
+	// b := n.n()
+	// fmt.Fprintf(wr, "%*s%s%s %s %d-%d", indent, "",
 	//	wr.leading, nt.Name(), compactQuote(b.source(src)), b.begin, b.end)
 	fmt.Fprintf(wr, "%*s%s%s", indent, "", leading, nt.Name())
 	// print properties

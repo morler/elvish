@@ -17,15 +17,15 @@ func TestExec_Argv0Argv(t *testing.T) {
 	dir := testutil.InTempDir(t)
 	testutil.ApplyDir(testutil.Dir{
 		"bin": testutil.Dir{
-			"elvish": testutil.File{Perm: 0755},
-			"cat":    testutil.File{Perm: 0755},
+			"elvish": testutil.File{Perm: 0o755},
+			"cat":    testutil.File{Perm: 0o755},
 		},
 	})
 
 	testutil.Setenv(t, "PATH", dir+"/bin")
 	testutil.Setenv(t, env.SHLVL, "1")
 
-	var tests = []struct {
+	tests := []struct {
 		name      string
 		code      string
 		wantArgv0 string

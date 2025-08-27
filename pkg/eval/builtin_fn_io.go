@@ -122,8 +122,10 @@ func readUpto(fm *Frame, terminator string) (string, error) {
 
 func checkTerminator(s string) error {
 	if len(s) != 1 || s[0] > 127 {
-		return errs.BadValue{What: "terminator",
-			Valid: "a single ASCII character", Actual: parse.Quote(s)}
+		return errs.BadValue{
+			What:  "terminator",
+			Valid: "a single ASCII character", Actual: parse.Quote(s),
+		}
 	}
 	return nil
 }

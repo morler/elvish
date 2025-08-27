@@ -144,9 +144,11 @@ func addFlag(fs *flag.FlagSet, name string, value any, description string) error
 	case vals.List:
 		fs.Var(&listFlag{value}, name, description)
 	default:
-		return errs.BadValue{What: "flag default value",
+		return errs.BadValue{
+			What:   "flag default value",
 			Valid:  "boolean, number, string or list",
-			Actual: vals.ReprPlain(value)}
+			Actual: vals.ReprPlain(value),
+		}
 	}
 	return nil
 }

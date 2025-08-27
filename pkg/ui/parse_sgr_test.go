@@ -39,6 +39,7 @@ func TestStyleFromSGR(t *testing.T) {
 		// True colors.
 		Args("38;2;1;2;3;48;2;10;20;30").
 			Rets(Style{
-				Fg: TrueColor(1, 2, 3), Bg: TrueColor(10, 20, 30)}),
+				Fg: TrueColor(1, 2, 3), Bg: TrueColor(10, 20, 30),
+			}),
 	)
 }

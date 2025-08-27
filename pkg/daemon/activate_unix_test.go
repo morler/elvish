@@ -46,8 +46,8 @@ func TestActivate_FailsIfUnableToRemoveHangingSocket(t *testing.T) {
 	must.MkdirAll("d")
 	makeHangingUnixSocket(t, "d/sock")
 	// Remove write permission so that removing d/sock will fail
-	os.Chmod("d", 0600)
-	defer os.Chmod("d", 0700)
+	os.Chmod("d", 0o600)
+	defer os.Chmod("d", 0o700)
 
 	_, err := Activate(io.Discard,
 		&daemondefs.SpawnConfig{DbPath: "db", SockPath: "d/sock", RunDir: "."})

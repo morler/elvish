@@ -10,7 +10,7 @@ import (
 func TestLsColors(t *testing.T) {
 	SetTestLsColors(t)
 	testutil.InTempDir(t)
-	os.Mkdir("dir", 0755)
+	os.Mkdir("dir", 0o755)
 	create("a.png")
 
 	colorist := GetColorist()

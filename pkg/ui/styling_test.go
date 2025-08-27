@@ -18,7 +18,8 @@ func TestStyleText(t *testing.T) {
 		// Multiple segments
 		Args(Text{
 			&Segment{Style{}, "foo"},
-			&Segment{Style{Fg: Green}, "bar"}}, FgRed).
+			&Segment{Style{Fg: Green}, "bar"},
+		}, FgRed).
 			Rets(Text{
 				&Segment{Style{Fg: Red}, "foo"},
 				&Segment{Style{Fg: Red}, "bar"},

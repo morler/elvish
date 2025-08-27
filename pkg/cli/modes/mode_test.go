@@ -20,7 +20,6 @@ func TestModeLine(t *testing.T) {
 func TestModePrompt(t *testing.T) {
 	prompt := func(s string, b bool) ui.Text { return modePrompt(s, b)() }
 	testModeLine(t, tt.Fn(prompt).Named("prompt"))
-
 }
 
 func testModeLine(t *testing.T, fn any) {

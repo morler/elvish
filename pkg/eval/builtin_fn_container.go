@@ -36,7 +36,8 @@ func nsFn(m vals.Map) (*Ns, error) {
 		if !ok {
 			return nil, errs.BadValue{
 				What:  `key of argument of "ns"`,
-				Valid: "string", Actual: vals.Kind(k)}
+				Valid: "string", Actual: vals.Kind(k),
+			}
 		}
 		nb.AddVar(kstring, vars.FromInit(v))
 	}
@@ -52,13 +53,15 @@ func makeMap(input Inputs) (vals.Map, error) {
 		}
 		if !vals.CanIterate(v) {
 			errMakeMap = errs.BadValue{
-				What: "input to make-map", Valid: "iterable", Actual: vals.Kind(v)}
+				What: "input to make-map", Valid: "iterable", Actual: vals.Kind(v),
+			}
 			return
 		}
 		if l := vals.Len(v); l != 2 {
 			errMakeMap = errs.BadValue{
 				What: "input to make-map", Valid: "iterable with 2 elements",
-				Actual: fmt.Sprintf("%v with %v elements", vals.Kind(v), l)}
+				Actual: fmt.Sprintf("%v with %v elements", vals.Kind(v), l),
+			}
 			return
 		}
 		elems, err := vals.Collect(v)

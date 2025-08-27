@@ -37,8 +37,8 @@ var (
 //
 // );
 func WaitForMultipleObjects(handles []windows.Handle, waitAll bool,
-	timeout uint32) (trigger int, abandoned bool, err error) {
-
+	timeout uint32,
+) (trigger int, abandoned bool, err error) {
 	count := uintptr(len(handles))
 	ret, _, err := waitForMultipleObjects.Call(count,
 		uintptr(unsafe.Pointer(&handles[0])), boolToUintptr(waitAll), uintptr(timeout))

@@ -160,35 +160,40 @@ var parseTests = []struct {
 		name: "unknown short option",
 		args: []string{"-b"},
 		wantOpts: []*Option{
-			{Spec: &OptionSpec{Short: 'b', Arity: OptionalArgument}, Unknown: true}},
+			{Spec: &OptionSpec{Short: 'b', Arity: OptionalArgument}, Unknown: true},
+		},
 		wantErr: errors.New("unknown option -b"),
 	},
 	{
 		name: "unknown short option with argument",
 		args: []string{"-bfoo"},
 		wantOpts: []*Option{
-			{Spec: &OptionSpec{Short: 'b', Arity: OptionalArgument}, Unknown: true, Argument: "foo"}},
+			{Spec: &OptionSpec{Short: 'b', Arity: OptionalArgument}, Unknown: true, Argument: "foo"},
+		},
 		wantErr: errors.New("unknown option -b"),
 	},
 	{
 		name: "unknown long option",
 		args: []string{"--bad"},
 		wantOpts: []*Option{
-			{Spec: &OptionSpec{Long: "bad", Arity: OptionalArgument}, Long: true, Unknown: true}},
+			{Spec: &OptionSpec{Long: "bad", Arity: OptionalArgument}, Long: true, Unknown: true},
+		},
 		wantErr: errors.New("unknown option --bad"),
 	},
 	{
 		name: "unknown long option with argument",
 		args: []string{"--bad=foo"},
 		wantOpts: []*Option{
-			{Spec: &OptionSpec{Long: "bad", Arity: OptionalArgument}, Long: true, Unknown: true, Argument: "foo"}},
+			{Spec: &OptionSpec{Long: "bad", Arity: OptionalArgument}, Long: true, Unknown: true, Argument: "foo"},
+		},
 		wantErr: errors.New("unknown option --bad"),
 	},
 	{
 		name: "multiple errors",
 		args: []string{"-b", "-f"},
 		wantOpts: []*Option{
-			{Spec: &OptionSpec{Short: 'b', Arity: OptionalArgument}, Unknown: true}},
+			{Spec: &OptionSpec{Short: 'b', Arity: OptionalArgument}, Unknown: true},
+		},
 		wantErr: errutil.Multi(
 			errors.New("missing argument for -f"), errors.New("unknown option -b")),
 	},
@@ -251,28 +256,32 @@ var completeTests = []struct {
 		args: []string{"-f", "foo"},
 		wantCtx: Context{
 			Type:   OptionArgument,
-			Option: &Option{Spec: fSpec, Argument: "foo"}},
+			Option: &Option{Spec: fSpec, Argument: "foo"},
+		},
 	},
 	{
 		name: "OptionArgument of short option, same argument",
 		args: []string{"-ffoo"},
 		wantCtx: Context{
 			Type:   OptionArgument,
-			Option: &Option{Spec: fSpec, Argument: "foo"}},
+			Option: &Option{Spec: fSpec, Argument: "foo"},
+		},
 	},
 	{
 		name: "OptionArgument of long option, separate argument",
 		args: []string{"--file", "foo"},
 		wantCtx: Context{
 			Type:   OptionArgument,
-			Option: &Option{Spec: fSpec, Long: true, Argument: "foo"}},
+			Option: &Option{Spec: fSpec, Long: true, Argument: "foo"},
+		},
 	},
 	{
 		name: "OptionArgument of long option, same argument",
 		args: []string{"--file=foo"},
 		wantCtx: Context{
 			Type:   OptionArgument,
-			Option: &Option{Spec: fSpec, Long: true, Argument: "foo"}},
+			Option: &Option{Spec: fSpec, Long: true, Argument: "foo"},
+		},
 	},
 	{
 		name: "OptionArgument of long option with LongOnly, same argument",
@@ -280,7 +289,8 @@ var completeTests = []struct {
 		cfg:  LongOnly,
 		wantCtx: Context{
 			Type:   OptionArgument,
-			Option: &Option{Spec: fSpec, Long: true, Argument: "foo"}},
+			Option: &Option{Spec: fSpec, Long: true, Argument: "foo"},
+		},
 	},
 	{
 		name:    "Argument",

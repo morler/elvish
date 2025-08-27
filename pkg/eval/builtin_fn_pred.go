@@ -48,7 +48,8 @@ func notEq(a, b any) bool {
 // uncomparable values.
 var ErrUncomparable = errs.BadValue{
 	What:  `inputs to "compare" or "order"`,
-	Valid: "comparable values", Actual: "uncomparable values"}
+	Valid: "comparable values", Actual: "uncomparable values",
+}
 
 type compareOptions struct {
 	Total bool

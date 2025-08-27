@@ -39,7 +39,8 @@ func TestFusuer_AddCmd_AddsBothToDBAndSession(t *testing.T) {
 	f.AddCmd(storedefs.Cmd{Text: "session 1"})
 
 	wantDBCmds := []storedefs.Cmd{
-		{Text: "shared 1", Seq: 0}, {Text: "session 1", Seq: 1}}
+		{Text: "shared 1", Seq: 0}, {Text: "session 1", Seq: 1},
+	}
 	if dbCmds, _ := db.CmdsWithSeq(-1, -1); !reflect.DeepEqual(dbCmds, wantDBCmds) {
 		t.Errorf("DB commands = %v, want %v", dbCmds, wantDBCmds)
 	}
@@ -50,7 +51,8 @@ func TestFusuer_AddCmd_AddsBothToDBAndSession(t *testing.T) {
 	}
 	wantAllCmds := []storedefs.Cmd{
 		{Text: "shared 1", Seq: 0},
-		{Text: "session 1", Seq: 1}}
+		{Text: "session 1", Seq: 1},
+	}
 	if !reflect.DeepEqual(allCmds, wantAllCmds) {
 		t.Errorf("AllCmd -> %v, want %v", allCmds, wantAllCmds)
 	}
@@ -97,7 +99,8 @@ func TestHybridStore_AllCmds_IncludesFrozenSharedAndNewlyAdded(t *testing.T) {
 	wantAllCmds := []storedefs.Cmd{
 		{Text: "shared 1", Seq: 0},
 		{Text: "session 1", Seq: 1},
-		{Text: "session 2", Seq: 4}}
+		{Text: "session 2", Seq: 4},
+	}
 	if !reflect.DeepEqual(allCmds, wantAllCmds) {
 		t.Errorf("AllCmds -> %v, want %v", allCmds, wantAllCmds)
 	}
@@ -148,7 +151,8 @@ func TestHybridStore_Cursor_SharedAndSession(t *testing.T) {
 
 	testCursorIteration(t, f.Cursor("+"), []storedefs.Cmd{
 		{Text: "+ shared 1", Seq: 1},
-		{Text: "+ session 1", Seq: 4}})
+		{Text: "+ session 1", Seq: 4},
+	})
 }
 
 func testCursorIteration(t *testing.T, cursor Cursor, wantCmds []storedefs.Cmd) {

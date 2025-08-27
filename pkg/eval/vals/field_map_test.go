@@ -42,9 +42,11 @@ func TestFieldMap(t *testing.T) {
 		Index("foo-bar", 23)
 }
 
-type notFieldMap1 struct{ foo string }
-type notFieldMap2 struct{ Embedded }
-type Embedded struct{ Foo string }
+type (
+	notFieldMap1 struct{ foo string }
+	notFieldMap2 struct{ Embedded }
+	Embedded     struct{ Foo string }
+)
 
 func TestIsFieldMap(t *testing.T) {
 	tt.Test(t, IsFieldMap,

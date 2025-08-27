@@ -212,7 +212,8 @@ func compileLHSOptionalRHS(cp *compiler, args []*parse.Compound, end int, lf lva
 			} else {
 				rhs = seqValuesOp{
 					diag.MixedRanging(args[i+1], args[len(args)-1]),
-					cp.compoundOps(args[i+1:])}
+					cp.compoundOps(args[i+1:]),
+				}
 			}
 			return cp.compileCompoundLValues(args[:i], lf), rhs
 		}

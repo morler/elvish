@@ -31,7 +31,8 @@ var diagTests = []struct {
 		{
 			Range: lsp.Range{
 				Start: lsp.Position{Line: 0, Character: 1},
-				End:   lsp.Position{Line: 0, Character: 2}},
+				End:   lsp.Position{Line: 0, Character: 2},
+			},
 			Severity: lsp.DSError, Source: "parse", Message: "should be variable name",
 		},
 	}},
@@ -39,7 +40,8 @@ var diagTests = []struct {
 		{
 			Range: lsp.Range{
 				Start: lsp.Position{Line: 1, Character: 1},
-				End:   lsp.Position{Line: 1, Character: 2}},
+				End:   lsp.Position{Line: 1, Character: 2},
+			},
 			Severity: lsp.DSError, Source: "parse", Message: "should be variable name",
 		},
 	}},
@@ -47,7 +49,8 @@ var diagTests = []struct {
 		{
 			Range: lsp.Range{
 				Start: lsp.Position{Line: 1, Character: 1},
-				End:   lsp.Position{Line: 1, Character: 2}},
+				End:   lsp.Position{Line: 1, Character: 2},
+			},
 			Severity: lsp.DSError, Source: "parse", Message: "should be variable name",
 		},
 	}},
@@ -55,7 +58,8 @@ var diagTests = []struct {
 		{
 			Range: lsp.Range{
 				Start: lsp.Position{Line: 1, Character: 1},
-				End:   lsp.Position{Line: 1, Character: 2}},
+				End:   lsp.Position{Line: 1, Character: 2},
+			},
 			Severity: lsp.DSError, Source: "parse", Message: "should be variable name",
 		},
 	}},
@@ -63,7 +67,8 @@ var diagTests = []struct {
 		{
 			Range: lsp.Range{
 				Start: lsp.Position{Line: 0, Character: 4},
-				End:   lsp.Position{Line: 0, Character: 5}},
+				End:   lsp.Position{Line: 0, Character: 5},
+			},
 			Severity: lsp.DSError, Source: "parse", Message: "should be variable name",
 		},
 	}},
@@ -204,15 +209,22 @@ var jsonrpcErrorTests = []struct {
 }{
 	{"unknown method", "unknown/method", struct{}{}, errMethodNotFound},
 	{"invalid request type", "textDocument/didOpen", []int{}, errInvalidParams},
-	{"unknown document to hover", "textDocument/hover",
+	{
+		"unknown document to hover", "textDocument/hover",
 		lsp.TextDocumentPositionParams{
-			TextDocument: lsp.TextDocumentIdentifier{URI: "file://unknown"}},
-		unknownDocument("file://unknown")},
-	{"unknown document to completion", "textDocument/completion",
+			TextDocument: lsp.TextDocumentIdentifier{URI: "file://unknown"},
+		},
+		unknownDocument("file://unknown"),
+	},
+	{
+		"unknown document to completion", "textDocument/completion",
 		lsp.CompletionParams{
 			TextDocumentPositionParams: lsp.TextDocumentPositionParams{
-				TextDocument: lsp.TextDocumentIdentifier{URI: "file://unknown"}}},
-		unknownDocument("file://unknown")},
+				TextDocument: lsp.TextDocumentIdentifier{URI: "file://unknown"},
+			},
+		},
+		unknownDocument("file://unknown"),
+	},
 }
 
 func TestJSONRPCErrors(t *testing.T) {
@@ -231,7 +243,8 @@ const testURI = "file:///foo"
 
 func didOpenParams(text string) lsp.DidOpenTextDocumentParams {
 	return lsp.DidOpenTextDocumentParams{
-		TextDocument: lsp.TextDocumentItem{URI: testURI, Text: text}}
+		TextDocument: lsp.TextDocumentItem{URI: testURI, Text: text},
+	}
 }
 
 func didChangeParams(text string) lsp.DidChangeTextDocumentParams {
@@ -241,7 +254,8 @@ func didChangeParams(text string) lsp.DidChangeTextDocumentParams {
 		},
 		ContentChanges: []lsp.TextDocumentContentChangeEvent{
 			{Text: text},
-		}}
+		},
+	}
 }
 
 func diagParam(diags []lsp.Diagnostic) lsp.PublishDiagnosticsParams {

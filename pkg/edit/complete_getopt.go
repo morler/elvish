@@ -246,8 +246,11 @@ type parsedOptSpecs struct {
 
 func parseGetoptOptSpecs(v any) (parsedOptSpecs, error) {
 	result := parsedOptSpecs{
-		nil, map[*getopt.OptionSpec]string{},
-		map[*getopt.OptionSpec]string{}, map[*getopt.OptionSpec]eval.Callable{}}
+		nil,
+		map[*getopt.OptionSpec]string{},
+		map[*getopt.OptionSpec]string{},
+		map[*getopt.OptionSpec]eval.Callable{},
+	}
 
 	var err error
 	errIterate := vals.Iterate(v, func(v any) bool {

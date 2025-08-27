@@ -96,7 +96,8 @@ func fromUtf8Bytes(nums ...int) (string, error) {
 			return "", errs.OutOfRange{
 				What:     "byte",
 				ValidLow: "0", ValidHigh: "255",
-				Actual: strconv.Itoa(num)}
+				Actual: strconv.Itoa(num),
+			}
 		}
 		b.WriteByte(byte(num))
 	}
@@ -104,7 +105,8 @@ func fromUtf8Bytes(nums ...int) (string, error) {
 		return "", errs.BadValue{
 			What:   "arguments to str:from-utf8-bytes",
 			Valid:  "valid UTF-8 sequence",
-			Actual: fmt.Sprint(b.Bytes())}
+			Actual: fmt.Sprint(b.Bytes()),
+		}
 	}
 	return b.String(), nil
 }
@@ -126,7 +128,8 @@ func join(sep string, inputs eval.Inputs) (string, error) {
 			buf.WriteString(s)
 		} else {
 			errJoin = errs.BadValue{
-				What: "input to str:join", Valid: "string", Actual: vals.Kind(v)}
+				What: "input to str:join", Valid: "string", Actual: vals.Kind(v),
+			}
 		}
 	})
 	return buf.String(), errJoin

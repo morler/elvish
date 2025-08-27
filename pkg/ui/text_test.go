@@ -12,9 +12,11 @@ func TestT(t *testing.T) {
 	tt.Test(t, T,
 		Args("test").Rets(Text{&Segment{Text: "test"}}),
 		Args("test red", FgRed).Rets(Text{&Segment{
-			Text: "test red", Style: Style{Fg: Red}}}),
+			Text: "test red", Style: Style{Fg: Red},
+		}}),
 		Args("test red", FgRed, Bold).Rets(Text{&Segment{
-			Text: "test red", Style: Style{Fg: Red, Bold: true}}}),
+			Text: "test red", Style: Style{Fg: Red, Bold: true},
+		}}),
 	)
 }
 
@@ -66,22 +68,30 @@ var partitionTests = []*tt.Case{
 	Args(text2).Rets([]Text{text2}),
 	Args(text2, 0).Rets([]Text{nil, text2}),
 	Args(text2, 1).Rets([]Text{
-		{red("l")}, {red("orem"), blue("foobar")}}),
+		{red("l")}, {red("orem"), blue("foobar")},
+	}),
 	Args(text2, 2).Rets([]Text{
-		{red("lo")}, {red("rem"), blue("foobar")}}),
+		{red("lo")}, {red("rem"), blue("foobar")},
+	}),
 	Args(text2, 5).Rets([]Text{{red("lorem")}, {blue("foobar")}}),
 	Args(text2, 6).Rets([]Text{
-		{red("lorem"), blue("f")}, {blue("oobar")}}),
+		{red("lorem"), blue("f")}, {blue("oobar")},
+	}),
 	Args(text2, 11).Rets([]Text{text2, nil}),
 
 	Args(text1, 1, 2).Rets([]Text{{red("l")}, {red("o")}, {red("rem")}}),
 	Args(text1, 1, 2, 3, 4).Rets([]Text{
-		{red("l")}, {red("o")}, {red("r")}, {red("e")}, {red("m")}}),
+		{red("l")}, {red("o")}, {red("r")}, {red("e")}, {red("m")},
+	}),
 	Args(text2, 2, 4, 6).Rets([]Text{
-		{red("lo")}, {red("re")},
-		{red("m"), blue("f")}, {blue("oobar")}}),
+		{red("lo")},
+		{red("re")},
+		{red("m"), blue("f")},
+		{blue("oobar")},
+	}),
 	Args(text2, 6, 8).Rets([]Text{
-		{red("lorem"), blue("f")}, {blue("oo")}, {blue("bar")}}),
+		{red("lorem"), blue("f")}, {blue("oo")}, {blue("bar")},
+	}),
 }
 
 func TestPartition(t *testing.T) {

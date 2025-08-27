@@ -55,13 +55,17 @@ func (c *Closure) Call(fm *Frame, args []any, opts map[string]any) error {
 	// Check number of arguments.
 	if c.RestArg != -1 {
 		if len(args) < len(c.ArgNames)-1 {
-			return errs.ArityMismatch{What: "arguments",
-				ValidLow: len(c.ArgNames) - 1, ValidHigh: -1, Actual: len(args)}
+			return errs.ArityMismatch{
+				What:     "arguments",
+				ValidLow: len(c.ArgNames) - 1, ValidHigh: -1, Actual: len(args),
+			}
 		}
 	} else {
 		if len(args) != len(c.ArgNames) {
-			return errs.ArityMismatch{What: "arguments",
-				ValidLow: len(c.ArgNames), ValidHigh: len(c.ArgNames), Actual: len(args)}
+			return errs.ArityMismatch{
+				What:     "arguments",
+				ValidLow: len(c.ArgNames), ValidHigh: len(c.ArgNames), Actual: len(args),
+			}
 		}
 	}
 	// Check whether all supplied options are supported. This map contains the
