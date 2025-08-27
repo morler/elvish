@@ -69,7 +69,7 @@ func setup(c testutil.Cleanuper, fns ...func(*fixture)) *fixture {
 	evals(ev,
 		// This is the same as the default prompt for non-root users. This makes
 		// sure that the tests will work when run as root.
-		"set edit:prompt = { tilde-abbr $pwd; put '> ' }",
+		"set edit:prompt = { tilde-abbr-native $pwd; put '> ' }",
 		// This will simplify most tests against the terminal.
 		"set edit:rprompt = { }")
 	f := &fixture{Editor: ed, TTYCtrl: ttyCtrl, Evaler: ev, Store: st, Home: home}

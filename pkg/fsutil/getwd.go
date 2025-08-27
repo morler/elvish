@@ -13,7 +13,7 @@ func Getwd() string {
 	if err != nil {
 		return "?"
 	}
-	return TildeAbbr(pwd)
+	return TildeAbbrNative(pwd)
 }
 
 // TildeAbbr abbreviates the user's home directory to ~.
@@ -33,7 +33,7 @@ func TildeAbbr(path string) string {
 			normalizedHome = strings.ReplaceAll(home, "\\", "/")
 			normalizedPath = strings.ReplaceAll(path, "\\", "/")
 		}
-		
+
 		if normalizedPath == normalizedHome {
 			return "~"
 		} else if strings.HasPrefix(normalizedPath, normalizedHome+"/") {
@@ -58,7 +58,7 @@ func TildeAbbrNative(path string) string {
 			normalizedHome = strings.ReplaceAll(home, "\\", "/")
 			normalizedPath = strings.ReplaceAll(path, "\\", "/")
 		}
-		
+
 		if normalizedPath == normalizedHome {
 			return "~"
 		} else if strings.HasPrefix(normalizedPath, normalizedHome+"/") {

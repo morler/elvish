@@ -3,6 +3,7 @@ package fsutil
 import (
 	"os"
 	"path"
+	"path/filepath"
 	"runtime"
 	"testing"
 
@@ -24,7 +25,7 @@ func TestGetwd(t *testing.T) {
 		{"wd outside HOME not abbreviated", "/does/not/exist", tmpdir, tmpdir},
 
 		{"wd at HOME abbreviated", tmpdir, tmpdir, "~"},
-		{"wd inside HOME abbreviated", tmpdir, tmpdir + "/a", "~/a"},
+		{"wd inside HOME abbreviated", tmpdir, tmpdir + "/a", "~" + string(filepath.Separator) + "a"},
 
 		{"wd not abbreviated when HOME is slash", "/", tmpdir, tmpdir},
 	}

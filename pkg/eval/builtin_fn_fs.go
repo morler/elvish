@@ -13,7 +13,8 @@ func init() {
 		"cd": cd,
 
 		// Path
-		"tilde-abbr": tildeAbbr,
+		"tilde-abbr":        tildeAbbr,
+		"tilde-abbr-native": tildeAbbrNative,
 	})
 }
 
@@ -37,4 +38,8 @@ func cd(fm *Frame, args ...string) error {
 
 func tildeAbbr(path string) string {
 	return fsutil.TildeAbbr(path)
+}
+
+func tildeAbbrNative(path string) string {
+	return fsutil.TildeAbbrNative(path)
 }
