@@ -13,13 +13,15 @@
   - ✅ 增强Windows平台进程隔离，避免文件句柄持久化
   - ✅ E2E测试全部通过验证
 
-### 2. Shell交互测试守护进程行为修复
+### 2. Shell交互测试守护进程行为修复 ✅ (已完成)
 - **问题**: `TestTranscripts/interact_test.elvts` 中守护进程命令历史功能失败
 - **现象**: 期望输出 `▶ (num 1)` 但实际无输出
-- **任务**:
-  - 检查空命令历史存储逻辑
-  - 修复Windows环境下的管道和重定向处理
-  - 确保守护进程正确处理命令序列号
+- **修复内容**:
+  - ✅ 识别到Windows平台下数据库路径使用LocalAppData而非临时HOME导致测试间状态共享
+  - ✅ 修改`inProcessActivateFunc`函数，为每个测试创建独立的数据库文件
+  - ✅ 实现智能路径检测，保持原有XDG_STATE_HOME测试兼容性
+  - ✅ 核心测试`does_not_store_empty_command_in_history`现已通过
+  - ✅ 所有相关守护进程测试验证通过
 
 ## 近期修复 (🟡 中优先级)
 

@@ -6,7 +6,9 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
@@ -54,6 +56,34 @@ func TestTranscripts(t *testing.T) {
 	)
 }
 
+// shouldUseTestDbPath determines if we should use a test-specific database path
+// instead of the configured path to ensure test isolation.
+func shouldUseTestDbPath(dbPath string) bool {
+	// On Windows, the default database path uses LocalAppData which isn't
+	// affected by temporary HOME settings, potentially causing test interference.
+	// Use a test-specific path unless the dbPath is explicitly in a temporary directory.
+	if runtime.GOOS == "windows" {
+		// If the path contains common system directories, use test-specific path
+		lower := strings.ToLower(dbPath)
+		systemDirs := []string{"appdata", "programdata", "windows"}
+		for _, dir := range systemDirs {
+			if strings.Contains(lower, dir) {
+				return true
+			}
+		}
+	}
+	// Also use test path if the dbPath looks like a default system path
+	// (doesn't contain temp directory indicators)
+	tempIndicators := []string{"tmp", "temp", "test"}
+	lower := strings.ToLower(dbPath)
+	for _, indicator := range tempIndicators {
+		if strings.Contains(lower, indicator) {
+			return false // Use the configured path
+		}
+	}
+	return true // Use test-specific path for safety
+}
+
 func inProcessActivateFunc(t *testing.T) daemondefs.ActivateFunc {
 	return func(stderr io.Writer, cfg *daemondefs.SpawnConfig) (daemondefs.Client, error) {
 		// Start an in-process daemon.
@@ -67,10 +97,14 @@ func inProcessActivateFunc(t *testing.T) daemondefs.ActivateFunc {
 		readyCh := make(chan struct{})
 		daemonDone := make(chan struct{})
 		go func() {
-			// Unlike the socket path, we do honor cfg.DBPath; this is because
-			// we run tests in a temporary HOME, so there's no risk of using the
-			// DB of real Elvish sessions.
-			daemon.Serve(sockPath, cfg.DbPath,
+			// Use the specified dbPath from config, but if it resolves to a system
+			// path (indicating potential shared state), use a test-specific path instead.
+			// This ensures test isolation while still respecting explicit test configurations.
+			dbPath := cfg.DbPath
+			if shouldUseTestDbPath(dbPath) {
+				dbPath = filepath.Join(dir, "db.bolt")
+			}
+			daemon.Serve(sockPath, dbPath,
 				daemon.ServeOpts{Ready: readyCh, Signals: sigCh})
 			close(daemonDone)
 		}()
