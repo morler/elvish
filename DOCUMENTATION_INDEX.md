@@ -21,7 +21,6 @@ This file provides a complete index of all documentation in the Elvish project, 
 
 ### 平台特定文档 / Platform-Specific Documentation
 - [docs/windows.md](docs/windows.md) - Windows用户指南 / Windows user guide
-- [docs/windows_CN.md](docs/windows_CN.md) - Windows用户指南（中文）/ Windows user guide (Chinese)
 
 ## 开发贡献 / Development and Contribution
 
@@ -31,7 +30,6 @@ This file provides a complete index of all documentation in the Elvish project, 
 
 ### 项目架构 / Project Architecture
 - [docs/architecture/doc.go](docs/architecture/doc.go) - 架构概述（英文）/ Architecture overview (English)
-- [docs/architecture/doc_CN.go](docs/architecture/doc_CN.go) - 架构概述（中文）/ Architecture overview (Chinese)
 
 ### 测试和质量 / Testing and Quality
 - [docs/testing.md](docs/testing.md) - 测试指南 / Testing guide
@@ -111,4 +109,4 @@ This file provides a complete index of all documentation in the Elvish project, 
 📝 **注意 / Note**: 这个索引文件会随着项目发展而更新。如发现遗漏或错误，请提交issue或PR。  
 This index file will be updated as the project evolves. Please submit an issue or PR if you find omissions or errors.
 
-🔄 **最后更新 / Last Updated**: 2025-08-25
+🔄 **最后更新 / Last Updated**: 2025-08-27

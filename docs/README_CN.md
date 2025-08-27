@@ -4,7 +4,7 @@
 
 -   🏗️ [从源码构建Elvish](building_CN.md)
 
--   🪟 [Windows用户指南](windows_CN.md)
+-   🪟 [Windows用户指南](windows.md)
 
 -   📦 [打包Elvish](packaging_CN.md)
 
