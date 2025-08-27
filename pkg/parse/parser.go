@@ -15,12 +15,10 @@ import (
 //
 // NOTE: The src member is assumed to be valid UF-8.
 type parser struct {
-	srcName string
-	src     string
-	pos     int
-	overEOF int
-	errors  []*Error
-	warn    io.Writer
+	*Lexer              // embedded lexer for basic text reading
+	srcName string      // source name for error reporting
+	errors  []*Error   // accumulated parse errors
+	warn    io.Writer  // warning output writer
 }
 
 // Error is a parse error.
@@ -32,11 +30,11 @@ type ErrorTag struct{}
 func (ErrorTag) ErrorTag() string { return "parse error" }
 
 func parse[N Node](ps *parser, n N) parsed[N] {
-	begin := ps.pos
+	begin := ps.Pos()
 	n.n().From = begin
 	n.parse(ps)
-	n.n().To = ps.pos
-	n.n().sourceText = ps.src[begin:ps.pos]
+	n.n().To = ps.Pos()
+	n.n().sourceText = ps.Src()[begin:ps.Pos()]
 	return parsed[N]{n}
 }
 
@@ -61,60 +59,51 @@ func addChild(p Node, ch Node) {
 
 // Tells the parser that parsing is done.
 func (ps *parser) done() {
-	if ps.pos != len(ps.src) {
-		r, _ := utf8.DecodeRuneInString(ps.src[ps.pos:])
+	if ps.Pos() != len(ps.Src()) {
+		r, _ := utf8.DecodeRuneInString(ps.Src()[ps.Pos():])
 		ps.error(fmt.Errorf("unexpected rune %q", r))
 	}
 }
 
-const eof rune = -1
+const eof rune = EOF // Use the exported EOF constant from lexer
 
 func (ps *parser) peek() rune {
-	if ps.pos == len(ps.src) {
+	if ps.Pos() == len(ps.Src()) {
 		return eof
 	}
-	r, _ := utf8.DecodeRuneInString(ps.src[ps.pos:])
+	r, _ := utf8.DecodeRuneInString(ps.Src()[ps.Pos():])
 	return r
 }
 
 func (ps *parser) hasPrefix(prefix string) bool {
-	return strings.HasPrefix(ps.src[ps.pos:], prefix)
+	return strings.HasPrefix(ps.Src()[ps.Pos():], prefix)
 }
 
+// next delegates to the embedded Lexer's Next method
 func (ps *parser) next() rune {
-	if ps.pos == len(ps.src) {
-		ps.overEOF++
-		return eof
-	}
-	r, s := utf8.DecodeRuneInString(ps.src[ps.pos:])
-	ps.pos += s
-	return r
+	return ps.Next()
 }
 
+// backup delegates to the embedded Lexer's Backup method
 func (ps *parser) backup() {
-	if ps.overEOF > 0 {
-		ps.overEOF--
-		return
-	}
-	_, s := utf8.DecodeLastRuneInString(ps.src[:ps.pos])
-	ps.pos -= s
+	ps.Backup()
 }
 
 func (ps *parser) errorp(r diag.Ranger, e error) {
 	err := &Error{
 		Message: e.Error(),
-		Context: *diag.NewContext(ps.srcName, ps.src, r),
-		Partial: r.Range().From == len(ps.src),
+		Context: *diag.NewContext(ps.srcName, ps.Src(), r),
+		Partial: r.Range().From == len(ps.Src()),
 	}
 	ps.errors = append(ps.errors, err)
 }
 
 func (ps *parser) error(e error) {
-	end := ps.pos
-	if end < len(ps.src) {
+	end := ps.Pos()
+	if end < len(ps.Src()) {
 		end++
 	}
-	ps.errorp(diag.Ranging{From: ps.pos, To: end}, e)
+	ps.errorp(diag.Ranging{From: ps.Pos(), To: end}, e)
 }
 
 // UnpackErrors returns the constituent parse errors if the given error contains

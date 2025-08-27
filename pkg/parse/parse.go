@@ -51,7 +51,11 @@ func Parse(src Source, cfg Config) (Tree, error) {
 // n. The returned error may contain one or more parse error, which can be
 // unpacked with [UnpackErrors].
 func ParseAs(src Source, n Node, cfg Config) error {
-	ps := &parser{srcName: src.Name, src: src.Code, warn: cfg.WarningWriter}
+	ps := &parser{
+		Lexer:   NewLexer(src.Code),
+		srcName: src.Name,
+		warn:    cfg.WarningWriter,
+	}
 	parse(ps, n)
 	ps.done()
 	return diag.PackErrors(ps.errors)

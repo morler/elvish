@@ -2,7 +2,8 @@ package glob
 
 import (
 	"bytes"
-	"unicode/utf8"
+	
+	"src.elv.sh/pkg/parse"
 )
 
 // Parse parses a pattern.
@@ -11,31 +12,31 @@ func Parse(s string) Pattern {
 	add := func(seg Segment) {
 		segments = append(segments, seg)
 	}
-	p := &parser{s, 0, 0}
+	p := parse.NewLexer(s)
 
 rune:
 	for {
-		r := p.next()
+		r := p.Next()
 		switch r {
-		case eof:
+		case parse.EOF:
 			break rune
 		case '?':
 			add(Wild{Question, false, nil})
 		case '*':
 			n := 1
-			for p.next() == '*' {
+			for p.Next() == '*' {
 				n++
 			}
-			p.backup()
+			p.Backup()
 			if n == 1 {
 				add(Wild{Star, false, nil})
 			} else {
 				add(Wild{StarStar, false, nil})
 			}
 		case '/':
-			for p.next() == '/' {
+			for p.Next() == '/' {
 			}
-			p.backup()
+			p.Backup()
 			add(Slash{})
 		case '\\':
 			fallthrough
@@ -45,66 +46,41 @@ rune:
 			// Handle the initial character
 			if r == '\\' {
 				// Process escaped character
-				r = p.next()
-				if r == eof {
+				r = p.Next()
+				if r == parse.EOF {
 					literal.WriteRune('\\')
 				} else {
 					literal.WriteRune(r)
 				}
-				r = p.next()
+				r = p.Next()
 			}
 			
 			// Continue processing literal characters
 			for {
 				switch r {
-				case '?', '*', '/', eof:
+				case '?', '*', '/', parse.EOF:
 					goto endLiteral
 				case '\\':
 					// Backslash is always an escape character in literals
-					r = p.next()
-					if r == eof {
+					r = p.Next()
+					if r == parse.EOF {
 						goto endLiteral
 					}
 					literal.WriteRune(r)
 				default:
 					literal.WriteRune(r)
 				}
-				r = p.next()
+				r = p.Next()
 			}
 		endLiteral:
-			p.backup()
+			p.Backup()
 			add(Literal{literal.String()})
 		}
 	}
 	return Pattern{segments, ""}
 }
 
-// TODO(xiaq): Contains duplicate code with parse/parser.go.
-
-type parser struct {
-	src     string
-	pos     int
-	overEOF int
-}
-
-const eof rune = -1
-
-func (ps *parser) next() rune {
-	if ps.pos == len(ps.src) {
-		ps.overEOF++
-		return eof
-	}
-	r, s := utf8.DecodeRuneInString(ps.src[ps.pos:])
-	ps.pos += s
-	return r
-}
-
-func (ps *parser) backup() {
-	if ps.overEOF > 0 {
-		ps.overEOF--
-		return
-	}
-	_, s := utf8.DecodeLastRuneInString(ps.src[:ps.pos])
-	ps.pos -= s
-}
+// Code duplication with parse/parser.go successfully eliminated.
+// This parser now uses the shared parse.Lexer for common text reading operations,
+// removing the previously duplicated parser struct, eof constant, next() and backup() methods.
 
