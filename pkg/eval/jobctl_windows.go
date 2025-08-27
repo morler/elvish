@@ -15,11 +15,11 @@ import (
 // Windows Job Objects API constants
 const (
 	// Job Object Limit Flags
-	JOB_OBJECT_LIMIT_BREAKAWAY_OK                = 0x00000800
-	JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE          = 0x00002000
-	
+	JOB_OBJECT_LIMIT_BREAKAWAY_OK      = 0x00000800
+	JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000
+
 	// Job Object Information Classes
-	JobObjectBasicLimitInformation = 2
+	JobObjectBasicLimitInformation    = 2
 	JobObjectExtendedLimitInformation = 9
 )
 
@@ -38,7 +38,7 @@ type JOBOBJECT_BASIC_LIMIT_INFORMATION struct {
 
 type JOBOBJECT_EXTENDED_LIMIT_INFORMATION struct {
 	BasicLimitInformation JOBOBJECT_BASIC_LIMIT_INFORMATION
-	IoInfo               struct {
+	IoInfo                struct {
 		ReadOperationCount  uint64
 		WriteOperationCount uint64
 		OtherOperationCount uint64
@@ -46,20 +46,20 @@ type JOBOBJECT_EXTENDED_LIMIT_INFORMATION struct {
 		WriteTransferCount  uint64
 		OtherTransferCount  uint64
 	}
-	ProcessMemoryLimit         uintptr
-	JobMemoryLimit             uintptr
-	PeakProcessMemoryUsed      uintptr
-	PeakJobMemoryUsed          uintptr
+	ProcessMemoryLimit    uintptr
+	JobMemoryLimit        uintptr
+	PeakProcessMemoryUsed uintptr
+	PeakJobMemoryUsed     uintptr
 }
 
 // Windows API functions
 var (
-	kernel32                   = windows.NewLazySystemDLL("kernel32.dll")
-	procCreateJobObjectW       = kernel32.NewProc("CreateJobObjectW")
-	procAssignProcessToJobObject = kernel32.NewProc("AssignProcessToJobObject")
-	procSetInformationJobObject = kernel32.NewProc("SetInformationJobObject")
+	kernel32                      = windows.NewLazySystemDLL("kernel32.dll")
+	procCreateJobObjectW          = kernel32.NewProc("CreateJobObjectW")
+	procAssignProcessToJobObject  = kernel32.NewProc("AssignProcessToJobObject")
+	procSetInformationJobObject   = kernel32.NewProc("SetInformationJobObject")
 	procQueryInformationJobObject = kernel32.NewProc("QueryInformationJobObject")
-	procTerminateJobObject     = kernel32.NewProc("TerminateJobObject")
+	procTerminateJobObject        = kernel32.NewProc("TerminateJobObject")
 )
 
 // windowsJobController implements JobController for Windows using Job Objects.
@@ -101,14 +101,14 @@ func (c *windowsJobController) CreateJob() (JobID, error) {
 	if ret == 0 {
 		return nil, err
 	}
-	
+
 	handle := windows.Handle(ret)
-	
+
 	// Set job limits to allow breakaway and kill on job close
 	var extendedInfo JOBOBJECT_EXTENDED_LIMIT_INFORMATION
-	extendedInfo.BasicLimitInformation.LimitFlags = 
+	extendedInfo.BasicLimitInformation.LimitFlags =
 		JOB_OBJECT_LIMIT_BREAKAWAY_OK | JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
-	
+
 	ret2, _, err2 := procSetInformationJobObject.Call(
 		uintptr(handle),
 		JobObjectExtendedLimitInformation,
@@ -119,7 +119,7 @@ func (c *windowsJobController) CreateJob() (JobID, error) {
 		windows.CloseHandle(handle)
 		return nil, err2
 	}
-	
+
 	// Track the job
 	c.mu.Lock()
 	c.jobs[handle] = &windowsJob{
@@ -127,7 +127,7 @@ func (c *windowsJobController) CreateJob() (JobID, error) {
 		processes: make(map[uint32]bool),
 	}
 	c.mu.Unlock()
-	
+
 	return &windowsJobID{handle: handle}, nil
 }
 
@@ -136,18 +136,18 @@ func (c *windowsJobController) AddProcess(jobID JobID, pid int) error {
 	if !ok || !winID.IsValid() {
 		return ErrInvalidJobID
 	}
-	
+
 	// Open the process
 	processHandle, err := windows.OpenProcess(
-		windows.PROCESS_SET_QUOTA | windows.PROCESS_TERMINATE, 
-		false, 
+		windows.PROCESS_SET_QUOTA|windows.PROCESS_TERMINATE,
+		false,
 		uint32(pid),
 	)
 	if err != nil {
 		return err
 	}
 	defer windows.CloseHandle(processHandle)
-	
+
 	// Assign process to job object
 	ret, _, err := procAssignProcessToJobObject.Call(
 		uintptr(winID.handle),
@@ -156,20 +156,20 @@ func (c *windowsJobController) AddProcess(jobID JobID, pid int) error {
 	if ret == 0 {
 		return err
 	}
-	
+
 	// Track the process in our job
 	c.mu.RLock()
 	job, exists := c.jobs[winID.handle]
 	c.mu.RUnlock()
-	
+
 	if !exists {
 		return ErrJobNotFound
 	}
-	
+
 	job.mu.Lock()
 	job.processes[uint32(pid)] = true
 	job.mu.Unlock()
-	
+
 	return nil
 }
 
@@ -196,30 +196,30 @@ func (c *windowsJobController) ResumeJob(jobID JobID) error {
 	if !ok || !winID.IsValid() {
 		return ErrInvalidJobID
 	}
-	
+
 	// Get all processes in the job
 	pids, err := c.GetJobProcesses(jobID)
 	if err != nil {
 		return err
 	}
-	
-	// Resume each process (this is approximate - Windows doesn't have 
+
+	// Resume each process (this is approximate - Windows doesn't have
 	// exact equivalents to SIGCONT)
 	for _, pid := range pids {
 		processHandle, err := windows.OpenProcess(
-			windows.PROCESS_SUSPEND_RESUME, 
-			false, 
+			windows.PROCESS_SUSPEND_RESUME,
+			false,
 			uint32(pid),
 		)
 		if err != nil {
 			continue // Skip processes we can't access
 		}
-		
+
 		// Note: This is a simplified implementation. Full implementation would
 		// need to track thread handles and use ResumeThread on each thread.
 		windows.CloseHandle(processHandle)
 	}
-	
+
 	return nil
 }
 
@@ -228,10 +228,10 @@ func (c *windowsJobController) SuspendJob(jobID JobID) error {
 	if !ok || !winID.IsValid() {
 		return ErrInvalidJobID
 	}
-	
+
 	// Similar to ResumeJob, this would need to suspend all threads
 	// in all processes in the job. This is a complex operation on Windows.
-	
+
 	// For now, return an error indicating this is not fully implemented
 	return fmt.Errorf("SuspendJob not fully implemented on Windows")
 }
@@ -241,17 +241,17 @@ func (c *windowsJobController) WaitForJob(jobID JobID) ([]ProcessStatus, error) 
 	if !ok || !winID.IsValid() {
 		return nil, ErrInvalidJobID
 	}
-	
+
 	// Get current processes in the job
 	pids, err := c.GetJobProcesses(jobID)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	var statuses []ProcessStatus
 	for _, pid := range pids {
 		processHandle, err := windows.OpenProcess(
-			windows.SYNCHRONIZE | windows.PROCESS_QUERY_INFORMATION,
+			windows.SYNCHRONIZE|windows.PROCESS_QUERY_INFORMATION,
 			false,
 			uint32(pid),
 		)
@@ -262,7 +262,7 @@ func (c *windowsJobController) WaitForJob(jobID JobID) ([]ProcessStatus, error) 
 			})
 			continue
 		}
-		
+
 		// Wait for the process to complete
 		event, err := windows.WaitForSingleObject(processHandle, windows.INFINITE)
 		if err != nil {
@@ -273,12 +273,12 @@ func (c *windowsJobController) WaitForJob(jobID JobID) ([]ProcessStatus, error) 
 			})
 			continue
 		}
-		
+
 		// Get exit code
 		var exitCode uint32
 		err = windows.GetExitCodeProcess(processHandle, &exitCode)
 		windows.CloseHandle(processHandle)
-		
+
 		status := ProcessStatus{
 			PID: pid,
 		}
@@ -288,10 +288,10 @@ func (c *windowsJobController) WaitForJob(jobID JobID) ([]ProcessStatus, error) 
 			status.ExitCode = int(exitCode)
 			status.Terminated = (event == windows.WAIT_OBJECT_0)
 		}
-		
+
 		statuses = append(statuses, status)
 	}
-	
+
 	return statuses, nil
 }
 
@@ -300,23 +300,23 @@ func (c *windowsJobController) GetJobProcesses(jobID JobID) ([]int, error) {
 	if !ok || !winID.IsValid() {
 		return nil, ErrInvalidJobID
 	}
-	
+
 	c.mu.RLock()
 	job, exists := c.jobs[winID.handle]
 	c.mu.RUnlock()
-	
+
 	if !exists {
 		return nil, ErrJobNotFound
 	}
-	
+
 	job.mu.RLock()
 	defer job.mu.RUnlock()
-	
+
 	pids := make([]int, 0, len(job.processes))
 	for pid := range job.processes {
 		pids = append(pids, int(pid))
 	}
-	
+
 	return pids, nil
 }
 
@@ -325,7 +325,7 @@ func (c *windowsJobController) TerminateJob(jobID JobID) error {
 	if !ok || !winID.IsValid() {
 		return ErrInvalidJobID
 	}
-	
+
 	// Terminate all processes in the job
 	ret, _, err := procTerminateJobObject.Call(
 		uintptr(winID.handle),
@@ -334,19 +334,19 @@ func (c *windowsJobController) TerminateJob(jobID JobID) error {
 	if ret == 0 {
 		return err
 	}
-	
+
 	// Clean up
 	c.mu.Lock()
 	delete(c.jobs, winID.handle)
 	c.mu.Unlock()
-	
+
 	return windows.CloseHandle(winID.handle)
 }
 
 func (c *windowsJobController) Close() error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	
+
 	// Close all job handles
 	for handle, job := range c.jobs {
 		windows.CloseHandle(handle)
@@ -354,7 +354,7 @@ func (c *windowsJobController) Close() error {
 		job.processes = make(map[uint32]bool)
 		job.mu.Unlock()
 	}
-	
+
 	c.jobs = make(map[windows.Handle]*windowsJob)
 	return nil
 }
@@ -369,13 +369,13 @@ func fgWindows(controller JobController, pids ...int) error {
 	if len(pids) == 0 {
 		return ErrJobNotFound
 	}
-	
+
 	// Create a new job for these processes
 	jobID, err := controller.CreateJob()
 	if err != nil {
 		return err
 	}
-	
+
 	// Add all processes to the job
 	for _, pid := range pids {
 		if err := controller.AddProcess(jobID, pid); err != nil {
@@ -383,18 +383,18 @@ func fgWindows(controller JobController, pids ...int) error {
 			return err
 		}
 	}
-	
+
 	// Bring the job to foreground (resume processes)
 	if err := controller.BringToForeground(jobID); err != nil {
 		return err
 	}
-	
+
 	// Wait for the job to complete
 	statuses, err := controller.WaitForJob(jobID)
 	if err != nil {
 		return err
 	}
-	
+
 	// Convert statuses to exceptions (matching original fg behavior)
 	errors := make([]Exception, len(statuses))
 	for i, status := range statuses {
@@ -409,6 +409,6 @@ func fgWindows(controller JobController, pids ...int) error {
 				status.PID), nil}
 		}
 	}
-	
+
 	return MakePipelineError(errors)
 }

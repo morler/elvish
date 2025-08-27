@@ -15,10 +15,10 @@ import (
 //
 // NOTE: The src member is assumed to be valid UF-8.
 type parser struct {
-	*Lexer              // embedded lexer for basic text reading
-	srcName string      // source name for error reporting
-	errors  []*Error   // accumulated parse errors
-	warn    io.Writer  // warning output writer
+	*Lexer            // embedded lexer for basic text reading
+	srcName string    // source name for error reporting
+	errors  []*Error  // accumulated parse errors
+	warn    io.Writer // warning output writer
 }
 
 // Error is a parse error.

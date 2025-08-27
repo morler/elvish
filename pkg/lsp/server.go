@@ -41,7 +41,7 @@ func isVariableShadowed(parseTree parse.Tree, pos int, varName string) bool {
 	if len(path) == 0 {
 		return false
 	}
-	
+
 	// Check if this variable is defined locally
 	found := false
 	eachDefinedVariableAtPos(path[len(path)-1], path[0].Range().From, func(name string) {
@@ -222,7 +222,7 @@ func (s *server) hover(_ context.Context, params lsp.TextDocumentPositionParams)
 	var expr np.SimpleExprData
 	var form *parse.Form
 	if p.Match(np.SimpleExpr(&expr, nil), np.Store(&form)) && form.Head == expr.Compound {
-		// Check if command is locally defined (shadowing consideration)  
+		// Check if command is locally defined (shadowing consideration)
 		if isVariableShadowed(document.parseTree, pos, expr.Value) {
 			// Command is locally defined, provide local function information
 			markdown, err := getLocalVariableInfo(expr.Value)
@@ -261,7 +261,7 @@ func (s *server) completion(_ context.Context, params lsp.CompletionParams) (any
 
 	lspItems := make([]lsp.CompletionItem, len(result.Items))
 	lspRange := lspRangeFromRange(code, result.Replace)
-	
+
 	// Enhanced completion item kind determination with shadowing consideration
 	var getCompletionKind = func(name, contextName string) lsp.CompletionItemKind {
 		switch contextName {
@@ -284,10 +284,10 @@ func (s *server) completion(_ context.Context, params lsp.CompletionParams) (any
 			return lsp.CIKText // Fallback for unknown types
 		}
 	}
-	
+
 	for i, item := range result.Items {
 		kind := getCompletionKind(item.ToInsert, result.Name)
-		
+
 		// Enhanced completion item with additional information
 		completionItem := lsp.CompletionItem{
 			Label: item.ToInsert,
@@ -297,7 +297,7 @@ func (s *server) completion(_ context.Context, params lsp.CompletionParams) (any
 				NewText: item.ToInsert,
 			},
 		}
-		
+
 		// Add detail information for better UX
 		switch result.Name {
 		case "variable":
@@ -319,7 +319,7 @@ func (s *server) completion(_ context.Context, params lsp.CompletionParams) (any
 		case "redir":
 			completionItem.Detail = "file path"
 		}
-		
+
 		lspItems[i] = completionItem
 	}
 	return lspItems, nil

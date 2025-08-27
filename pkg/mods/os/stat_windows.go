@@ -47,13 +47,13 @@ func filetimeToTime(ft syscall.Filetime) time.Time {
 	// Unix epoch starts at January 1, 1970 UTC
 	// The difference is 116444736000000000 * 100ns = 11644473600 seconds
 	const windowsEpochDiff = 116444736000000000
-	
+
 	// Combine low and high parts into a single int64
 	nsec := int64(ft.HighDateTime)<<32 + int64(ft.LowDateTime)
-	
+
 	// Convert to Unix epoch (nanoseconds since January 1, 1970 UTC)
 	nsec = (nsec - windowsEpochDiff) * 100
-	
+
 	return time.Unix(0, nsec).UTC()
 }
 

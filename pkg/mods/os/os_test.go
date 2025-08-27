@@ -34,7 +34,7 @@ func TestTranscripts(t *testing.T) {
 			if info.Mode()&os.ModeSocket == 0 {
 				t.Skipf("socket file is not a socket (mode: %v)", info.Mode())
 			}
-			t.Cleanup(func() { 
+			t.Cleanup(func() {
 				listener.Close()
 				// On Windows, socket file is auto-deleted when listener closes
 				// On Unix, we might need to manually remove it

@@ -17,47 +17,47 @@ import (
 
 var Ns = eval.BuildNsNamed("str").
 	AddGoFns(map[string]any{
-		"compare":      strings.Compare,
-		"contains":     strings.Contains,
-		"contains-any": strings.ContainsAny,
-		"count":        strings.Count,
-		"equal-fold":   strings.EqualFold,
-		"fields":      strings.Fields,
-		"fields-func": fieldsFunc,
+		"compare":         strings.Compare,
+		"contains":        strings.Contains,
+		"contains-any":    strings.ContainsAny,
+		"count":           strings.Count,
+		"equal-fold":      strings.EqualFold,
+		"fields":          strings.Fields,
+		"fields-func":     fieldsFunc,
 		"from-codepoints": fromCodepoints,
 		"from-utf8-bytes": fromUtf8Bytes,
 		"has-prefix":      strings.HasPrefix,
 		"has-suffix":      strings.HasSuffix,
-		"index":      strings.Index,
-		"index-any":  strings.IndexAny,
-		"index-func": indexFunc,
-		"join":       join,
+		"index":           strings.Index,
+		"index-any":       strings.IndexAny,
+		"index-func":      indexFunc,
+		"join":            join,
 		"last-index":      strings.LastIndex,
 		"last-index-func": lastIndexFunc,
 		"map":             mapFunc,
-		"repeat":  repeat,
-		"replace": replace,
-		"split":       split,
-		"split-after": splitAfter,
+		"repeat":          repeat,
+		"replace":         replace,
+		"split":           split,
+		"split-after":     splitAfter,
 		//lint:ignore SA1019 Elvish builtins need to be formally deprecated
 		// before removal
-		"title":         strings.Title,
-		"to-codepoints": toCodepoints,
-		"to-lower":      strings.ToLower,
-		"to-title":      strings.ToTitle,
-		"to-upper":        strings.ToUpper,
-		"to-utf8-bytes":   toUtf8Bytes,
+		"title":            strings.Title,
+		"to-codepoints":    toCodepoints,
+		"to-lower":         strings.ToLower,
+		"to-title":         strings.ToTitle,
+		"to-upper":         strings.ToUpper,
+		"to-utf8-bytes":    toUtf8Bytes,
 		"to-lower-special": toLowerSpecial,
 		"to-title-special": toTitleSpecial,
 		"to-upper-special": toUpperSpecial,
-		"trim":       strings.Trim,
-		"trim-left":       strings.TrimLeft,
-		"trim-right":      strings.TrimRight,
-		"trim-left-func":  trimLeftFunc,
-		"trim-right-func": trimRightFunc,
-		"trim-space":  strings.TrimSpace,
-		"trim-prefix": strings.TrimPrefix,
-		"trim-suffix": strings.TrimSuffix,
+		"trim":             strings.Trim,
+		"trim-left":        strings.TrimLeft,
+		"trim-right":       strings.TrimRight,
+		"trim-left-func":   trimLeftFunc,
+		"trim-right-func":  trimRightFunc,
+		"trim-space":       strings.TrimSpace,
+		"trim-prefix":      strings.TrimPrefix,
+		"trim-suffix":      strings.TrimSuffix,
 	}).Ns()
 
 func fromCodepoints(nums ...int) (string, error) {
@@ -306,11 +306,11 @@ func callFuncForBool(fm *eval.Frame, f eval.Callable, arg string) bool {
 	outputs, err := fm.CaptureOutput(func(subFm *eval.Frame) error {
 		return f.Call(subFm, []any{arg}, eval.NoOpts)
 	})
-	
+
 	if err != nil || len(outputs) == 0 {
 		return false
 	}
-	
+
 	// Convert the first output to boolean
 	return vals.Bool(outputs[0])
 }
@@ -321,11 +321,11 @@ func callFuncForRune(fm *eval.Frame, f eval.Callable, arg string, originalRune r
 	outputs, err := fm.CaptureOutput(func(subFm *eval.Frame) error {
 		return f.Call(subFm, []any{arg}, eval.NoOpts)
 	})
-	
+
 	if err != nil || len(outputs) == 0 {
 		return originalRune // keep original character on error
 	}
-	
+
 	// Handle different return types
 	switch val := outputs[0].(type) {
 	case string:

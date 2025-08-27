@@ -18,11 +18,11 @@ import (
 // Helper functions for overflow detection in optimized integer arithmetic
 
 const (
-	maxIntBits = ^uint(0) >> 1  // Bits for max int
+	maxIntBits = ^uint(0) >> 1 // Bits for max int
 	maxInt     = int(maxIntBits)
 	minInt     = -maxInt - 1
-	intMaxDiv2 = maxInt / 2     // approximately maxInt/2
-	intMinDiv2 = minInt / 2     // approximately minInt/2
+	intMaxDiv2 = maxInt / 2 // approximately maxInt/2
+	intMinDiv2 = minInt / 2 // approximately minInt/2
 )
 
 // safeIntAdd checks if adding two integers would overflow
@@ -38,7 +38,7 @@ func safeIntAdd(a, b int) (int, bool) {
 	return result, true
 }
 
-// safeIntMul checks if multiplying two integers would overflow  
+// safeIntMul checks if multiplying two integers would overflow
 func safeIntMul(a, b int) (int, bool) {
 	if a == 0 || b == 0 {
 		return 0, true
@@ -192,7 +192,7 @@ func add(rawNums ...vals.Num) vals.Num {
 	if len(rawNums) == 0 {
 		return 0
 	}
-	
+
 	// Optimize for the common case of pure int arithmetic
 	allInts := true
 	intSum := 0
@@ -212,7 +212,7 @@ func add(rawNums ...vals.Num) vals.Num {
 	if allInts {
 		return intSum
 	}
-	
+
 	nums := vals.UnifyNums(rawNums, vals.BigInt)
 	switch nums := nums.(type) {
 	case []*big.Int:
@@ -285,7 +285,7 @@ func mul(rawNums ...vals.Num) vals.Num {
 	if len(rawNums) == 0 {
 		return 1
 	}
-	
+
 	hasExact0 := false
 	hasInf := false
 	for _, num := range rawNums {

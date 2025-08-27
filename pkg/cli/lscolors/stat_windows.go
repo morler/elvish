@@ -11,7 +11,7 @@ import (
 //
 // A complete implementation would need:
 // 1. Opening the file with CreateFile
-// 2. Calling GetFileInformationByHandle 
+// 2. Calling GetFileInformationByHandle
 // 3. Checking the NumberOfLinks field
 //
 // For now, we prioritize performance and correctness over feature completeness.

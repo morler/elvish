@@ -48,7 +48,7 @@ func decodeUTF8FromBytes(data []byte) (rune, int, error) {
 			return badRune, i, errInvalidUTF8
 		}
 	}
-	
+
 	if len(data) < needed {
 		return badRune, len(data), errIncompleteUTF8
 	}
@@ -64,8 +64,8 @@ func decodeUTF8FromBytes(data []byte) (rune, int, error) {
 
 // Common errors for UTF-8 decoding
 var (
-	errEOF           = &utf8Error{"unexpected end of data"}
-	errInvalidUTF8   = &utf8Error{"invalid UTF-8 sequence"}
+	errEOF            = &utf8Error{"unexpected end of data"}
+	errInvalidUTF8    = &utf8Error{"invalid UTF-8 sequence"}
 	errIncompleteUTF8 = &utf8Error{"incomplete UTF-8 sequence"}
 )
 

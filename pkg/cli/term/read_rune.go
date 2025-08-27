@@ -24,7 +24,7 @@ func readRune(rd byteReaderWithTimeout, timeout time.Duration) (rune, error) {
 	if err != nil {
 		return badRune, err
 	}
-	
+
 	// Determine how many bytes we need for this UTF-8 sequence
 	var needed int
 	switch {
@@ -39,11 +39,11 @@ func readRune(rd byteReaderWithTimeout, timeout time.Duration) (rune, error) {
 	default:
 		return badRune, errInvalidUTF8
 	}
-	
+
 	// Collect all bytes for the UTF-8 sequence
 	bytes := make([]byte, needed)
 	bytes[0] = leader
-	
+
 	// Read remaining bytes with UTF-8 sequence timeout
 	for i := 1; i < needed; i++ {
 		b, err := rd.ReadByteWithTimeout(utf8SeqTimeout)
@@ -52,7 +52,7 @@ func readRune(rd byteReaderWithTimeout, timeout time.Duration) (rune, error) {
 		}
 		bytes[i] = b
 	}
-	
+
 	// Use the cross-platform UTF-8 decoding logic
 	r, _, err := decodeUTF8FromBytes(bytes)
 	return r, err

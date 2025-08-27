@@ -146,12 +146,12 @@ func parseGetoptConfig(v any) (getopt.Config, error) {
 	case vals.Map:
 		var result getopt.Config
 		var hasConfig bool
-		
+
 		// Handle empty map case - return default GNU config
 		if config.Len() == 0 {
 			return getopt.GNU, nil
 		}
-		
+
 		// Check for predefined configurations
 		if preset, ok := config.Index("preset"); ok {
 			if presetStr, ok := preset.(string); ok {
@@ -172,7 +172,7 @@ func parseGetoptConfig(v any) (getopt.Config, error) {
 				return 0, fmt.Errorf("preset should be string, got %s", vals.Kind(preset))
 			}
 		}
-		
+
 		// Check for individual flags
 		if flag, ok := config.Index("stop-after-double-dash"); ok {
 			if flagBool, ok := flag.(bool); ok {
@@ -184,7 +184,7 @@ func parseGetoptConfig(v any) (getopt.Config, error) {
 				return 0, fmt.Errorf("stop-after-double-dash should be bool, got %s", vals.Kind(flag))
 			}
 		}
-		
+
 		if flag, ok := config.Index("stop-before-first-non-option"); ok {
 			if flagBool, ok := flag.(bool); ok {
 				if flagBool {
@@ -195,7 +195,7 @@ func parseGetoptConfig(v any) (getopt.Config, error) {
 				return 0, fmt.Errorf("stop-before-first-non-option should be bool, got %s", vals.Kind(flag))
 			}
 		}
-		
+
 		if flag, ok := config.Index("long-only"); ok {
 			if flagBool, ok := flag.(bool); ok {
 				if flagBool {
@@ -206,12 +206,12 @@ func parseGetoptConfig(v any) (getopt.Config, error) {
 				return 0, fmt.Errorf("long-only should be bool, got %s", vals.Kind(flag))
 			}
 		}
-		
+
 		if !hasConfig {
 			return getopt.GNU, nil // default if empty map
 		}
 		return result, nil
-		
+
 	default:
 		return 0, fmt.Errorf("config should be string or map, got %s", vals.Kind(v))
 	}

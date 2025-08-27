@@ -46,14 +46,14 @@ func TestJobControllerWithCurrentProcess(t *testing.T) {
 	// Note: This might fail on some platforms due to permissions
 	currentPid := os.Getpid()
 	err = controller.AddProcess(jobID, currentPid)
-	
+
 	// On Unix, adding current process might fail, on Windows it might work
 	// So we just log the result rather than failing
 	if err != nil {
 		t.Logf("Adding current process failed (expected on some platforms): %v", err)
 	} else {
 		t.Logf("Successfully added current process %d to job", currentPid)
-		
+
 		// Test getting job processes
 		pids, err := controller.GetJobProcesses(jobID)
 		if err != nil {
@@ -83,17 +83,17 @@ func TestFgCommandIntegration(t *testing.T) {
 	// On Windows, we'll use timeout, on Unix we can use sleep
 	var cmd string
 	var args []string
-	
+
 	// Use a cross-platform approach - Go's own program
-	cmd = os.Args[0] // Use the test binary itself
+	cmd = os.Args[0]                // Use the test binary itself
 	args = []string{"-test.run=^$"} // Run no tests (will exit quickly)
-	
+
 	// Create a simple external command for testing
 	// This is a basic test - more comprehensive tests would need actual
 	// process management scenarios
-	
+
 	t.Logf("Testing with command: %s %v", cmd, args)
-	
+
 	// For now, just verify that fg handles invalid PIDs gracefully
 	invalidPid := 999999 // Very unlikely to be a real PID
 	err := fg(invalidPid)

@@ -34,7 +34,7 @@ func Glob(p string, cb func(PathInfo) bool) bool {
 func (p Pattern) Glob(cb func(PathInfo) bool) bool {
 	segs := p.Segments
 	dir := ""
-	
+
 	// Detect the original path separator style for Windows compatibility
 	var originalSep rune = '/'
 	if runtime.GOOS == "windows" {
@@ -122,7 +122,7 @@ func normalizeWindowsPath(path string, originalSep rune) string {
 	if runtime.GOOS != "windows" {
 		return path
 	}
-	
+
 	// Convert to the original separator style
 	if originalSep == '\\' {
 		return strings.ReplaceAll(path, "/", "\\")
@@ -137,12 +137,12 @@ func detectPathSeparator(pattern string) rune {
 	if runtime.GOOS != "windows" {
 		return '/'
 	}
-	
+
 	// For Windows, detect the style used in the original pattern
 	// Look for unescaped backslashes (Windows paths)
 	backslashCount := 0
 	forwardCount := strings.Count(pattern, "/")
-	
+
 	// Count unescaped backslashes
 	for i := 0; i < len(pattern); i++ {
 		if pattern[i] == '\\' {
@@ -152,7 +152,7 @@ func detectPathSeparator(pattern string) rune {
 			}
 		}
 	}
-	
+
 	// If we have Windows-style paths (more backslashes), preserve that style
 	if backslashCount > forwardCount {
 		return '\\'

@@ -29,10 +29,10 @@ func (l Label) render(width int) *term.Buffer {
 // renderOptimized creates a buffer with height-aware early termination
 func (l Label) renderOptimized(width, height int) *term.Buffer {
 	bb := term.NewBufferBuilder(width)
-	
+
 	for _, seg := range l.Content {
 		bb.WriteStringSGR(seg.Text, seg.Style.SGR())
-		
+
 		// Check if we've exceeded the height limit
 		cursor := bb.Cursor()
 		if cursor.Line >= height {
@@ -42,7 +42,7 @@ func (l Label) renderOptimized(width, height int) *term.Buffer {
 			return buf
 		}
 	}
-	
+
 	return bb.Buffer()
 }
 

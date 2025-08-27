@@ -21,8 +21,8 @@ func TestOptimizedIntegerArithmetic(t *testing.T) {
 		{"add_empty", add, []vals.Num{}, 0},
 		{"add_zero", add, []vals.Num{0, 5, 0}, 5},
 		{"add_negative", add, []vals.Num{-3, 7, -2}, 2},
-		
-		// Multiplication tests  
+
+		// Multiplication tests
 		{"mul_pure_ints", mul, []vals.Num{2, 3, 4}, 24},
 		{"mul_single_int", mul, []vals.Num{7}, 7},
 		{"mul_empty", mul, []vals.Num{}, 1},
@@ -44,21 +44,21 @@ func TestOptimizedIntegerArithmetic(t *testing.T) {
 	}
 }
 
-// TestMixedTypeHandling tests that mixed types still work correctly 
+// TestMixedTypeHandling tests that mixed types still work correctly
 func TestMixedTypeHandling(t *testing.T) {
 	bigInt := big.NewInt(1000000000000)
 	bigRat := big.NewRat(3, 2) // 1.5
-	
+
 	tests := []struct {
-		name string
-		op   func(...vals.Num) vals.Num
-		args []vals.Num
+		name  string
+		op    func(...vals.Num) vals.Num
+		args  []vals.Num
 		check func(vals.Num) bool
 	}{
 		{
-			"add_mixed_int_bigint", 
-			add, 
-			[]vals.Num{5, bigInt}, 
+			"add_mixed_int_bigint",
+			add,
+			[]vals.Num{5, bigInt},
 			func(result vals.Num) bool {
 				// vals.NormalizeBigInt converts back to int if it fits
 				switch result := result.(type) {
@@ -72,7 +72,7 @@ func TestMixedTypeHandling(t *testing.T) {
 			},
 		},
 		{
-			"add_mixed_int_rat", 
+			"add_mixed_int_rat",
 			add,
 			[]vals.Num{1, bigRat},
 			func(result vals.Num) bool {
@@ -82,7 +82,7 @@ func TestMixedTypeHandling(t *testing.T) {
 			},
 		},
 		{
-			"add_mixed_int_float", 
+			"add_mixed_int_float",
 			add,
 			[]vals.Num{3, 2.5},
 			func(result vals.Num) bool {
@@ -115,11 +115,11 @@ func TestMixedTypeHandling(t *testing.T) {
 func TestOverflowHandling(t *testing.T) {
 	maxInt := int(^uint(0) >> 1)
 	minInt := -maxInt - 1
-	
+
 	tests := []struct {
-		name     string
-		op       func(...vals.Num) vals.Num  
-		args     []vals.Num
+		name      string
+		op        func(...vals.Num) vals.Num
+		args      []vals.Num
 		checkType string // "bigint" or "int"
 	}{
 		{
@@ -129,14 +129,14 @@ func TestOverflowHandling(t *testing.T) {
 			"bigint", // should overflow to big.Int
 		},
 		{
-			"add_overflow_negative", 
+			"add_overflow_negative",
 			add,
 			[]vals.Num{minInt, -1},
 			"bigint", // should overflow to big.Int
 		},
 		{
 			"mul_overflow",
-			mul, 
+			mul,
 			[]vals.Num{maxInt, 2},
 			"bigint", // should overflow to big.Int
 		},
@@ -151,7 +151,7 @@ func TestOverflowHandling(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := tt.op(tt.args...)
-			
+
 			switch tt.checkType {
 			case "int":
 				if _, ok := result.(int); !ok {
@@ -170,37 +170,37 @@ func TestOverflowHandling(t *testing.T) {
 func TestSafeIntArithmetic(t *testing.T) {
 	maxInt := int(^uint(0) >> 1)
 	minInt := -maxInt - 1
-	
+
 	// Test safeIntAdd
 	t.Run("safeIntAdd", func(t *testing.T) {
 		// Normal case
 		if result, ok := safeIntAdd(5, 3); !ok || result != 8 {
 			t.Errorf("Expected (8, true), got (%d, %v)", result, ok)
 		}
-		
+
 		// Overflow case
 		if _, ok := safeIntAdd(maxInt, 1); ok {
 			t.Error("Expected overflow detection to return false")
 		}
-		
+
 		// Underflow case
 		if _, ok := safeIntAdd(minInt, -1); ok {
 			t.Error("Expected underflow detection to return false")
 		}
 	})
-	
+
 	// Test safeIntMul
 	t.Run("safeIntMul", func(t *testing.T) {
 		// Normal case
 		if result, ok := safeIntMul(6, 7); !ok || result != 42 {
 			t.Errorf("Expected (42, true), got (%d, %v)", result, ok)
 		}
-		
+
 		// Zero case
 		if result, ok := safeIntMul(0, 12345); !ok || result != 0 {
 			t.Errorf("Expected (0, true), got (%d, %v)", result, ok)
 		}
-		
+
 		// Overflow case
 		if _, ok := safeIntMul(maxInt, 2); ok {
 			t.Error("Expected overflow detection to return false")
@@ -212,25 +212,25 @@ func TestSafeIntArithmetic(t *testing.T) {
 func BenchmarkArithmeticOperations(b *testing.B) {
 	intArgs := []vals.Num{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 	mixedArgs := []vals.Num{1, 2, 3, 4, big.NewInt(5), 6, 7, 8, 9, 10}
-	
+
 	b.Run("add_pure_ints", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			add(intArgs...)
 		}
 	})
-	
+
 	b.Run("add_mixed_types", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			add(mixedArgs...)
 		}
 	})
-	
+
 	b.Run("mul_pure_ints", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			mul(intArgs...)
 		}
 	})
-	
+
 	b.Run("mul_mixed_types", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			mul(mixedArgs...)

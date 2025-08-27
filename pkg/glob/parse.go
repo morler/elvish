@@ -2,7 +2,7 @@ package glob
 
 import (
 	"bytes"
-	
+
 	"src.elv.sh/pkg/parse"
 )
 
@@ -42,7 +42,7 @@ rune:
 			fallthrough
 		default:
 			var literal bytes.Buffer
-			
+
 			// Handle the initial character
 			if r == '\\' {
 				// Process escaped character
@@ -54,7 +54,7 @@ rune:
 				}
 				r = p.Next()
 			}
-			
+
 			// Continue processing literal characters
 			for {
 				switch r {
@@ -83,4 +83,3 @@ rune:
 // Code duplication with parse/parser.go successfully eliminated.
 // This parser now uses the shared parse.Lexer for common text reading operations,
 // removing the previously duplicated parser struct, eof constant, next() and backup() methods.
-

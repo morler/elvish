@@ -27,14 +27,14 @@ func TestConvertEvent(t *testing.T) {
 		Args(charKeyEvent(uint16(r2), 0)).Rets(surrogateKeyEvent{r2}),
 
 		Args(funcKeyEvent(0x1b, 0)).Rets(K(ui.Escape)),
-		
+
 		// Test enhanced Windows key support
-		Args(funcKeyEvent(0x21, 0)).Rets(K(ui.PageUp)),    // Page Up
-		Args(funcKeyEvent(0x22, 0)).Rets(K(ui.PageDown)),  // Page Down
-		
+		Args(funcKeyEvent(0x21, 0)).Rets(K(ui.PageUp)),   // Page Up
+		Args(funcKeyEvent(0x22, 0)).Rets(K(ui.PageDown)), // Page Down
+
 		// Test numpad key support
-		Args(funcKeyEvent(0x60, 0)).Rets(K('0')),          // Numpad 0
-		Args(funcKeyEvent(0x6a, 0)).Rets(K('*')),          // Numpad *
+		Args(funcKeyEvent(0x60, 0)).Rets(K('0')), // Numpad 0
+		Args(funcKeyEvent(0x6a, 0)).Rets(K('*')), // Numpad *
 
 		// Functional key with modifiers
 		Args(funcKeyEvent(0x08, 0)).Rets(K(ui.Backspace)),

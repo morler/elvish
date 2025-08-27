@@ -10,10 +10,10 @@ import (
 // BenchmarkLabelRender tests label rendering performance with large content
 func BenchmarkLabelRender(b *testing.B) {
 	tests := []struct {
-		name     string
-		content  ui.Text
-		width    int
-		height   int
+		name    string
+		content ui.Text
+		width   int
+		height  int
 	}{
 		{
 			name:    "short-content",
@@ -96,11 +96,11 @@ func BenchmarkListBoxRender(b *testing.B) {
 			} else {
 				items = TestItems{NItems: tt.nItems}
 			}
-			
+
 			listBox := NewListBox(ListBoxSpec{
 				State: ListBoxState{Items: items, Selected: 0},
 			})
-			
+
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
 				_ = listBox.Render(tt.width, tt.height)
@@ -138,7 +138,7 @@ func BenchmarkListBoxHorizontalRender(b *testing.B) {
 				Horizontal: true,
 				State:      ListBoxState{Items: items, Selected: 0},
 			})
-			
+
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
 				_ = listBox.Render(tt.width, tt.height)

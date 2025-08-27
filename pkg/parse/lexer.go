@@ -9,7 +9,7 @@ const EOF rune = -1
 // It can be embedded in parser structures to provide common text reading operations.
 type Lexer struct {
 	src     string // source text being parsed
-	pos     int    // current reading position  
+	pos     int    // current reading position
 	overEOF int    // count of reads past EOF
 }
 

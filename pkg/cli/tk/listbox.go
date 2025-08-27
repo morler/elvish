@@ -202,7 +202,7 @@ func (w *listBox) renderVertical(width, height int) *term.Buffer {
 		if len(allLines) >= height {
 			break
 		}
-		
+
 		item := items.Show(i)
 		lines := item.SplitByRune('\n')
 		if i == first {

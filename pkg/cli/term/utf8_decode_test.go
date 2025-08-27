@@ -17,13 +17,13 @@ func TestDecodeUTF8FromBytes(t *testing.T) {
 		t.Run(content, func(t *testing.T) {
 			data := []byte(content)
 			offset := 0
-			
+
 			for _, expectedRune := range content {
 				if offset >= len(data) {
 					t.Errorf("unexpected end of data at offset %d", offset)
 					break
 				}
-				
+
 				r, consumed, err := decodeUTF8FromBytes(data[offset:])
 				if err != nil {
 					t.Errorf("decoding error at offset %d: %v", offset, err)
@@ -36,10 +36,10 @@ func TestDecodeUTF8FromBytes(t *testing.T) {
 					t.Errorf("consumed %d bytes, expected > 0", consumed)
 					break
 				}
-				
+
 				offset += consumed
 			}
-			
+
 			if offset != len(data) {
 				t.Errorf("consumed %d bytes, expected %d", offset, len(data))
 			}

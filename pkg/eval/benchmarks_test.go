@@ -74,11 +74,11 @@ func BenchmarkCompilation(b *testing.B) {
 				if err != nil {
 					b.Fatal(err)
 				}
-				
+
 				b.StartTimer()
 				_, _, err = compile(ev.builtin.static(), ev.global.static(), nil, tree, nil)
 				b.StopTimer()
-				
+
 				if err != nil {
 					b.Fatal(err)
 				}
@@ -99,7 +99,7 @@ func BenchmarkTildeExpansion(b *testing.B) {
 		{"no-tilde", "put /abs/path /another/path"},
 		{"mixed-paths", "put ~ /abs ~/rel /another"},
 	}
-	
+
 	for _, bench := range tildeTests {
 		b.Run(bench.name, func(b *testing.B) {
 			ev := NewEvaler()

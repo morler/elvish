@@ -146,7 +146,6 @@ var (
 	ErrCannotDetermineUsername = errors.New("cannot determine user name from glob pattern")
 )
 
-
 func doTilde(v any) (any, error) {
 	switch v := v.(type) {
 	case string:
@@ -576,7 +575,6 @@ func (op *mapPairsOp) exec(fm *Frame, f func(k, v any) Exception) Exception {
 	}
 	return nil
 }
-
 
 type literalValuesOp struct {
 	diag.Ranging

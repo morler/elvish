@@ -2,9 +2,7 @@
 
 ~> put $daemon:pid
 ▶ 12345
-
 ~> put $daemon:sock
 ▶ /tmp/elvish-test.sock
-
 ~> daemon:pid
 ▶ 12345

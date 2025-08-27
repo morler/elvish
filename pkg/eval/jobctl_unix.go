@@ -172,11 +172,11 @@ func (c *unixJobController) WaitForJob(jobID JobID) ([]ProcessStatus, error) {
 	for _, pid := range pids {
 		var ws syscall.WaitStatus
 		wpid, err := syscall.Wait4(pid, &ws, syscall.WUNTRACED, nil)
-		
+
 		status := ProcessStatus{
 			PID: wpid,
 		}
-		
+
 		if err != nil {
 			status.Error = err
 		} else if ws.Exited() {
@@ -185,7 +185,7 @@ func (c *unixJobController) WaitForJob(jobID JobID) ([]ProcessStatus, error) {
 			status.Terminated = true
 			status.ExitCode = int(ws.Signal())
 		}
-		
+
 		statuses = append(statuses, status)
 	}
 
@@ -239,7 +239,7 @@ func (c *unixJobController) TerminateJob(jobID JobID) error {
 func (c *unixJobController) Close() error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	
+
 	// Clear all tracked jobs
 	c.jobs = make(map[int]*unixJob)
 	return nil
@@ -296,8 +296,8 @@ func fgUnix(controller JobController, pids ...int) error {
 			errors[i] = &exception{status.Error, nil}
 		} else {
 			errors[i] = &exception{NewExternalCmdExit(
-				"[pid "+strconv.Itoa(status.PID)+"]", 
-				syscall.WaitStatus(status.ExitCode), 
+				"[pid "+strconv.Itoa(status.PID)+"]",
+				syscall.WaitStatus(status.ExitCode),
 				status.PID), nil}
 		}
 	}
