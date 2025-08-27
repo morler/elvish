@@ -75,7 +75,7 @@ func interact(ev *eval.Evaler, fds [3]*os.File, cfg *interactCfg) {
 		restoreTTY := term.SetupForTUIOnce(fds[0], fds[1])
 		defer restoreTTY()
 		newed := edit.NewEditor(cli.NewTTY(fds[0], fds[2]), ev, daemonClient)
-		ev.ExtendBuiltin(eval.BuildNs().AddNs("edit", newed))
+		ev.ExtendBuiltin(eval.BuildNs().AddNs("edit", newed.Ns()))
 		ev.BgJobNotify = func(s string) { newed.Notify(ui.T(s)) }
 		ed = newed
 	} else {

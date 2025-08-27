@@ -8,6 +8,7 @@ package edit
 import (
 	_ "embed"
 	"fmt"
+	"os"
 	"sync"
 	"sync/atomic"
 
@@ -60,7 +61,9 @@ func NewEditor(tty cli.TTY, ev *eval.Evaler, st storedefs.Store) *Editor {
 
 	hs, err := newHistStore(st)
 	if err != nil {
-		_ = err // TODO(xiaq): Report the error.
+		// Report the error to stderr but continue with fallback functionality
+		fmt.Fprintf(os.Stderr, "Warning: Failed to initialize command history store: %v\n", err)
+		fmt.Fprintln(os.Stderr, "Command history will use memory-only storage for this session.")
 	}
 
 	initMaxHeight(&appSpec, nb)
