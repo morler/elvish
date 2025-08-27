@@ -8,6 +8,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 
@@ -31,7 +32,7 @@ func TempDir(c Cleanuper) string {
 		panic(err)
 	}
 	c.Cleanup(func() {
-		err := os.RemoveAll(dir)
+		err := removeAllWithRetry(dir)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "failed to remove temp dir %s: %v\n", dir, err)
 		}
@@ -227,3 +228,36 @@ func (fi fileInfo) Mode() fs.FileMode { return fi.perm }
 func (fileInfo) ModTime() time.Time   { return t0 }
 func (fileInfo) IsDir() bool          { return false }
 func (fileInfo) Sys() any             { return nil }
+
+// removeAllWithRetry implements directory removal with retry logic for Windows.
+// Windows file handles can persist longer than expected, causing cleanup failures.
+func removeAllWithRetry(dir string) error {
+	const maxRetries = 10
+	const retryDelay = 100 * time.Millisecond
+
+	var lastErr error
+	for i := 0; i < maxRetries; i++ {
+		err := os.RemoveAll(dir)
+		if err == nil {
+			return nil
+		}
+
+		lastErr = err
+
+		// On Windows, retry if the error suggests file is in use
+		if runtime.GOOS == "windows" {
+			errStr := err.Error()
+			if strings.Contains(errStr, "Access is denied") ||
+				strings.Contains(errStr, "being used by another process") ||
+				strings.Contains(errStr, "cannot access the file") {
+				time.Sleep(retryDelay)
+				continue
+			}
+		}
+
+		// For non-retryable errors, return immediately
+		return err
+	}
+
+	return fmt.Errorf("failed to remove directory after %d retries: %v", maxRetries, lastErr)
+}
